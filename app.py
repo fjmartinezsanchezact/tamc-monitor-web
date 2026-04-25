@@ -19,7 +19,7 @@ except ImportError:
 # ============================================================
 # CONFIGURATION
 # ============================================================
-DEFAULT_RESULTADOS_DIR = "resultados"
+DEFAULT_RESULTADOS_DIR = "web_data/latest"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 RAW_DATA_DIR_NAMES = {"raw", "mseed", "waveforms", "data"}
 
