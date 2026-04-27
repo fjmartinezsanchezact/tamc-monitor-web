@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-04-26 17:08:06 UTC",
+  "generated_utc": "2026-04-27 04:54:23 UTC",
   "project_root": "C:\\Users\\PC\\Desktop\\tamcsismico",
   "source_resultados_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\resultados",
   "source_data_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\data",
@@ -7,92 +7,92 @@
   "structure": "<REGION>/mainshock/plots/*.png + <REGION>/fixed_stations.json",
   "regions": [
     {
-      "source_resultados_folder": "Aegean_Sea_Greece-Turkey__RECENT_20260426_135542",
-      "web_folder": "Aegean_Sea_Greece-Turkey_RECENT_20260426_135542",
+      "source_resultados_folder": "Aegean_Sea_Greece-Turkey__RECENT_20260427_014145",
+      "web_folder": "Aegean_Sea_Greece-Turkey_RECENT_20260427_014145",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Cascadia_Subduction_Zone_USA-Canada__RECENT_20260426_135353",
-      "web_folder": "Cascadia_Subduction_Zone_USA-Canada_RECENT_20260426_135353",
+      "source_resultados_folder": "Cascadia_Subduction_Zone_USA-Canada__RECENT_20260427_013951",
+      "web_folder": "Cascadia_Subduction_Zone_USA-Canada_RECENT_20260427_013951",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Etna_Italy__RECENT_20260426_140004",
-      "web_folder": "Etna_Italy_RECENT_20260426_140004",
+      "source_resultados_folder": "Etna_Italy__RECENT_20260427_014607",
+      "web_folder": "Etna_Italy_RECENT_20260427_014607",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Fuego_Guatemala__RECENT_20260426_140405",
-      "web_folder": "Fuego_Guatemala_RECENT_20260426_140405",
+      "source_resultados_folder": "Fuego_Guatemala__RECENT_20260427_015006",
+      "web_folder": "Fuego_Guatemala_RECENT_20260427_015006",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260426_135706",
-      "web_folder": "Hikurangi_Subduction_Zone_New_Zealand_RECENT_20260426_135706",
+      "source_resultados_folder": "Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260427_014303",
+      "web_folder": "Hikurangi_Subduction_Zone_New_Zealand_RECENT_20260427_014303",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Kilauea_Hawaii_USA__RECENT_20260426_140308",
-      "web_folder": "Kilauea_Hawaii_USA_RECENT_20260426_140308",
+      "source_resultados_folder": "Kilauea_Hawaii_USA__RECENT_20260427_014910",
+      "web_folder": "Kilauea_Hawaii_USA_RECENT_20260427_014910",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "La_Palma_Canary_Islands__RECENT_20260426_135759",
-      "web_folder": "La_Palma_Canary_Islands_RECENT_20260426_135759",
+      "source_resultados_folder": "La_Palma_Canary_Islands__RECENT_20260427_014405",
+      "web_folder": "La_Palma_Canary_Islands_RECENT_20260427_014405",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Maule_Chile__RECENT_20260426_135052",
-      "web_folder": "Maule_Chile_RECENT_20260426_135052",
+      "source_resultados_folder": "Maule_Chile__RECENT_20260427_013649",
+      "web_folder": "Maule_Chile_RECENT_20260427_013649",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Miyako_Japan__RECENT_20260426_134944",
-      "web_folder": "Miyako_Japan_RECENT_20260426_134944",
+      "source_resultados_folder": "Miyako_Japan__RECENT_20260427_013547",
+      "web_folder": "Miyako_Japan_RECENT_20260427_013547",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Popocatepetl_Mexico__RECENT_20260426_140512",
-      "web_folder": "Popocatepetl_Mexico_RECENT_20260426_140512",
+      "source_resultados_folder": "Popocatepetl_Mexico__RECENT_20260427_015110",
+      "web_folder": "Popocatepetl_Mexico_RECENT_20260427_015110",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Reykjanes_Iceland__RECENT_20260426_135858",
-      "web_folder": "Reykjanes_Iceland_RECENT_20260426_135858",
+      "source_resultados_folder": "Reykjanes_Iceland__RECENT_20260427_014506",
+      "web_folder": "Reykjanes_Iceland_RECENT_20260427_014506",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "San_Andreas_Fault_California_USA__RECENT_20260426_135139",
-      "web_folder": "San_Andreas_Fault_California_USA_RECENT_20260426_135139",
+      "source_resultados_folder": "San_Andreas_Fault_California_USA__RECENT_20260427_013743",
+      "web_folder": "San_Andreas_Fault_California_USA_RECENT_20260427_013743",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Stromboli_Italy__RECENT_20260426_140130",
-      "web_folder": "Stromboli_Italy_RECENT_20260426_140130",
+      "source_resultados_folder": "Stromboli_Italy__RECENT_20260427_014729",
+      "web_folder": "Stromboli_Italy_RECENT_20260427_014729",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Torremolinos_M_laga_Spain_RECENT_20260426_134839",
-      "web_folder": "Torremolinos_M_laga_Spain_RECENT_20260426_134839",
+      "source_resultados_folder": "Torremolinos_M_laga_Spain_RECENT_20260427_013447",
+      "web_folder": "Torremolinos_M_laga_Spain_RECENT_20260427_013447",
       "png_files": 5,
       "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Yellowstone_Wyoming_USA__RECENT_20260426_140633",
-      "web_folder": "Yellowstone_Wyoming_USA_RECENT_20260426_140633",
+      "source_resultados_folder": "Yellowstone_Wyoming_USA__RECENT_20260427_015243",
+      "web_folder": "Yellowstone_Wyoming_USA_RECENT_20260427_015243",
       "png_files": 5,
       "fixed_stations_json": true
     }
