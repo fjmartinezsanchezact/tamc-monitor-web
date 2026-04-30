@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "generated_utc": "2026-04-30T04:51:16Z",
+  "generated_utc": "2026-04-30T15:41:20Z",
   "summary_type": "global_multistation_network_coherence_summary",
   "total_regions": 26,
   "state_counts": {
@@ -8,8 +8,10 @@
     "localized_transient_synchronization": 2,
     "transient_coherent_anomaly": 0,
     "localized_anomaly_regime": 0,
-    "isolated_extreme_outlier_regime": 20,
-    "background_or_low_coherence": 4
+    "moderate_structure_with_clustered_extremes": 21,
+    "moderate_structure_with_isolated_extremes": 0,
+    "isolated_extreme_outlier_episode": 0,
+    "background_or_low_coherence": 0
   },
   "top_regions_by_descriptive_score": [
     {
@@ -46,7 +48,7 @@
       "region_name": "Tohoku Megathrust Japan",
       "event_folder": "Tohoku_Megathrust_Japan__RECENT_20260430_032228",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.93,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -55,13 +57,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Tohoku Megathrust Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Tohoku Megathrust Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Kamchatka Kuril Subduction Zone Russia Japan",
       "event_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260430_031605",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.41,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -70,13 +72,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Fuego Guatemala",
       "event_folder": "Fuego_Guatemala__RECENT_20260430_033418",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.91,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -85,13 +87,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Fuego Guatemala shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Fuego Guatemala shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "San Andreas Fault California USA",
       "event_folder": "San_Andreas_Fault_California_USA__RECENT_20260430_030721",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.78,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -100,13 +102,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "San Andreas Fault California USA shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "San Andreas Fault California USA shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Miyako Japan",
       "event_folder": "Miyako_Japan__RECENT_20260430_030511",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.3,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -115,13 +117,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Miyako Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Miyako Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Maule Chile",
       "event_folder": "Maule_Chile__RECENT_20260430_030616",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 53.03,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -130,13 +132,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Maule Chile shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Maule Chile shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Popocatepetl Mexico",
       "event_folder": "Popocatepetl_Mexico__RECENT_20260430_033534",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.83,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -145,13 +147,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Popocatepetl Mexico shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Popocatepetl Mexico shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Illapel Subduction Zone Chile",
       "event_folder": "Illapel_Subduction_Zone_Chile__RECENT_20260430_032504",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.8,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -160,7 +162,7 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Illapel Subduction Zone Chile shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Illapel Subduction Zone Chile shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     }
   ],
   "regions": [
@@ -168,7 +170,7 @@
       "region_name": "Aegean Sea Greece Turkey",
       "event_folder": "Aegean_Sea_Greece-Turkey__RECENT_20260430_031159",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 37.6,
       "descriptive_score_level": "low",
       "coherence_level": "low",
@@ -177,7 +179,7 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Aegean Sea Greece Turkey shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Aegean Sea Greece Turkey is classified as clustered extreme episodes without broad synchrony based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
     },
     {
       "region_name": "Alaska Aleutian Subduction Zone USA",
@@ -198,7 +200,7 @@
       "region_name": "Bengkulu Sunda Megathrust Indonesia",
       "event_folder": "Bengkulu_Sunda_Megathrust_Indonesia__RECENT_20260430_032331",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.52,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -207,13 +209,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Bengkulu Sunda Megathrust Indonesia shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Bengkulu Sunda Megathrust Indonesia shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Cascadia Subduction Zone USA Canada",
       "event_folder": "Cascadia_Subduction_Zone_USA-Canada__RECENT_20260430_030951",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.65,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -222,13 +224,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Cascadia Subduction Zone USA Canada shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Cascadia Subduction Zone USA Canada shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Etna Italy",
       "event_folder": "Etna_Italy__RECENT_20260430_032923",
       "mode": "monitor",
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 43.8,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -237,13 +239,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Etna Italy is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
+      "summary": "Etna Italy shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Fuego Guatemala",
       "event_folder": "Fuego_Guatemala__RECENT_20260430_033418",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.91,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -252,13 +254,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Fuego Guatemala shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Fuego Guatemala shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Hikurangi Subduction Zone New Zealand",
       "event_folder": "Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260430_031339",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 44.26,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -267,13 +269,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Hikurangi Subduction Zone New Zealand shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Hikurangi Subduction Zone New Zealand shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Illapel Subduction Zone Chile",
       "event_folder": "Illapel_Subduction_Zone_Chile__RECENT_20260430_032504",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.8,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -282,13 +284,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Illapel Subduction Zone Chile shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Illapel Subduction Zone Chile shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Kamchatka Kuril Subduction Zone Russia Japan",
       "event_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260430_031605",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.41,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -297,13 +299,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Kermadec Subduction Zone New Zealand",
       "event_folder": "Kermadec_Subduction_Zone_New_Zealand__RECENT_20260430_032557",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 45.62,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -312,13 +314,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Kermadec Subduction Zone New Zealand shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Kermadec Subduction Zone New Zealand shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Kilauea Hawaii USA",
       "event_folder": "Kilauea_Hawaii_USA__RECENT_20260430_033313",
       "mode": "monitor",
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 46.61,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -327,13 +329,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Kilauea Hawaii USA is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
+      "summary": "Kilauea Hawaii USA shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "La Palma Canary Islands",
       "event_folder": "La_Palma_Canary_Islands__RECENT_20260430_032701",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 44.6,
       "descriptive_score_level": "moderate",
       "coherence_level": "low",
@@ -342,13 +344,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "La Palma Canary Islands shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "La Palma Canary Islands is classified as clustered extreme episodes without broad synchrony based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
     },
     {
       "region_name": "Lorca Murcia Spain moderate seismic region",
       "event_folder": "Lorca_Murcia_Spain_moderate_seismic_region_RECENT_20260430_030318",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.89,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -357,13 +359,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Lorca Murcia Spain moderate seismic region shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Lorca Murcia Spain moderate seismic region shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Maule Chile",
       "event_folder": "Maule_Chile__RECENT_20260430_030616",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 53.03,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -372,13 +374,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Maule Chile shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Maule Chile shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Miyako Japan",
       "event_folder": "Miyako_Japan__RECENT_20260430_030511",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.3,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -387,13 +389,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Miyako Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Miyako Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Nerpio Albacete Spain low activity inland region",
       "event_folder": "Nerpio_Albacete_Spain_low-activity_inland_region_RECENT_20260430_030412",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.76,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -402,13 +404,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Nerpio Albacete Spain low activity inland region shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Nerpio Albacete Spain low activity inland region shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "North Anatolian Fault Turkey",
       "event_folder": "North_Anatolian_Fault_Turkey__RECENT_20260430_032041",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 38.79,
       "descriptive_score_level": "low",
       "coherence_level": "low",
@@ -417,13 +419,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "North Anatolian Fault Turkey shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "North Anatolian Fault Turkey is classified as clustered extreme episodes without broad synchrony based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
     },
     {
       "region_name": "Peru Ecuador Subduction Zone",
       "event_folder": "Peru-Ecuador_Subduction_Zone_RECENT_20260430_031918",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.42,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -432,13 +434,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Peru Ecuador Subduction Zone shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Peru Ecuador Subduction Zone shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Popocatepetl Mexico",
       "event_folder": "Popocatepetl_Mexico__RECENT_20260430_033534",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.83,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -447,13 +449,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Popocatepetl Mexico shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Popocatepetl Mexico shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Reykjanes Iceland",
       "event_folder": "Reykjanes_Iceland__RECENT_20260430_032804",
       "mode": "monitor",
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 44.52,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -462,13 +464,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "moderate_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Reykjanes Iceland is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
+      "summary": "Reykjanes Iceland shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "San Andreas Fault California USA",
       "event_folder": "San_Andreas_Fault_California_USA__RECENT_20260430_030721",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.78,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -477,13 +479,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "San Andreas Fault California USA shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "San Andreas Fault California USA shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Stromboli Italy",
       "event_folder": "Stromboli_Italy__RECENT_20260430_033113",
       "mode": "monitor",
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 43.78,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -492,13 +494,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Stromboli Italy is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available."
+      "summary": "Stromboli Italy shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Sumatra Andaman Subduction Zone Indonesia",
       "event_folder": "Sumatra-Andaman_Subduction_Zone_Indonesia__RECENT_20260430_031721",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.55,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -507,13 +509,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Sumatra Andaman Subduction Zone Indonesia shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Sumatra Andaman Subduction Zone Indonesia shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Tohoku Megathrust Japan",
       "event_folder": "Tohoku_Megathrust_Japan__RECENT_20260430_032228",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.93,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -522,13 +524,13 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Tohoku Megathrust Japan shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Tohoku Megathrust Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Torremolinos M laga Spain",
       "event_folder": "Torremolinos_M_laga_Spain_RECENT_20260430_030209",
       "mode": "monitor",
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 47.65,
       "descriptive_score_level": "moderate",
       "coherence_level": "moderate",
@@ -537,7 +539,7 @@
       "extreme_structure": "strongly clustered extremes",
       "forcing_relationship": "weak_or_no_linear_tracking",
       "robust_statistical_support": "consistent_with_null",
-      "summary": "Torremolinos M laga Spain shows isolated extreme outliers on an otherwise low global anomaly background."
+      "summary": "Torremolinos M laga Spain shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly."
     },
     {
       "region_name": "Yellowstone Wyoming USA",

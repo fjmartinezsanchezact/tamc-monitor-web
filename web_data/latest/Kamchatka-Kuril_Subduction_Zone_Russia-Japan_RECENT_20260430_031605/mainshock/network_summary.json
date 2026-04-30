@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "generated_utc": "2026-04-30T04:51:09Z",
+  "generated_utc": "2026-04-30T15:41:13Z",
   "region_name": "Kamchatka Kuril Subduction Zone Russia Japan",
   "event_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260430_031605",
   "mode": "monitor",
@@ -307,7 +307,7 @@
   "joint_interpretation": {
     "title": "Joint network interpretation",
     "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
-    "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+    "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
     "coherence_level": "moderate",
     "anomaly_level": "low",
     "temporal_structure": "sparse synchronization episodes",
@@ -321,7 +321,7 @@
       "strongly clustered extremes",
       "forcing: weak_or_no_linear_tracking",
       "robust: consistent_with_null",
-      "ISOLATED EXTREME OUTLIER REGIME"
+      "MODERATE STRUCTURE WITH CLUSTERED EXTREMES"
     ],
     "evidence": [
       "Synchrony reaches 3 of 5 stations at peak, but synchronized samples represent 0.8241% of the window.",
@@ -335,7 +335,7 @@
       "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
       "The observed anomaly structure does not simply track the smooth forcing reference."
     ],
-    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows isolated extreme outliers on an otherwise low global anomaly background.",
+    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly.",
     "interpretation_logic": {
       "sync_used": true,
       "metrics_allstations_used": true,
@@ -362,7 +362,7 @@
   "interpretation": {
     "title": "Joint network interpretation",
     "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
-    "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+    "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
     "coherence_level": "moderate",
     "anomaly_level": "low",
     "temporal_structure": "sparse synchronization episodes",
@@ -376,7 +376,7 @@
       "strongly clustered extremes",
       "forcing: weak_or_no_linear_tracking",
       "robust: consistent_with_null",
-      "ISOLATED EXTREME OUTLIER REGIME"
+      "MODERATE STRUCTURE WITH CLUSTERED EXTREMES"
     ],
     "evidence": [
       "Synchrony reaches 3 of 5 stations at peak, but synchronized samples represent 0.8241% of the window.",
@@ -390,7 +390,7 @@
       "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
       "The observed anomaly structure does not simply track the smooth forcing reference."
     ],
-    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows isolated extreme outliers on an otherwise low global anomaly background.",
+    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly.",
     "interpretation_logic": {
       "sync_used": true,
       "metrics_allstations_used": true,

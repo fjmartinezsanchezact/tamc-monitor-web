@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "generated_utc": "2026-04-30T04:51:14Z",
+  "generated_utc": "2026-04-30T15:41:18Z",
   "region_name": "Stromboli Italy",
   "event_folder": "Stromboli_Italy__RECENT_20260430_033113",
   "mode": "monitor",
@@ -307,7 +307,7 @@
   "joint_interpretation": {
     "title": "Joint network interpretation",
     "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
-    "network_state": "BACKGROUND / LOW COHERENCE",
+    "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
     "coherence_level": "moderate",
     "anomaly_level": "low",
     "temporal_structure": "sparse synchronization episodes",
@@ -321,7 +321,7 @@
       "strongly clustered extremes",
       "forcing: weak_or_no_linear_tracking",
       "robust: consistent_with_null",
-      "BACKGROUND / LOW COHERENCE"
+      "MODERATE STRUCTURE WITH CLUSTERED EXTREMES"
     ],
     "evidence": [
       "Synchrony reaches 2 of 5 stations at peak, but synchronized samples represent 0.0032% of the window.",
@@ -334,7 +334,7 @@
       "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
       "The observed anomaly structure does not simply track the smooth forcing reference."
     ],
-    "summary": "Stromboli Italy is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available.",
+    "summary": "Stromboli Italy shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly.",
     "interpretation_logic": {
       "sync_used": true,
       "metrics_allstations_used": true,
@@ -361,7 +361,7 @@
   "interpretation": {
     "title": "Joint network interpretation",
     "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
-    "network_state": "BACKGROUND / LOW COHERENCE",
+    "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
     "coherence_level": "moderate",
     "anomaly_level": "low",
     "temporal_structure": "sparse synchronization episodes",
@@ -375,7 +375,7 @@
       "strongly clustered extremes",
       "forcing: weak_or_no_linear_tracking",
       "robust: consistent_with_null",
-      "BACKGROUND / LOW COHERENCE"
+      "MODERATE STRUCTURE WITH CLUSTERED EXTREMES"
     ],
     "evidence": [
       "Synchrony reaches 2 of 5 stations at peak, but synchronized samples represent 0.0032% of the window.",
@@ -388,7 +388,7 @@
       "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
       "The observed anomaly structure does not simply track the smooth forcing reference."
     ],
-    "summary": "Stromboli Italy is classified as background / low coherence based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available.",
+    "summary": "Stromboli Italy shows moderate network structure with clustered extremes. Synchrony and extreme timing suggest episodic structure, but the global z-score distribution remains low. This should be read as a moderate descriptive pattern, not as a sustained network-wide anomaly.",
     "interpretation_logic": {
       "sync_used": true,
       "metrics_allstations_used": true,

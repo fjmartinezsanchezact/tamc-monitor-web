@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-04-30 04:51:38 UTC",
+  "generated_utc": "2026-04-30 15:42:15 UTC",
   "project_root": "C:\\Users\\PC\\Desktop\\tamcsismico",
   "source_resultados_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\resultados",
   "source_data_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\data",
@@ -14,7 +14,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 37.6,
       "descriptive_score_level": "low",
       "schema_version": "3.0"
@@ -38,7 +38,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.52,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -50,7 +50,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.65,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -62,7 +62,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 43.8,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -74,7 +74,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.91,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -86,7 +86,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 44.26,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -98,7 +98,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.8,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -110,7 +110,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.41,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -122,7 +122,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 45.62,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -134,7 +134,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 46.61,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -146,7 +146,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 44.6,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -158,7 +158,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.89,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -170,7 +170,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 53.03,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -182,7 +182,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.3,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -194,7 +194,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.76,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -206,7 +206,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
       "descriptive_score_0_100": 38.79,
       "descriptive_score_level": "low",
       "schema_version": "3.0"
@@ -218,7 +218,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 49.42,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -230,7 +230,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.83,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -242,7 +242,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 44.52,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -254,7 +254,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 54.78,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -266,7 +266,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 43.78,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -278,7 +278,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 52.55,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -290,7 +290,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 57.93,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
@@ -302,7 +302,7 @@
       "fixed_stations_json": true,
       "network_summary_json": true,
       "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
+      "network_state": "MODERATE STRUCTURE WITH CLUSTERED EXTREMES",
       "descriptive_score_0_100": 47.65,
       "descriptive_score_level": "moderate",
       "schema_version": "3.0"
