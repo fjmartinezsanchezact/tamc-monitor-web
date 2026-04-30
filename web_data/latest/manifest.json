@@ -1,323 +1,166 @@
 {
-  "generated_utc": "2026-04-29 16:43:08 UTC",
+  "generated_utc": "2026-04-30 04:39:09 UTC",
   "project_root": "C:\\Users\\PC\\Desktop\\tamcsismico",
   "source_resultados_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\resultados",
   "source_data_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\data",
   "web_dir": "C:\\Users\\PC\\Desktop\\tamcsismico\\web_data\\latest",
-  "structure": "<REGION>/mainshock/plots/*.png + <REGION>/fixed_stations.json + <REGION>/mainshock/network_summary.json + network_global_summary.json",
-  "global_network_summary_json": true,
+  "structure": "<REGION>/mainshock/plots/*.png + <REGION>/fixed_stations.json",
   "regions": [
     {
-      "source_resultados_folder": "Aegean_Sea_Greece-Turkey__RECENT_20260429_140151",
-      "web_folder": "Aegean_Sea_Greece-Turkey_RECENT_20260429_140151",
+      "source_resultados_folder": "Aegean_Sea_Greece-Turkey__RECENT_20260430_031159",
+      "web_folder": "Aegean_Sea_Greece-Turkey_RECENT_20260430_031159",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 37.83,
-      "descriptive_score_level": "low",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Alaska-Aleutian_Subduction_Zone_USA__RECENT_20260429_140436",
-      "web_folder": "Alaska-Aleutian_Subduction_Zone_USA_RECENT_20260429_140436",
+      "source_resultados_folder": "Alaska-Aleutian_Subduction_Zone_USA__RECENT_20260430_031453",
+      "web_folder": "Alaska-Aleutian_Subduction_Zone_USA_RECENT_20260430_031453",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
-      "descriptive_score_0_100": 59.07,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Bengkulu_Sunda_Megathrust_Indonesia__RECENT_20260429_141317",
-      "web_folder": "Bengkulu_Sunda_Megathrust_Indonesia_RECENT_20260429_141317",
+      "source_resultados_folder": "Bengkulu_Sunda_Megathrust_Indonesia__RECENT_20260430_032331",
+      "web_folder": "Bengkulu_Sunda_Megathrust_Indonesia_RECENT_20260430_032331",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 55.35,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Cascadia_Subduction_Zone_USA-Canada__RECENT_20260429_140004",
-      "web_folder": "Cascadia_Subduction_Zone_USA-Canada_RECENT_20260429_140004",
+      "source_resultados_folder": "Cascadia_Subduction_Zone_USA-Canada__RECENT_20260430_030951",
+      "web_folder": "Cascadia_Subduction_Zone_USA-Canada_RECENT_20260430_030951",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 48.74,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Etna_Italy__RECENT_20260429_141847",
-      "web_folder": "Etna_Italy_RECENT_20260429_141847",
+      "source_resultados_folder": "Etna_Italy__RECENT_20260430_032923",
+      "web_folder": "Etna_Italy_RECENT_20260430_032923",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
-      "descriptive_score_0_100": 43.91,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Fuego_Guatemala__RECENT_20260429_142334",
-      "web_folder": "Fuego_Guatemala_RECENT_20260429_142334",
+      "source_resultados_folder": "Fuego_Guatemala__RECENT_20260430_033418",
+      "web_folder": "Fuego_Guatemala_RECENT_20260430_033418",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 55.09,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260429_140330",
-      "web_folder": "Hikurangi_Subduction_Zone_New_Zealand_RECENT_20260429_140330",
+      "source_resultados_folder": "Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260430_031339",
+      "web_folder": "Hikurangi_Subduction_Zone_New_Zealand_RECENT_20260430_031339",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 43.96,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Illapel_Subduction_Zone_Chile__RECENT_20260429_141431",
-      "web_folder": "Illapel_Subduction_Zone_Chile_RECENT_20260429_141431",
+      "source_resultados_folder": "Illapel_Subduction_Zone_Chile__RECENT_20260430_032504",
+      "web_folder": "Illapel_Subduction_Zone_Chile_RECENT_20260430_032504",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
-      "descriptive_score_0_100": 71.95,
-      "descriptive_score_level": "high",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260429_140613",
-      "web_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan_RECENT_20260429_140613",
+      "source_resultados_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260430_031605",
+      "web_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan_RECENT_20260430_031605",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
-      "descriptive_score_0_100": 68.64,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Kermadec_Subduction_Zone_New_Zealand__RECENT_20260429_141524",
-      "web_folder": "Kermadec_Subduction_Zone_New_Zealand_RECENT_20260429_141524",
+      "source_resultados_folder": "Kermadec_Subduction_Zone_New_Zealand__RECENT_20260430_032557",
+      "web_folder": "Kermadec_Subduction_Zone_New_Zealand_RECENT_20260430_032557",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 46.27,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Kilauea_Hawaii_USA__RECENT_20260429_142239",
-      "web_folder": "Kilauea_Hawaii_USA_RECENT_20260429_142239",
+      "source_resultados_folder": "Kilauea_Hawaii_USA__RECENT_20260430_033313",
+      "web_folder": "Kilauea_Hawaii_USA_RECENT_20260430_033313",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 47.12,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "La_Palma_Canary_Islands__RECENT_20260429_141634",
-      "web_folder": "La_Palma_Canary_Islands_RECENT_20260429_141634",
+      "source_resultados_folder": "La_Palma_Canary_Islands__RECENT_20260430_032701",
+      "web_folder": "La_Palma_Canary_Islands_RECENT_20260430_032701",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 51.04,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Lorca_Murcia_Spain_moderate_seismic_region_RECENT_20260429_135302",
-      "web_folder": "Lorca_Murcia_Spain_moderate_seismic_region_RECENT_20260429_135302",
+      "source_resultados_folder": "Lorca_Murcia_Spain_moderate_seismic_region_RECENT_20260430_030318",
+      "web_folder": "Lorca_Murcia_Spain_moderate_seismic_region_RECENT_20260430_030318",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 58.39,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Maule_Chile__RECENT_20260429_135712",
-      "web_folder": "Maule_Chile_RECENT_20260429_135712",
+      "source_resultados_folder": "Maule_Chile__RECENT_20260430_030616",
+      "web_folder": "Maule_Chile_RECENT_20260430_030616",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
-      "descriptive_score_0_100": 62.83,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Miyako_Japan__RECENT_20260429_135612",
-      "web_folder": "Miyako_Japan_RECENT_20260429_135612",
+      "source_resultados_folder": "Miyako_Japan__RECENT_20260430_030511",
+      "web_folder": "Miyako_Japan_RECENT_20260430_030511",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 58.87,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Nerpio_Albacete_Spain_low-activity_inland_region_RECENT_20260429_135404",
-      "web_folder": "Nerpio_Albacete_Spain_low-activity_inland_region_RECENT_20260429_135404",
+      "source_resultados_folder": "Nerpio_Albacete_Spain_low-activity_inland_region_RECENT_20260430_030412",
+      "web_folder": "Nerpio_Albacete_Spain_low-activity_inland_region_RECENT_20260430_030412",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 52.32,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "North_Anatolian_Fault_Turkey__RECENT_20260429_141020",
-      "web_folder": "North_Anatolian_Fault_Turkey_RECENT_20260429_141020",
+      "source_resultados_folder": "North_Anatolian_Fault_Turkey__RECENT_20260430_032041",
+      "web_folder": "North_Anatolian_Fault_Turkey_RECENT_20260430_032041",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 38.28,
-      "descriptive_score_level": "low",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Peru-Ecuador_Subduction_Zone_RECENT_20260429_140904",
-      "web_folder": "Peru-Ecuador_Subduction_Zone_RECENT_20260429_140904",
+      "source_resultados_folder": "Peru-Ecuador_Subduction_Zone_RECENT_20260430_031918",
+      "web_folder": "Peru-Ecuador_Subduction_Zone_RECENT_20260430_031918",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 52.15,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Popocatepetl_Mexico__RECENT_20260429_142437",
-      "web_folder": "Popocatepetl_Mexico_RECENT_20260429_142437",
+      "source_resultados_folder": "Popocatepetl_Mexico__RECENT_20260430_033534",
+      "web_folder": "Popocatepetl_Mexico_RECENT_20260430_033534",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 53.17,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Reykjanes_Iceland__RECENT_20260429_141732",
-      "web_folder": "Reykjanes_Iceland_RECENT_20260429_141732",
+      "source_resultados_folder": "Reykjanes_Iceland__RECENT_20260430_032804",
+      "web_folder": "Reykjanes_Iceland_RECENT_20260430_032804",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
-      "descriptive_score_0_100": 44.25,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "San_Andreas_Fault_California_USA__RECENT_20260429_135757",
-      "web_folder": "San_Andreas_Fault_California_USA_RECENT_20260429_135757",
+      "source_resultados_folder": "San_Andreas_Fault_California_USA__RECENT_20260430_030721",
+      "web_folder": "San_Andreas_Fault_California_USA_RECENT_20260430_030721",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 54.71,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Stromboli_Italy__RECENT_20260429_142045",
-      "web_folder": "Stromboli_Italy_RECENT_20260429_142045",
+      "source_resultados_folder": "Stromboli_Italy__RECENT_20260430_033113",
+      "web_folder": "Stromboli_Italy_RECENT_20260430_033113",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "BACKGROUND / LOW COHERENCE",
-      "descriptive_score_0_100": 43.99,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Sumatra-Andaman_Subduction_Zone_Indonesia__RECENT_20260429_140746",
-      "web_folder": "Sumatra-Andaman_Subduction_Zone_Indonesia_RECENT_20260429_140746",
+      "source_resultados_folder": "Sumatra-Andaman_Subduction_Zone_Indonesia__RECENT_20260430_031721",
+      "web_folder": "Sumatra-Andaman_Subduction_Zone_Indonesia_RECENT_20260430_031721",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 55.36,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Tohoku_Megathrust_Japan__RECENT_20260429_141206",
-      "web_folder": "Tohoku_Megathrust_Japan_RECENT_20260429_141206",
+      "source_resultados_folder": "Tohoku_Megathrust_Japan__RECENT_20260430_032228",
+      "web_folder": "Tohoku_Megathrust_Japan_RECENT_20260430_032228",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 58.33,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Torremolinos_M_laga_Spain_RECENT_20260429_135156",
-      "web_folder": "Torremolinos_M_laga_Spain_RECENT_20260429_135156",
+      "source_resultados_folder": "Torremolinos_M_laga_Spain_RECENT_20260430_030209",
+      "web_folder": "Torremolinos_M_laga_Spain_RECENT_20260430_030209",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "ISOLATED EXTREME OUTLIER REGIME",
-      "descriptive_score_0_100": 52.01,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     },
     {
-      "source_resultados_folder": "Yellowstone_Wyoming_USA__RECENT_20260429_142605",
-      "web_folder": "Yellowstone_Wyoming_USA_RECENT_20260429_142605",
+      "source_resultados_folder": "Yellowstone_Wyoming_USA__RECENT_20260430_033717",
+      "web_folder": "Yellowstone_Wyoming_USA_RECENT_20260430_033717",
       "png_files": 5,
-      "fixed_stations_json": true,
-      "network_summary_json": true,
-      "network_summary_readable": true,
-      "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
-      "descriptive_score_0_100": 60.19,
-      "descriptive_score_level": "moderate",
-      "schema_version": "3.0"
+      "fixed_stations_json": true
     }
   ]
 }
