@@ -792,8 +792,6 @@ def render_disclaimer() -> None:
     st.markdown("### 🔬 EXPERIMENTAL · NON-PREDICTIVE · BETA VERSION")
     st.markdown(
         f"""
-This dashboard is the live monitoring extension of **TAMC–FRANJAMAR v3**  
-[DOI: 10.5281/zenodo.19665949]({SEISMIC_DOI})
 
 **Real updated data · fixed reproducible pipeline · no region-specific tuning**
 
