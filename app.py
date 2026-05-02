@@ -3695,7 +3695,7 @@ def render_support_callout(compact: bool = False) -> None:
 	"If you find this work useful or interesting, you can support its development and evolution, "
 	"helping to implement upcoming improvements."
     )
-    st.link_button("☕ Apoyar el proyecto", BUYMEACOFFEE_URL, use_container_width=True)
+    st.link_button("☕ Support the project", BUYMEACOFFEE_URL, use_container_width=True)
 
 
 def render_roadmap_page() -> None:
