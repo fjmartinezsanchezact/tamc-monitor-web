@@ -998,34 +998,6 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
             request_scroll("full_ranking")
             st.rerun()
 
-    if top_items:
-        st.markdown("<div class='radar-button-title'>Open region details</div>", unsafe_allow_html=True)
-        button_cols = st.columns(3)
-        for idx, it in enumerate(top_items):
-            flag = f"{it.get('flag')} " if it.get("flag") else ""
-            with button_cols[idx % 3]:
-                if st.button(
-                    f"{flag}{it['name']} · {score_text(it)}/100",
-                    key=f"radar_open_region_{idx}_{it['zone'].name}",
-                    use_container_width=True,
-                ):
-                    open_region_from_summary(it)
-                    st.rerun()
-
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("🌍 Explore all regions", key="radar_explore_regions", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_region_catalog = True
-            st.session_state.show_full_ranking = False
-            st.session_state.selected_layer = "All regions"
-            request_scroll("region_selector")
-            st.rerun()
-    with c2:
-        if top_item and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
-            open_region_from_summary(top_item)
-            st.rerun()
-
     if st.session_state.get("show_full_ranking", False):
         render_region_classification_table(items_sorted)
 
@@ -3516,18 +3488,38 @@ def scroll_to_top() -> None:
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
+
+    # Monitor must always behave as a real home navigation control.
+    # Using a native link button avoids the Streamlit state bug where a selected
+    # st.button can rerun without visually returning to the landing page.
+    if page_key == "monitor":
+        try:
+            st.link_button(
+                final_label,
+                APP_HOME_URL,
+                use_container_width=True,
+                type="primary" if selected else "secondary",
+            )
+        except Exception:
+            if st.button(
+                final_label,
+                key="nav_monitor_native_fallback",
+                use_container_width=True,
+                type="primary" if selected else "secondary",
+            ):
+                go_monitor_home()
+                st.rerun()
+        return
+
     if st.button(
         final_label,
         key=f"nav_{page_key}",
         use_container_width=True,
         type="primary" if selected else "secondary",
     ):
-        if page_key == "monitor":
-            go_monitor_home()
-        else:
-            st.session_state.page = page_key
-            st.session_state.show_full_ranking = False
-            request_scroll(f"page_{page_key}")
+        st.session_state.page = page_key
+        st.session_state.show_full_ranking = False
+        request_scroll(f"page_{page_key}")
         st.rerun()
 
 
