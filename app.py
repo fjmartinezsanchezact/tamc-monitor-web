@@ -3456,11 +3456,11 @@ def ensure_page_state() -> None:
 
 
 def go_monitor_home() -> None:
-    """Reset the app to the public monitor landing page.
+    """Go to the monitor landing screen and jump to START HERE.
 
-    This is intentionally a native Streamlit reset, not an external link.
-    It clears any region/ranking URL parameters so the Monitor button always
-    returns to the first public screen instead of reopening a previous region.
+    The top Monitor button is kept as a native Streamlit button.
+    Its only job is to return to the monitor page and scroll down to the
+    START HERE block, which is the practical entry point for users.
     """
     st.session_state.page = "monitor"
     st.session_state.show_region_catalog = False
@@ -3478,7 +3478,8 @@ def go_monitor_home() -> None:
         except Exception:
             pass
 
-    request_scroll("app_top_anchor")
+    # Important: this is intentionally START HERE, not the top of the page.
+    request_scroll("start_here")
 
 
 def scroll_to_top() -> None:
