@@ -863,35 +863,55 @@ def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]
         return "⚪ No summary", "Network summaries not available yet", "#94a3b8"
     top = max(scores)
     if top >= 75:
-        return "🔴 High structure", "At least one region shows a strong descriptive structure score", "#ef4444"
+        return "🔴 High network organization", "At least one region shows a strong descriptive structure score", "#ef4444"
     if top >= 50:
-        return "🟠 Moderate structure", "Some regions show organized or transient multistation structure", "#f59e0b"
+        return "🟠 Moderate network organization", "Some regions show organized or transient multistation structure", "#f59e0b"
     if top >= 30:
-        return "🟡 Low–moderate", "Mostly background with some localized structure", "#eab308"
-    return "🟢 Mostly quiet", "No region currently dominates the descriptive structure ranking", "#22c55e"
+        return "🟡 Low–moderate network organization", "Mostly background with some localized structure", "#eab308"
+    return "🟢 Mostly quiet network state", "No region currently dominates the descriptive structure ranking", "#22c55e"
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """Fast first-screen app layer: global state + top active regions."""
+    """Fast first-screen app layer: global state + top active regions.
+
+    The HTML cards provide the visual radar; the native Streamlit buttons below
+    make each radar item directly navigable on desktop and Android/WebView.
+    """
     items = [_summary_for_zone(z) for z in zone_dirs]
     items_sorted = sorted(
         items,
         key=lambda x: (-1 if x.get("score") is None else -float(x["score"]), str(x.get("name", "")))
     )
     top_items = items_sorted[:6]
+    top_item = top_items[0] if top_items else None
+    secondary_items = top_items[1:]
     label, subtitle, global_color = _global_status_label(items)
 
-    cards_html = ""
-    for it in top_items:
+    def score_text(it: Dict[str, object]) -> str:
         score = it.get("score")
-        score_txt = "—" if score is None else f"{float(score):.1f}"
-        flag = f"{it.get('flag')} " if it.get("flag") else ""
+        return "—" if score is None else f"{float(score):.1f}"
 
+    top_html = ""
+    if top_item:
+        top_flag = f"{top_item.get('flag')} " if top_item.get("flag") else ""
+        top_html = (
+            f'<div class="radar-top-card" style="border-color:{top_item["color"]};">'
+            f'<div class="radar-top-badge">TOP REGION</div>'
+            f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
+            f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
+            f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
+            f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
+            f'</div>'
+        )
+
+    cards_html = ""
+    for it in secondary_items:
+        flag = f"{it.get('flag')} " if it.get("flag") else ""
         cards_html += (
             f'<div class="radar-region-card" style="border-color:{it["color"]};">'
             f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
             f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
-            f'<div class="radar-score-row"><span>{html.escape(score_txt)}</span><small>/100</small></div>'
+            f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
             f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
             f'</div>'
         )
@@ -903,18 +923,36 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         f'<div class="radar-kicker">GLOBAL STATUS RADAR</div>'
         f'<div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>'
         f'<div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>'
+        f'<div class="radar-tap-hint">Tap a region below to open the full monitoring outputs.</div>'
         f'</div>'
         f'<div class="radar-live-pill">T−1 h · updated data</div>'
         f'</div>'
-        f'<div class="radar-grid">{cards_html}</div>'
+        f'<div class="radar-layout">{top_html}<div class="radar-grid">{cards_html}</div></div>'
         f'</div>'
     )
 
     st.markdown(radar_html, unsafe_allow_html=True)
 
+    if top_items:
+        st.markdown("<div class='radar-button-title'>Open region details</div>", unsafe_allow_html=True)
+        button_cols = st.columns(3)
+        for idx, it in enumerate(top_items):
+            flag = f"{it.get('flag')} " if it.get("flag") else ""
+            with button_cols[idx % 3]:
+                if st.button(
+                    f"{flag}{it['name']} · {score_text(it)}/100",
+                    key=f"radar_open_region_{idx}_{it['zone'].name}",
+                    use_container_width=True,
+                ):
+                    st.session_state.show_region_catalog = False
+                    st.session_state.selected_layer = "All regions"
+                    st.session_state.selected_zone_name = it["zone"].name
+                    request_scroll("focused_region")
+                    st.rerun()
+
     c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("🌍 Explore radar regions", key="radar_explore_regions", use_container_width=True):
+        if st.button("🌍 Explore all radar regions", key="radar_explore_regions", use_container_width=True):
             st.session_state.show_region_catalog = True
             st.session_state.selected_layer = "All regions"
             request_scroll("region_selector")
@@ -923,12 +961,13 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
     with c2:
         if top_items and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
             st.session_state.show_region_catalog = False
+            st.session_state.selected_layer = "All regions"
             st.session_state.selected_zone_name = top_items[0]["zone"].name
             request_scroll("focused_region")
             st.rerun()
 
     with c3:
-        if st.button("💬 Send feedback", key="radar_feedback", use_container_width=True):
+        if st.button("💬 Help improve this app", key="radar_feedback", use_container_width=True):
             st.session_state.page = "feedback"
             request_scroll("page_feedback")
             st.rerun()
@@ -2123,9 +2162,21 @@ def inject_css() -> None:
         .radar-kicker { color:#38bdf8; font-weight:950; letter-spacing:.18em; font-size:.86rem; text-transform:uppercase; }
         .radar-main { font-size:2rem; font-weight:950; letter-spacing:-.03em; line-height:1.12; margin-top:5px; }
         .radar-subtitle { color:#cbd5e1; font-size:1.02rem; line-height:1.45; margin-top:5px; }
+        .radar-tap-hint { color:#bae6fd; font-size:.9rem; font-weight:850; margin-top:8px; opacity:.92; }
         .radar-live-pill { border:1px solid rgba(34,197,94,.45); color:#bbf7d0; background:rgba(20,83,45,.22); border-radius:999px; padding:8px 12px; font-weight:900; white-space:nowrap; font-size:.86rem; }
-        .radar-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:10px; }
-        .radar-region-card { border:1px solid #334155; background:rgba(2,6,23,.54); border-radius:18px; padding:12px; min-height:128px; }
+        .radar-layout { display:grid; grid-template-columns:minmax(230px, 1.08fr) minmax(300px, 2fr); gap:12px; align-items:stretch; }
+        .radar-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; }
+        .radar-top-card { border:1px solid #f59e0b; background:linear-gradient(135deg, rgba(245,158,11,.16), rgba(2,6,23,.70)); border-radius:20px; padding:16px; min-height:176px; box-shadow:0 0 24px rgba(245,158,11,.12); }
+        .radar-top-badge { display:inline-block; color:#fed7aa; border:1px solid rgba(245,158,11,.45); background:rgba(120,53,15,.25); border-radius:999px; padding:4px 8px; font-size:.72rem; font-weight:950; letter-spacing:.10em; }
+        .radar-top-name { color:#f8fafc; font-size:1.24rem; font-weight:950; line-height:1.18; margin-top:10px; }
+        .radar-top-meta { color:#94a3b8; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; font-weight:850; margin-top:8px; }
+        .radar-top-score { margin-top:12px; display:flex; align-items:baseline; gap:4px; }
+        .radar-top-score span { color:#f8fafc; font-size:2.1rem; font-weight:950; }
+        .radar-top-score small { color:#94a3b8; font-weight:850; }
+        .radar-top-state { font-size:.96rem; font-weight:950; line-height:1.25; margin-top:6px; }
+        .radar-region-card { border:1px solid #334155; background:rgba(2,6,23,.54); border-radius:18px; padding:12px; min-height:128px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
+        .radar-region-card:hover, .radar-top-card:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.26), 0 0 18px rgba(56,189,248,.10); }
+        .radar-button-title { color:#93c5fd; font-size:.86rem; font-weight:950; letter-spacing:.10em; text-transform:uppercase; margin:2px 0 8px 0; }
         .radar-region-name { color:#f8fafc; font-size:.98rem; font-weight:950; line-height:1.2; min-height:2.35rem; }
         .radar-region-type { color:#94a3b8; font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; font-weight:850; margin-top:4px; }
         .radar-score-row { margin-top:10px; display:flex; align-items:baseline; gap:3px; }
@@ -2138,11 +2189,12 @@ def inject_css() -> None:
         .feedback-card { border:1px solid rgba(56,189,248,.32); background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(2,6,23,.92)); border-radius:20px; padding:18px; margin:12px 0; }
         .feedback-title { color:#f8fafc; font-size:1.35rem; font-weight:950; margin-bottom:6px; }
         .feedback-text { color:#cbd5e1; line-height:1.55; font-size:1.02rem; }
-        @media (max-width: 1100px) { .radar-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } }
+        @media (max-width: 1100px) { .radar-layout { grid-template-columns:1fr; } .radar-grid { grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); } }
         @media (max-width: 700px) {
             .radar-head-row { flex-direction:column; }
             .radar-main { font-size:1.55rem; }
-            .radar-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+            .radar-grid { grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
+            .radar-top-card { min-height:auto; padding:13px; }
             .radar-region-card { min-height:118px; padding:10px; }
         }
         .start-here-card {
