@@ -3354,6 +3354,8 @@ def render_back_to_top_button() -> None:
                 bar.appendChild(top);
             }
             top.onclick = function() {
+                // Inicio is a scroll-to-top helper. It never hides the top Monitor button
+                // and it does not inject any extra Monitor button at the bottom.
                 const el = doc.getElementById('app_top_anchor');
                 if (el) {
                     el.scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -3482,17 +3484,28 @@ def ensure_page_state() -> None:
 
 
 def go_monitor_home() -> None:
-    """Reset the app to the public monitor landing page."""
+    """Reset the app to the public monitor landing page.
+
+    This is intentionally a native Streamlit reset, not an external link.
+    It clears any region/ranking URL parameters so the Monitor button always
+    returns to the first public screen instead of reopening a previous region.
+    """
     st.session_state.page = "monitor"
     st.session_state.show_region_catalog = False
     st.session_state.show_full_ranking = False
     st.session_state.selected_layer = "All regions"
     if zone_dirs:
         st.session_state.selected_zone_name = zone_dirs[0].name
+
+    # Clear query params robustly across Streamlit versions.
     try:
         st.query_params.clear()
     except Exception:
-        pass
+        try:
+            st.experimental_set_query_params()
+        except Exception:
+            pass
+
     request_scroll("app_top_anchor")
 
 
