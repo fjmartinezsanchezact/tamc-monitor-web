@@ -872,11 +872,7 @@ def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]
 
 
 def open_region_from_summary(it: Dict[str, object]) -> None:
-    st.session_state.page = "monitor"
-    st.session_state.show_region_catalog = False
-    st.session_state.selected_layer = "All regions"
-    st.session_state.selected_zone_name = it["zone"].name
-    request_scroll("focused_region")
+    select_region_and_highlight(it["zone"].name)
 
 
 def region_query_url(zone_name: str) -> str:
@@ -927,6 +923,179 @@ def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
         request_scroll("full_ranking")
 
 
+# ============================================================
+# UX ENHANCEMENTS: TOOLTIPS / DEMO / HIGHLIGHT
+# ============================================================
+SCIENTIFIC_TOOLTIPS = {
+    "Robust coherent regime": "Sustained network-level coherence across multiple stations.",
+    "Coherent regime": "Organized multistation structure, interpreted descriptively.",
+    "Robust transient synchrony": "Short-lived but strong synchrony across several stations.",
+    "Transient synchrony": "Short-lived coordinated behaviour across the station network.",
+    "Transient coherent anomaly": "Temporary organized anomaly visible at network level.",
+    "Localized anomaly": "An unusual pattern concentrated in part of the network or window.",
+    "Isolated outlier": "A strong isolated deviation, not necessarily broad synchrony.",
+    "Clustered extremes": "Extreme values appear in clusters, without broad network synchrony.",
+    "Background / low coherence": "Mostly baseline-like behaviour with weak collective structure.",
+    "Multistation synchrony": "How many stations behave coherently at the same time.",
+    "Extreme anomaly distribution": "Where the strongest departures from baseline occur.",
+    "Mean anomaly and susceptibility": "Global evolution of the network response over time.",
+    "Station-resolved z-scores": "How unusual each station is relative to its own baseline.",
+    "Anomaly vs. synthetic tidal forcing": "Reference comparison against smooth periodic forcing; not a prediction signal.",
+}
+
+
+def tooltip_span(label: str, text: str | None = None) -> str:
+    """Small HTML tooltip used for compact scientific labels."""
+    clean_label = str(label)
+    clean_text = str(text or SCIENTIFIC_TOOLTIPS.get(clean_label, "Short scientific description."))
+    return (
+        f'<span class="scientific-tooltip" title="{html.escape(clean_text)}">'
+        f'{html.escape(clean_label)}</span>'
+    )
+
+
+def graph_label_with_tooltip(slot: str) -> str:
+    """Graph label with native title tooltip, safe for st.markdown HTML."""
+    return tooltip_span(slot, SCIENTIFIC_TOOLTIPS.get(slot) or GRAPH_SLOTS.get(slot, {}).get("description", ""))
+
+
+def network_state_with_tooltip(short_state: str) -> str:
+    return tooltip_span(short_state, SCIENTIFIC_TOOLTIPS.get(str(short_state), "Descriptive network-state label; not a forecast."))
+
+
+def select_region_and_highlight(zone_name: str) -> None:
+    """Open a region and request a visible highlight after scroll."""
+    st.session_state.page = "monitor"
+    st.session_state.show_region_catalog = False
+    st.session_state.selected_layer = "All regions"
+    st.session_state.selected_zone_name = zone_name
+    st.session_state.highlight_region = True
+    request_scroll("focused_region")
+
+
+def start_guided_demo(zone_dirs: List[Path]) -> None:
+    st.session_state.demo_mode = True
+    st.session_state.demo_step = 0
+    st.session_state.page = "monitor"
+    st.session_state.show_region_catalog = False
+    st.session_state.show_full_ranking = False
+    request_scroll("start_here")
+
+
+def render_guided_demo_panel(zone_dirs: List[Path]) -> None:
+    """Small guided walkthrough for first-time visitors."""
+    st.markdown("<div id='guided_demo'></div>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="demo-card">
+            <div class="demo-kicker">GUIDED DEMO MODE</div>
+            <div class="demo-title">Understand the monitor in a few clicks</div>
+            <div class="demo-body">A short narrative that shows where to start, how to open a region, and how to read the five panels together.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if not st.session_state.get("demo_mode", False):
+        if st.button("▶ Start guided demo", key="demo_start_button", use_container_width=True):
+            start_guided_demo(zone_dirs)
+            st.rerun()
+        return
+
+    step = int(st.session_state.get("demo_step", 0))
+    steps = [
+        ("1/4 · Start here", "Use START HERE to pick a reference region. This avoids starting from a long catalogue."),
+        ("2/4 · Open a reference region", "The demo opens San Andreas if available. The selected region will be highlighted automatically."),
+        ("3/4 · Read five outputs together", "Synchrony, extremes, mean anomaly, station z-scores and tidal reference should be interpreted jointly."),
+        ("4/4 · Compare regions", "Use Classification or Explore all regions to compare descriptive structure scores across systems."),
+    ]
+    title, body = steps[min(step, len(steps)-1)]
+    st.info(f"**{title}** — {body}")
+
+    if step == 0:
+        request_scroll("start_here")
+    elif step == 1:
+        select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
+        if st.session_state.get("selected_zone_name"):
+            st.session_state.highlight_region = True
+            request_scroll("focused_region")
+    elif step == 2:
+        request_scroll("focused_region")
+    elif step == 3:
+        st.session_state.show_full_ranking = True
+        request_scroll("full_ranking")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Next demo step", key="demo_next_button", use_container_width=True):
+            st.session_state.demo_step = min(step + 1, len(steps) - 1)
+            st.rerun()
+    with c2:
+        if st.button("Exit demo", key="demo_exit_button", use_container_width=True):
+            st.session_state.demo_mode = False
+            st.session_state.demo_step = 0
+            st.session_state.show_full_ranking = False
+            st.rerun()
+
+
+def inject_demo_and_highlight_css() -> None:
+    """Extra CSS for smooth scrolling, highlight and demo polish."""
+    st.markdown(
+        """
+        <style>
+        html { scroll-behavior: smooth; }
+        .focus-target.flash-highlight {
+            animation: regionFlash 1.15s ease-out 1;
+            border-radius: 22px;
+        }
+        @keyframes regionFlash {
+            0%   { box-shadow: 0 0 0 0 rgba(56,189,248,0.0); }
+            20%  { box-shadow: 0 0 0 7px rgba(56,189,248,0.55); }
+            55%  { box-shadow: 0 0 0 4px rgba(56,189,248,0.25); }
+            100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.0); }
+        }
+        .scientific-tooltip {
+            border-bottom: 1px dotted rgba(125,211,252,.75);
+            cursor: help;
+            color: #e0f2fe;
+            font-weight: 850;
+        }
+        .demo-card {
+            border: 1px solid rgba(168,85,247,.42);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin: 14px 0 12px 0;
+            background: linear-gradient(135deg, rgba(88,28,135,.35), rgba(15,23,42,.92));
+            box-shadow: 0 12px 34px rgba(0,0,0,.28);
+        }
+        .demo-kicker {
+            color: #c4b5fd;
+            font-weight: 950;
+            letter-spacing: .14em;
+            font-size: .88rem;
+        }
+        .demo-title {
+            color: #f8fafc;
+            font-weight: 950;
+            font-size: 1.18rem;
+            margin-top: 6px;
+        }
+        .demo-body { color: #cbd5e1; margin-top: 6px; line-height: 1.45; }
+        .clickable-radar-card, .zone-card, .zone-title-card, .metric, div.stButton > button {
+            transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+        }
+        .zone-card:hover, .zone-title-card:hover, .metric:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.28);
+        }
+        div.stButton > button:active { transform: translateY(1px); }
+        div.stButton > button:hover { box-shadow: 0 0 18px rgba(56,189,248,.18); }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
     """App-facing radar plus native Streamlit navigation controls.
 
@@ -956,7 +1125,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
             f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
             f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
             f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
-            f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
+            f'<div class="radar-top-state" style="color:{top_item["color"]};">{network_state_with_tooltip(str(top_item["short_state"]))}</div>'
             f'</div></a>'
         )
 
@@ -969,7 +1138,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
             f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
             f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
             f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
-            f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
+            f'<div class="radar-state" style="color:{it["color"]};">{network_state_with_tooltip(str(it["short_state"]))}</div>'
             f'</div></a>'
         )
 
@@ -1016,7 +1185,7 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
         cols[0].markdown(f"**#{idx}**")
         cols[1].markdown(f"**{flag}{html.escape(str(it['name']))}**")
         cols[2].markdown(f"`{score_txt}/100`")
-        cols[3].markdown(html.escape(str(it.get("short_state", ""))))
+        cols[3].markdown(network_state_with_tooltip(str(it.get("short_state", ""))), unsafe_allow_html=True)
         with cols[4]:
             if st.button("Open", key=f"ranking_open_{idx}_{it['zone'].name}", use_container_width=True):
                 open_region_from_summary(it)
@@ -1044,6 +1213,7 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
+            st.session_state.highlight_region = True
             request_scroll("focused_region")
             st.rerun()
     with c2:
@@ -1052,6 +1222,7 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["yellowstone"])
+            st.session_state.highlight_region = True
             request_scroll("focused_region")
             st.rerun()
     with c3:
@@ -1333,7 +1504,7 @@ def render_zone_card(zone_dir: Path) -> None:
     graph_cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
         with graph_cols[idx % 5]:
-            st.markdown(f"<div class='graph-mini-title'>{slot}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='graph-mini-title'>{graph_label_with_tooltip(slot)}</div>", unsafe_allow_html=True)
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
@@ -2018,7 +2189,7 @@ def render_zone_detail(zone_dir: Path, show_all: bool) -> None:
     cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
         with cols[idx % 5]:
-            st.markdown(f"<div class='graph-mini-title'>{slot}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='graph-mini-title'>{graph_label_with_tooltip(slot)}</div>", unsafe_allow_html=True)
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
@@ -3398,6 +3569,7 @@ st.set_page_config(page_title="TAMC–FRANJAMAR Monitor", layout="wide", initial
 st.markdown("<div id='app_top_anchor'></div>", unsafe_allow_html=True)
 inject_google_analytics()
 inject_css()
+inject_demo_and_highlight_css()
 
 st.markdown(
     """
@@ -3578,6 +3750,7 @@ def render_monitor_page() -> None:
     render_global_status_radar(zone_dirs)
     render_disclaimer()
     render_start_here_block(zone_dirs)
+    render_guided_demo_panel(zone_dirs)
 
     selected_zone = next(
         (z for z in zone_dirs if z.name == st.session_state.selected_zone_name),
@@ -3593,8 +3766,10 @@ def render_monitor_page() -> None:
             selected_zone = selected_from_selector
 
     st.markdown("---")
-    st.markdown("<div id='focused_region'></div>", unsafe_allow_html=True)
+    highlight_class = " flash-highlight" if st.session_state.pop("highlight_region", False) else ""
+    st.markdown(f"<div id='focused_region' class='focus-target{highlight_class}'>", unsafe_allow_html=True)
     render_zone_detail(selected_zone, show_all=show_all)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     perform_deferred_scroll()
 
