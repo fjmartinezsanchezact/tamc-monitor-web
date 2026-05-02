@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, List, Tuple
+from urllib.parse import quote
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -22,6 +23,7 @@ except ImportError:
 # CONFIGURATION
 # ============================================================
 DEFAULT_RESULTADOS_DIR = "web_data/latest"
+APP_HOME_URL = "https://franjamar-monitor.streamlit.app/"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 RAW_DATA_DIR_NAMES = {"raw", "mseed", "waveforms", "data"}
 
@@ -33,6 +35,7 @@ FEEDBACK_SUBJECT = "TAMC-FRANJAMAR Monitor feedback"
 APP_ICON_PATH = Path("icon_franjamar.png")
 APP_VERSION_UTC = "2026-04-30 10:00 UTC"
 APP_VERSION_ID = "v2026.04.30-1000UTC"
+BUYMEACOFFEE_URL = "https://buymeacoffee.com/franjamar"
 
 GRAPH_SLOTS = {
     "Multistation synchrony": {
@@ -786,25 +789,15 @@ def pick_hero(zone_dirs: List[Path]) -> Tuple[Path | None, str | None, str | Non
 
 
 def render_disclaimer() -> None:
-    """Compact public disclaimer for app/mobile use.
+    """Render a stable native Streamlit research/disclaimer block.
 
-    The detailed text is still available, but the first screen is lighter and
-    easier to understand for Android users.
+    This intentionally avoids raw HTML in the body so Streamlit Cloud cannot
+    display tags as text/code.
     """
+    st.markdown("### 🔬 EXPERIMENTAL · NON-PREDICTIVE · BETA VERSION")
     st.markdown(
-        """
-<div class="mobile-disclaimer-card">
-  <div class="mobile-disclaimer-title">🔬 Experimental · non-predictive · beta</div>
-  <div class="mobile-disclaimer-text">
-    Descriptive monitoring of <b>network-level statistical structure</b>. It does not forecast earthquakes, eruptions, timing, magnitude or risk.
-  </div>
-</div>
-        """,
-        unsafe_allow_html=True,
-    )
-    with st.expander("Read scientific scope and limitations", expanded=False):
-        st.markdown(
-            """
+        f"""
+
 **Real updated data · fixed reproducible pipeline · no region-specific tuning**
 
 It analyzes **collective behavior** and **multistation coherence** in seismic networks using rolling **24 h windows** with a short consolidation delay (**T−1 h**).
@@ -816,8 +809,8 @@ It analyzes **collective behavior** and **multistation coherence** in seismic ne
 ⚠️ **This system does not forecast earthquakes, eruptions, timing, magnitude or risk.**
 
 Its purpose is to characterize **statistical structure**, detect **deviations from baseline behavior**, and identify emerging **network regimes** for exploratory research.
-            """
-        )
+        """
+    )
 
 def select_preferred_region(zone_dirs: List[Path], keywords: List[str]) -> None:
     """Select the newest available region matching any keyword."""
@@ -857,81 +850,178 @@ def _summary_for_zone(zone_dir: Path) -> Dict[str, object]:
     }
 
 
+def _sorted_region_summaries(zone_dirs: List[Path]) -> List[Dict[str, object]]:
+    items = [_summary_for_zone(z) for z in zone_dirs]
+    return sorted(
+        items,
+        key=lambda x: (9999 if x.get("score") is None else -float(x["score"]), str(x.get("name", ""))),
+    )
+
+
 def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]:
     scores = [float(x["score"]) for x in items if x.get("score") is not None]
     if not scores:
         return "⚪ No summary", "Network summaries not available yet", "#94a3b8"
     top = max(scores)
     if top >= 75:
-        return "🔴 High structure", "At least one region shows a strong descriptive structure score", "#ef4444"
+        return "🔴 High network organization", "At least one region shows a strong descriptive structure score", "#ef4444"
     if top >= 50:
-        return "🟠 Moderate structure", "Some regions show organized or transient multistation structure", "#f59e0b"
+        return "🟠 Moderate network organization", "Some regions show organized or transient multistation structure", "#f59e0b"
     if top >= 30:
-        return "🟡 Low–moderate", "Mostly background with some localized structure", "#eab308"
-    return "🟢 Mostly quiet", "No region currently dominates the descriptive structure ranking", "#22c55e"
+        return "🟡 Low–moderate network organization", "Mostly background with some localized structure", "#eab308"
+    return "🟢 Mostly quiet network state", "No region currently dominates the descriptive structure ranking", "#22c55e"
+
+
+def open_region_from_summary(it: Dict[str, object]) -> None:
+    st.session_state.page = "monitor"
+    st.session_state.show_region_catalog = False
+    st.session_state.selected_layer = "All regions"
+    st.session_state.selected_zone_name = it["zone"].name
+    request_scroll("focused_region")
+
+
+def region_query_url(zone_name: str) -> str:
+    """Build an internal URL that opens a region reliably after reload."""
+    return f"?page=monitor&region={quote(str(zone_name), safe='')}#focused_region"
+
+
+def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
+    """Read URL parameters and map them to Streamlit session state."""
+    try:
+        params = st.query_params
+    except Exception:
+        return
+
+    page = params.get("page", None)
+    if isinstance(page, list):
+        page = page[0] if page else None
+    if page in {"monitor", "what", "how", "read", "roadmap", "feedback", "papers"}:
+        st.session_state.page = page
+
+    region = params.get("region", None)
+    if isinstance(region, list):
+        region = region[0] if region else None
+    if region:
+        match = next((z for z in zone_dirs if z.name == region), None)
+        if match is not None:
+            st.session_state.page = "monitor"
+            st.session_state.show_region_catalog = False
+            st.session_state.selected_layer = "All regions"
+            st.session_state.selected_zone_name = match.name
+            request_scroll("focused_region")
+
+    catalog = params.get("catalog", None)
+    if isinstance(catalog, list):
+        catalog = catalog[0] if catalog else None
+    if catalog == "1":
+        st.session_state.page = "monitor"
+        st.session_state.show_region_catalog = True
+        st.session_state.selected_layer = "All regions"
+        request_scroll("region_selector")
+
+    ranking = params.get("ranking", None)
+    if isinstance(ranking, list):
+        ranking = ranking[0] if ranking else None
+    if ranking == "1":
+        st.session_state.page = "monitor"
+        st.session_state.show_full_ranking = True
+        request_scroll("full_ranking")
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """Fast first-screen app layer: global state + top active regions."""
-    items = [_summary_for_zone(z) for z in zone_dirs]
-    items_sorted = sorted(
-        items,
-        key=lambda x: (-1 if x.get("score") is None else -float(x["score"]), str(x.get("name", "")))
-    )
+    """App-facing radar plus native Streamlit navigation controls.
+
+    The visual cards are clickable internal links. The Streamlit buttons below
+    remain as reliable fallbacks.
+    """
+    items_sorted = _sorted_region_summaries(zone_dirs)
     top_items = items_sorted[:6]
-    label, subtitle, global_color = _global_status_label(items)
+    top_item = top_items[0] if top_items else None
+    secondary_items = top_items[1:]
+    label, subtitle, global_color = _global_status_label(items_sorted)
+
+    def score_text(it: Dict[str, object]) -> str:
+        score = it.get("score")
+        return "—" if score is None else f"{float(score):.1f}"
+
+    def href_for(it: Dict[str, object]) -> str:
+        return region_query_url(str(it["zone"].name))
+
+    top_html = ""
+    if top_item:
+        top_flag = f"{top_item.get('flag')} " if top_item.get("flag") else ""
+        top_html = (
+            f'<a class="radar-card-link" href="{href_for(top_item)}" target="_self" title="Open {html.escape(str(top_item["name"]))}">'
+            f'<div class="radar-top-card clickable-radar-card" style="border-color:{top_item["color"]};">'
+            f'<div class="radar-top-badge">TOP REGION · TAP TO OPEN</div>'
+            f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
+            f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
+            f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
+            f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
+            f'</div></a>'
+        )
 
     cards_html = ""
-    for it in top_items:
+    for it in secondary_items:
+        flag = f"{it.get('flag')} " if it.get("flag") else ""
+        cards_html += (
+            f'<a class="radar-card-link" href="{href_for(it)}" target="_self" title="Open {html.escape(str(it["name"]))}">'
+            f'<div class="radar-region-card clickable-radar-card" style="border-color:{it["color"]};">'
+            f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
+            f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
+            f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
+            f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
+            f'</div></a>'
+        )
+
+    radar_html = f"""
+<div class="global-radar-card">
+  <div class="radar-head-row">
+    <div>
+      <div class="radar-kicker">GLOBAL STATUS RADAR</div>
+      <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
+      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
+      <div class="radar-tap-hint">Tap/click a radar card or use the buttons below to open region details.</div>
+    </div>
+  </div>
+  <div class="radar-layout">{top_html}<div class="radar-grid">{cards_html}</div></div>
+</div>
+    """
+    st.markdown(radar_html, unsafe_allow_html=True)
+
+    # Classification control remains native because it was already working reliably.
+    rank_left, rank_right = st.columns([0.70, 0.30])
+    with rank_right:
+        if st.button("📋 Classification: all regions", key="radar_full_ranking_top", use_container_width=True):
+            st.session_state.page = "monitor"
+            st.session_state.show_full_ranking = not st.session_state.get("show_full_ranking", False)
+            st.session_state.show_region_catalog = False
+            request_scroll("full_ranking")
+            st.rerun()
+
+    if st.session_state.get("show_full_ranking", False):
+        render_region_classification_table(items_sorted)
+
+
+def render_region_classification_table(items_sorted: List[Dict[str, object]]) -> None:
+    """Full descending classification by descriptive score, with open buttons."""
+    st.markdown("<div id='full_ranking'></div>", unsafe_allow_html=True)
+    st.markdown("### 📋 Region classification · highest to lowest score")
+    st.caption("Descriptive ranking only. It is not a warning, forecast or risk estimate.")
+
+    for idx, it in enumerate(items_sorted, start=1):
         score = it.get("score")
         score_txt = "—" if score is None else f"{float(score):.1f}"
         flag = f"{it.get('flag')} " if it.get("flag") else ""
-
-        cards_html += (
-            f'<div class="radar-region-card" style="border-color:{it["color"]};">'
-            f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
-            f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
-            f'<div class="radar-score-row"><span>{html.escape(score_txt)}</span><small>/100</small></div>'
-            f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
-            f'</div>'
-        )
-
-    radar_html = (
-        f'<div class="global-radar-card">'
-        f'<div class="radar-head-row">'
-        f'<div>'
-        f'<div class="radar-kicker">GLOBAL STATUS RADAR</div>'
-        f'<div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>'
-        f'<div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>'
-        f'</div>'
-        f'<div class="radar-live-pill">T−1 h · updated data</div>'
-        f'</div>'
-        f'<div class="radar-grid">{cards_html}</div>'
-        f'</div>'
-    )
-
-    st.markdown(radar_html, unsafe_allow_html=True)
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if st.button("🌍 Explore radar regions", key="radar_explore_regions", use_container_width=True):
-            st.session_state.show_region_catalog = True
-            st.session_state.selected_layer = "All regions"
-            request_scroll("region_selector")
-            st.rerun()
-
-    with c2:
-        if top_items and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
-            st.session_state.show_region_catalog = False
-            st.session_state.selected_zone_name = top_items[0]["zone"].name
-            request_scroll("focused_region")
-            st.rerun()
-
-    with c3:
-        if st.button("💬 Send feedback", key="radar_feedback", use_container_width=True):
-            st.session_state.page = "feedback"
-            request_scroll("page_feedback")
-            st.rerun()
+        cols = st.columns([0.08, 0.34, 0.16, 0.22, 0.20])
+        cols[0].markdown(f"**#{idx}**")
+        cols[1].markdown(f"**{flag}{html.escape(str(it['name']))}**")
+        cols[2].markdown(f"`{score_txt}/100`")
+        cols[3].markdown(html.escape(str(it.get("short_state", ""))))
+        with cols[4]:
+            if st.button("Open", key=f"ranking_open_{idx}_{it['zone'].name}", use_container_width=True):
+                open_region_from_summary(it)
+                st.rerun()
 
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
@@ -951,19 +1041,25 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
     c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
+            st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
             request_scroll("focused_region")
             st.rerun()
     with c2:
         if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
+            st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["yellowstone"])
             request_scroll("focused_region")
             st.rerun()
     with c3:
         if st.button("🌍 Explore all regions", key="quick_explore_all_regions", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = True
+            st.session_state.show_full_ranking = False
             st.session_state.selected_layer = "All regions"
             request_scroll("region_selector")
             st.rerun()
@@ -1129,11 +1225,6 @@ def render_header(zone_dirs: List[Path]) -> None:
                     Framework: <b>TAMC–FRANJAMAR v3</b> ·
                     <a href="{SEISMIC_DOI}" target="_blank" rel="noopener noreferrer">DOI: 10.5281/zenodo.19665949</a>
                 </div>
-                <div class="hero-status-row">
-                    <span class="hero-pill beta">Beta version</span>
-                    <span class="hero-pill">Real updated data</span>
-                    <span class="hero-pill version">{APP_VERSION_ID} · app.py uploaded {APP_VERSION_UTC}</span>
-                </div>
             </div>
             <div class="metric-grid">
                 <div class="metric"><span>{len(zone_dirs)}</span><small>regions monitored</small></div>
@@ -1154,6 +1245,26 @@ def render_header(zone_dirs: List[Path]) -> None:
                 <b>{window_txt}</b>
                 <small>24 h window · T−1 h consolidation delay</small>
             </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_version_status_card() -> None:
+    """Compact status/version strip shown outside the hero.
+
+    It is intentionally rendered as plain status text, not as separate pill
+    buttons, because these labels are informational and not clickable.
+    """
+    st.markdown(
+        f"""
+        <div class="version-status-card">
+            <span class="version-status-beta">BETA VERSION</span>
+            <span class="version-separator">·</span>
+            <span class="version-status-data">REAL UPDATED DATA</span>
+            <span class="version-separator">·</span>
+            <span class="version-status-version">{APP_VERSION_ID} · APP.PY UPLOADED {APP_VERSION_UTC}</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2111,40 +2222,55 @@ def inject_css() -> None:
     st.markdown(
         """
         <style>
+
         .global-radar-card {
-            border: 1px solid rgba(56,189,248,.34);
-            background: radial-gradient(circle at top left, rgba(14,165,233,.18), rgba(15,23,42,.94) 42%, rgba(2,6,23,.96));
+            border: 1px solid rgba(56,189,248,.42);
             border-radius: 24px;
-            padding: 20px;
-            margin: 16px 0 14px 0;
-            box-shadow: 0 18px 48px rgba(0,0,0,.30), 0 0 34px rgba(56,189,248,.10);
+            padding: 22px;
+            margin: 18px 0 18px 0;
+            background: linear-gradient(135deg, rgba(8,47,73,.35), rgba(15,23,42,.96));
+            box-shadow: 0 18px 48px rgba(0,0,0,.30);
         }
-        .radar-head-row { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:16px; }
-        .radar-kicker { color:#38bdf8; font-weight:950; letter-spacing:.18em; font-size:.86rem; text-transform:uppercase; }
-        .radar-main { font-size:2rem; font-weight:950; letter-spacing:-.03em; line-height:1.12; margin-top:5px; }
-        .radar-subtitle { color:#cbd5e1; font-size:1.02rem; line-height:1.45; margin-top:5px; }
-        .radar-live-pill { border:1px solid rgba(34,197,94,.45); color:#bbf7d0; background:rgba(20,83,45,.22); border-radius:999px; padding:8px 12px; font-weight:900; white-space:nowrap; font-size:.86rem; }
-        .radar-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:10px; }
-        .radar-region-card { border:1px solid #334155; background:rgba(2,6,23,.54); border-radius:18px; padding:12px; min-height:128px; }
-        .radar-region-name { color:#f8fafc; font-size:.98rem; font-weight:950; line-height:1.2; min-height:2.35rem; }
-        .radar-region-type { color:#94a3b8; font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; font-weight:850; margin-top:4px; }
-        .radar-score-row { margin-top:10px; display:flex; align-items:baseline; gap:3px; }
-        .radar-score-row span { color:#f8fafc; font-size:1.55rem; font-weight:950; }
-        .radar-score-row small { color:#94a3b8; font-weight:800; }
-        .radar-state { font-size:.84rem; font-weight:950; line-height:1.25; margin-top:4px; }
-        .mobile-disclaimer-card { border:1px solid rgba(248,113,113,.44); background:linear-gradient(135deg, rgba(127,29,29,.28), rgba(15,23,42,.92)); border-radius:18px; padding:14px 16px; margin:14px 0; }
-        .mobile-disclaimer-title { color:#fecaca; font-weight:950; letter-spacing:.04em; text-transform:uppercase; font-size:.95rem; }
-        .mobile-disclaimer-text { color:#e5e7eb; margin-top:6px; line-height:1.5; font-size:1rem; }
-        .feedback-card { border:1px solid rgba(56,189,248,.32); background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(2,6,23,.92)); border-radius:20px; padding:18px; margin:12px 0; }
-        .feedback-title { color:#f8fafc; font-size:1.35rem; font-weight:950; margin-bottom:6px; }
-        .feedback-text { color:#cbd5e1; line-height:1.55; font-size:1.02rem; }
-        @media (max-width: 1100px) { .radar-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } }
-        @media (max-width: 700px) {
+        .radar-head-row { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom:16px; }
+        .radar-kicker { color:#38bdf8; font-weight:950; letter-spacing:.16em; font-size:1rem; }
+        .radar-main { font-size:1.1rem; font-weight:950; margin-top:8px; }
+        .radar-subtitle { color:#cbd5e1; margin-top:8px; line-height:1.45; }
+        .radar-tap-hint { color:#bae6fd; margin-top:10px; font-weight:800; }
+        .radar-live-pill { white-space:nowrap; border:1px solid rgba(34,197,94,.55); background:rgba(22,101,52,.20); color:#bbf7d0; padding:8px 14px; border-radius:999px; font-weight:950; }
+        .radar-layout { display:grid; grid-template-columns:minmax(260px, 1.45fr) minmax(360px, 2.6fr); gap:12px; align-items:stretch; }
+        .radar-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(155px, 1fr)); gap:10px; }
+        .radar-top-card, .radar-region-card { border:1px solid #334155; border-radius:18px; background:rgba(2,6,23,.55); padding:15px; min-height:150px; }
+        .radar-top-card { min-height:220px; background:linear-gradient(135deg, rgba(24,24,27,.88), rgba(15,23,42,.88)); }
+        .radar-top-badge { display:inline-block; border:1px solid rgba(251,191,36,.55); color:#fed7aa; background:rgba(120,53,15,.30); border-radius:999px; padding:4px 10px; font-weight:950; letter-spacing:.12em; margin-bottom:16px; }
+        .radar-top-name, .radar-region-name { color:#f8fafc; font-weight:950; line-height:1.3; }
+        .radar-top-meta, .radar-region-type { margin-top:12px; color:#94a3b8; text-transform:uppercase; letter-spacing:.12em; font-weight:900; }
+        .radar-top-score, .radar-score-row { margin-top:12px; color:#f8fafc; font-weight:950; }
+        .radar-top-score span { font-size:1.35rem; }
+        .radar-top-score small, .radar-score-row small { color:#94a3b8; margin-left:2px; }
+        .radar-top-state, .radar-state { margin-top:10px; font-weight:950; line-height:1.35; }
+        .radar-button-title { color:#93c5fd; font-weight:900; margin:10px 0 8px 0; }
+        .feedback-card { border:1px solid rgba(56,189,248,.35); border-radius:18px; padding:18px; background:rgba(15,23,42,.82); margin:14px 0; line-height:1.55; }
+        .bottom-native-nav { margin: 26px 0 90px 0; }
+        .bottom-native-nav + div { margin-top: 0; }
+        .version-status-card {
+            display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+            border:1px solid rgba(56,189,248,.38);
+            background:linear-gradient(135deg, rgba(15,23,42,.72), rgba(8,47,73,.28));
+            border-radius:18px; padding:13px 16px; margin:0 0 18px 0;
+            box-shadow:0 14px 34px rgba(0,0,0,.22);
+            font-weight:900; letter-spacing:.05em; text-transform:uppercase;
+            color:#cbd5e1;
+        }
+        .version-status-beta { color:#f9a8d4; }
+        .version-status-data { color:#7dd3fc; }
+        .version-status-version { color:#cbd5e1; }
+        .version-separator { color:#64748b; font-weight:950; }
+        @media (max-width: 900px) {
             .radar-head-row { flex-direction:column; }
-            .radar-main { font-size:1.55rem; }
-            .radar-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
-            .radar-region-card { min-height:118px; padding:10px; }
+            .radar-layout { grid-template-columns:1fr; }
+            .radar-grid { grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
         }
+
         .start-here-card {
             border: 1px solid rgba(56,189,248,.22);
             border-radius: 18px;
@@ -2154,6 +2280,10 @@ def inject_css() -> None:
             box-shadow: inset 0 0 0 1px rgba(148,163,184,.04);
         }
         .start-here-text { color: #cbd5e1; font-size: 1.02rem; margin-top: 8px; line-height: 1.45; }
+        .radar-card-link { display:block; height:100%; color:inherit !important; text-decoration:none !important; }
+        .radar-card-link:hover .clickable-radar-card { border-color:#38bdf8 !important; box-shadow:0 0 0 1px rgba(56,189,248,.35), 0 16px 34px rgba(0,0,0,.38); transform:translateY(-2px); }
+        .clickable-radar-card { cursor:pointer; transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease; }
+
         :root {
             --bg: #070a12;
             --card: #111827;
@@ -3166,77 +3296,95 @@ def perform_deferred_scroll(default_delay_ms: int = 350) -> None:
 
 
 def render_back_to_top_button() -> None:
-    """Render a reliable fixed Inicio button in the parent DOM.
+    """Bottom-centred fixed Inicio button.
 
-    Streamlit components render inside iframes, so this explicitly injects the
-    button into window.parent.document. It remains visible from any scroll
-    position and works in desktop + Android WebView.
+    Only the Inicio button is kept at the bottom to avoid duplicating the
+    top Monitor navigation. It is injected into the parent document so it
+    remains floating while scrolling.
     """
     components.html(
         """
         <script>
         (function() {
             const doc = window.parent.document;
-            let btn = doc.getElementById('franjamarBackTopBtn');
-            if (!btn) {
-                btn = doc.createElement('button');
-                btn.id = 'franjamarBackTopBtn';
-                btn.innerHTML = '⬆ Inicio';
-                btn.onclick = function() {
-                    // Always return to the true app home, not only to the top
-                    // of the currently selected page/section.
-                    try {
-                        const loc = window.parent.location;
-                        const base = loc.origin + loc.pathname;
-                        window.parent.location.href = base + '?page=monitor#app_top_anchor';
-                    } catch (e) {
-                        try {
-                            window.top.location.href = 'https://franjamar-monitor.streamlit.app/?page=monitor#app_top_anchor';
-                        } catch (x) {
-                            try { window.parent.scrollTo({top: 0, behavior: 'smooth'}); } catch (y) {}
-                        }
-                    }
-                };
-                doc.body.appendChild(btn);
+            const oldFeedback = doc.getElementById('franjamarFeedbackBtn');
+            if (oldFeedback) oldFeedback.remove();
+            const oldMonitor = doc.getElementById('franjamarBottomMonitorBtn');
+            if (oldMonitor) oldMonitor.remove();
+
+            let bar = doc.getElementById('franjamarBottomNav');
+            if (!bar) {
+                bar = doc.createElement('div');
+                bar.id = 'franjamarBottomNav';
+                doc.body.appendChild(bar);
             }
 
-            const styleId = 'franjamarBackTopStyle';
-            if (!doc.getElementById(styleId)) {
-                const style = doc.createElement('style');
+            let top = doc.getElementById('franjamarBottomTopBtn');
+            if (!top) {
+                top = doc.createElement('button');
+                top.id = 'franjamarBottomTopBtn';
+                top.innerHTML = '⬆ Inicio';
+                bar.appendChild(top);
+            }
+            top.onclick = function() {
+                // Inicio is a scroll-to-top helper. It never hides the top Monitor button
+                // and it does not inject any extra Monitor button at the bottom.
+                const el = doc.getElementById('app_top_anchor');
+                if (el) {
+                    el.scrollIntoView({behavior: 'smooth', block: 'start'});
+                } else {
+                    window.parent.scrollTo({top: 0, behavior: 'smooth'});
+                }
+            };
+
+            const styleId = 'franjamarBottomNavStyle';
+            let style = doc.getElementById(styleId);
+            if (!style) {
+                style = doc.createElement('style');
                 style.id = styleId;
-                style.textContent = `
-                    #franjamarBackTopBtn {
-                        position: fixed;
-                        right: 22px;
-                        bottom: 22px;
-                        z-index: 2147483647;
-                        padding: 11px 17px;
-                        border-radius: 999px;
-                        border: 1px solid rgba(56,189,248,.85);
-                        background: linear-gradient(135deg, rgba(14,165,233,.98), rgba(34,211,238,.98));
-                        color: white;
-                        font-weight: 900;
-                        font-size: 13px;
-                        letter-spacing: .04em;
-                        cursor: pointer;
-                        box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 20px rgba(56,189,248,.35);
-                        opacity: .96;
-                    }
-                    #franjamarBackTopBtn:hover {
-                        opacity: 1;
-                        transform: translateY(-1px);
-                    }
-                    @media (max-width: 700px) {
-                        #franjamarBackTopBtn {
-                            right: 12px;
-                            bottom: 12px;
-                            padding: 9px 12px;
-                            font-size: 12px;
-                        }
-                    }
-                `;
                 doc.head.appendChild(style);
             }
+            style.textContent = `
+                #franjamarBottomNav {
+                    position: fixed !important;
+                    left: 50% !important;
+                    bottom: 18px !important;
+                    transform: translateX(-50%) !important;
+                    z-index: 2147483647 !important;
+                    display: flex !important;
+                    gap: 10px !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    padding: 7px !important;
+                    border-radius: 999px !important;
+                    border: 1px solid rgba(56,189,248,.38) !important;
+                    background: rgba(2,6,23,.72) !important;
+                    backdrop-filter: blur(10px) !important;
+                    box-shadow: 0 12px 34px rgba(0,0,0,.55) !important;
+                    pointer-events: auto !important;
+                }
+                #franjamarBottomNav button {
+                    min-width: 118px !important;
+                    padding: 10px 16px !important;
+                    border-radius: 999px !important;
+                    border: 1px solid rgba(125,211,252,.75) !important;
+                    background: linear-gradient(135deg, rgba(14,165,233,.98), rgba(37,99,235,.98)) !important;
+                    color: white !important;
+                    font-weight: 900 !important;
+                    font-size: 13px !important;
+                    letter-spacing: .03em !important;
+                    cursor: pointer !important;
+                    box-shadow: 0 8px 22px rgba(0,0,0,.35) !important;
+                }
+                #franjamarBottomNav button:hover {
+                    transform: translateY(-1px) !important;
+                    box-shadow: 0 0 18px rgba(56,189,248,.35) !important;
+                }
+                @media (max-width: 700px) {
+                    #franjamarBottomNav { bottom: 10px !important; gap: 7px !important; padding: 6px !important; }
+                    #franjamarBottomNav button { min-width: 92px !important; padding: 9px 11px !important; font-size: 12px !important; }
+                }
+            `;
         })();
         </script>
         """,
@@ -3244,50 +3392,6 @@ def render_back_to_top_button() -> None:
         width=0,
     )
 
-
-
-def render_floating_feedback_button() -> None:
-    """Fixed feedback button for Android/WebView."""
-    components.html(
-        f"""
-        <script>
-        (function() {{
-            const doc = window.parent.document;
-            let btn = doc.getElementById('franjamarFeedbackBtn');
-            if (!btn) {{
-                btn = doc.createElement('button');
-                btn.id = 'franjamarFeedbackBtn';
-                btn.innerHTML = '💬 Feedback';
-                btn.onclick = function() {{
-                    window.parent.location.href = 'mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}';
-                }};
-                doc.body.appendChild(btn);
-            }}
-            const styleId = 'franjamarFeedbackStyle';
-            if (!doc.getElementById(styleId)) {{
-                const style = doc.createElement('style');
-                style.id = styleId;
-                style.textContent = `
-                    #franjamarFeedbackBtn {{
-                        position: fixed; right: 22px; bottom: 70px; z-index: 2147483647;
-                        padding: 10px 15px; border-radius: 999px;
-                        border: 1px solid rgba(244,114,182,.82);
-                        background: linear-gradient(135deg, rgba(219,39,119,.98), rgba(124,58,237,.98));
-                        color: white; font-weight: 900; font-size: 13px; letter-spacing: .03em;
-                        cursor: pointer; box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 20px rgba(244,114,182,.30);
-                    }}
-                    @media (max-width: 700px) {{
-                        #franjamarFeedbackBtn {{ right: 12px; bottom: 55px; padding: 9px 12px; font-size: 12px; }}
-                    }}
-                `;
-                doc.head.appendChild(style);
-            }}
-        }})();
-        </script>
-        """,
-        height=0,
-        width=0,
-    )
 # ============================================================
 # UI
 # ============================================================
@@ -3295,6 +3399,37 @@ st.set_page_config(page_title="TAMC–FRANJAMAR Monitor", layout="wide", initial
 st.markdown("<div id='app_top_anchor'></div>", unsafe_allow_html=True)
 inject_google_analytics()
 inject_css()
+
+st.markdown(
+    """
+    <style>
+    .block-container { padding-bottom: 7.5rem !important; }
+    a.ranking-open-link,
+    a.radar-open-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 0.62rem 0.8rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(96,165,250,0.45);
+        background: rgba(15,23,42,0.82);
+        color: #e5e7eb !important;
+        text-decoration: none !important;
+        font-weight: 800;
+    }
+    a.ranking-open-link:hover,
+    a.radar-open-link:hover {
+        border-color: rgba(56,189,248,0.85);
+        color: #bae6fd !important;
+        background: rgba(14,165,233,0.16);
+    }
+    @media (max-width: 700px) {
+        .block-container { padding-bottom: 8.5rem !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 inject_streamlit_badge_remover()
 
 # Public/app mode: no Streamlit sidebar controls.
@@ -3321,9 +3456,55 @@ def ensure_page_state() -> None:
         st.session_state.page = "monitor"
 
 
+def go_monitor_home() -> None:
+    """Go to the monitor landing screen and jump to START HERE.
+
+    The top Monitor button is kept as a native Streamlit button.
+    Its only job is to return to the monitor page and scroll down to the
+    START HERE block, which is the practical entry point for users.
+    """
+    st.session_state.page = "monitor"
+    st.session_state.show_region_catalog = False
+    st.session_state.show_full_ranking = False
+    st.session_state.selected_layer = "All regions"
+    if zone_dirs:
+        st.session_state.selected_zone_name = zone_dirs[0].name
+
+    # Clear query params robustly across Streamlit versions.
+    try:
+        st.query_params.clear()
+    except Exception:
+        try:
+            st.experimental_set_query_params()
+        except Exception:
+            pass
+
+    # Important: this is intentionally START HERE, not the top of the page.
+    request_scroll("start_here")
+
+
+def scroll_to_top() -> None:
+    request_scroll("app_top_anchor")
+
+
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
+
+    if page_key == "monitor":
+        # Keep Monitor as a real native Streamlit button so it is always visible
+        # in the top navigation bar. It resets the app state to the public
+        # monitor landing view instead of using an external link.
+        if st.button(
+            final_label,
+            key="nav_monitor_home_button",
+            use_container_width=True,
+            type="primary" if selected else "secondary",
+        ):
+            go_monitor_home()
+            st.rerun()
+        return
+
     if st.button(
         final_label,
         key=f"nav_{page_key}",
@@ -3331,6 +3512,7 @@ def nav_button(label: str, page_key: str) -> None:
         type="primary" if selected else "secondary",
     ):
         st.session_state.page = page_key
+        st.session_state.show_full_ranking = False
         request_scroll(f"page_{page_key}")
         st.rerun()
 
@@ -3366,7 +3548,10 @@ def render_top_app_bar() -> None:
             unsafe_allow_html=True,
         )
 
-    nav_cols = st.columns(6)
+    # Extra vertical separation so Monitor aligns below the subtitle, not over it.
+    st.markdown("<div style='height:22px'></div>", unsafe_allow_html=True)
+
+    nav_cols = st.columns(7)
     with nav_cols[0]:
         nav_button("📡 Monitor", "monitor")
     with nav_cols[1]:
@@ -3378,6 +3563,8 @@ def render_top_app_bar() -> None:
     with nav_cols[4]:
         nav_button("📄 DOI / Papers", "papers")
     with nav_cols[5]:
+        nav_button("🚀 Roadmap", "roadmap")
+    with nav_cols[6]:
         nav_button("💬 Feedback", "feedback")
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -3392,6 +3579,7 @@ def render_monitor_page() -> None:
     st.markdown("<div id='page_monitor'></div>", unsafe_allow_html=True)
     ensure_selector_state(zone_dirs)
     render_global_status_radar(zone_dirs)
+    render_support_callout(compact=True)
     render_disclaimer()
     render_start_here_block(zone_dirs)
 
@@ -3483,39 +3671,76 @@ def render_read_outputs_page() -> None:
 
 
 
+def render_support_callout(compact: bool = False) -> None:
+    """Small non-invasive support block linked to Buy Me a Coffee."""
+    if compact:
+        st.markdown(
+            f"""
+<div class="support-callout-card">
+  <div class="support-callout-title">☕ Support this independent project</div>
+  <div class="support-callout-text">
+    This monitor is developed independently. If you find it useful, you can support its development and future roadmap.
+  </div>
+</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.link_button("☕ Support / Buy Me a Coffee", BUYMEACOFFEE_URL, use_container_width=True)
+        return
+
+    st.markdown("### 🤝 Apoyar el proyecto")
+    st.write(
+        "This is a personal research project, developed independently and without funding. "
+	"The results shown are generated using the project's reproducible pipeline. "
+	"If you find this work useful or interesting, you can support its development and evolution, "
+	"helping to implement upcoming improvements."
+    )
+    st.link_button("☕ Support the project", BUYMEACOFFEE_URL, use_container_width=True)
+
+
+def render_roadmap_page() -> None:
+    st.markdown("<div id='page_roadmap'></div>", unsafe_allow_html=True)
+    st.markdown("## 🚀 Future roadmap / Hoja de ruta")
+    st.markdown(
+        """
+<div class="roadmap-card">
+  <div class="roadmap-item"><b>Real earthquake and eruption event overlays</b><br>Direct comparison between detected network structure and confirmed events.</div>
+  <div class="roadmap-item"><b>Multiregion comparison mode</b><br>Identify similarities and differences between seismic, volcanic, fault and subduction systems.</div>
+  <div class="roadmap-item"><b>Temporal evolution viewer</b><br>Follow how network structure evolves across time instead of only reading a single monitoring window.</div>
+  <div class="roadmap-item"><b>Additional sensor integration</b><br>Extend the same multistation-structure approach to geomagnetic, atmospheric and other distributed sensor networks.</div>
+  <div class="roadmap-item"><b>Improved interpretation layer</b><br>Clearer classification of network regimes, with more transparent explanations for non-specialist users.</div>
+  <div class="roadmap-item"><b>Native mobile app version</b><br>Faster access, better mobile navigation and improved near-real-time interaction.</div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.caption("This roadmap is directional and descriptive. It does not imply operational warning, prediction or risk-estimation functionality.")
+    st.markdown("---")
+    render_support_callout(compact=False)
+
+
 def render_feedback_page() -> None:
     st.markdown("<div id='page_feedback'></div>", unsafe_allow_html=True)
     st.markdown("## Feedback / Suggestions")
     st.markdown(
         """
 <div class="feedback-card">
-  <div class="feedback-title">Help improve the app</div>
-  <div class="feedback-text">
-    This is an independent, experimental and non-predictive research app. Feedback is especially useful on usability, scientific interpretation, unclear labels, missing regions, Android display issues, or bugs.
-  </div>
+  <b>Help improve the app</b><br>
+  This is an independent, experimental and non-predictive research app. Feedback is especially useful on usability, scientific interpretation, unclear labels, missing regions, Android display issues, or bugs.
 </div>
         """,
         unsafe_allow_html=True,
     )
-    mailto = f"mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}"
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.link_button("📩 Send feedback by email", mailto, use_container_width=True)
-    with c2:
-        st.link_button("🐞 Report issue", mailto + "%20-%20bug", use_container_width=True)
-    with c3:
-        st.link_button("🌍 Suggest region", mailto + "%20-%20new%20region", use_container_width=True)
-
+    st.markdown("**Contact email:**")
+    st.code(FEEDBACK_EMAIL, language="text")
+    mailto = f"mailto:{FEEDBACK_EMAIL}?subject={quote(FEEDBACK_SUBJECT)}"
+    st.markdown(f"[📩 Send feedback by email]({mailto})")
     st.markdown("### Suggested feedback format")
     st.code(
-        """App section:
-What confused me:
-What worked well:
-Device/browser:
-Suggested region or improvement:
-""",
+        "App section:\nWhat confused me:\nWhat worked well:\nDevice/browser:\nSuggested region or improvement:",
         language="text",
     )
+
 def render_papers_page() -> None:
     st.markdown("<div id='page_papers'></div>", unsafe_allow_html=True)
     st.markdown("## DOI / Papers")
@@ -3543,8 +3768,12 @@ All monitoring outputs shown here are direct applications of the same fixed-para
     """)
 
 
+ensure_page_state()
+apply_query_params_to_state(zone_dirs)
+
 render_top_app_bar()
 render_header(zone_dirs)
+render_version_status_card()
 
 if st.session_state.page == "monitor":
     render_monitor_page()
@@ -3554,6 +3783,8 @@ elif st.session_state.page == "how":
     render_how_page()
 elif st.session_state.page == "read":
     render_read_outputs_page()
+elif st.session_state.page == "roadmap":
+    render_roadmap_page()
 elif st.session_state.page == "feedback":
     render_feedback_page()
 elif st.session_state.page == "papers":
@@ -3563,7 +3794,6 @@ if st.session_state.page != "monitor":
     perform_deferred_scroll()
 
 render_back_to_top_button()
-render_floating_feedback_button()
 
 if auto_refresh:
     time.sleep(refresh_seconds)
