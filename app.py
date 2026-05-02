@@ -28,6 +28,8 @@ RAW_DATA_DIR_NAMES = {"raw", "mseed", "waveforms", "data"}
 SEISMIC_DOI = "https://doi.org/10.5281/zenodo.19665949"
 VOLCANIC_DOI = "https://doi.org/10.5281/zenodo.18525626"
 EXTREME_EVENT_DOI = "https://doi.org/10.5281/zenodo.18649274"
+FEEDBACK_EMAIL = "fjmartinezsanchezact@gmail.com"
+FEEDBACK_SUBJECT = "TAMC-FRANJAMAR Monitor feedback"
 APP_ICON_PATH = Path("icon_franjamar.png")
 APP_VERSION_UTC = "2026-04-30 10:00 UTC"
 APP_VERSION_ID = "v2026.04.30-1000UTC"
@@ -784,15 +786,25 @@ def pick_hero(zone_dirs: List[Path]) -> Tuple[Path | None, str | None, str | Non
 
 
 def render_disclaimer() -> None:
-    """Render a stable native Streamlit research/disclaimer block.
+    """Compact public disclaimer for app/mobile use.
 
-    This intentionally avoids raw HTML in the body so Streamlit Cloud cannot
-    display tags as text/code.
+    The detailed text is still available, but the first screen is lighter and
+    easier to understand for Android users.
     """
-    st.markdown("### 🔬 EXPERIMENTAL · NON-PREDICTIVE · BETA VERSION")
     st.markdown(
-        f"""
-
+        """
+<div class="mobile-disclaimer-card">
+  <div class="mobile-disclaimer-title">🔬 Experimental · non-predictive · beta</div>
+  <div class="mobile-disclaimer-text">
+    Descriptive monitoring of <b>network-level statistical structure</b>. It does not forecast earthquakes, eruptions, timing, magnitude or risk.
+  </div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.expander("Read scientific scope and limitations", expanded=False):
+        st.markdown(
+            """
 **Real updated data · fixed reproducible pipeline · no region-specific tuning**
 
 It analyzes **collective behavior** and **multistation coherence** in seismic networks using rolling **24 h windows** with a short consolidation delay (**T−1 h**).
@@ -804,8 +816,8 @@ It analyzes **collective behavior** and **multistation coherence** in seismic ne
 ⚠️ **This system does not forecast earthquakes, eruptions, timing, magnitude or risk.**
 
 Its purpose is to characterize **statistical structure**, detect **deviations from baseline behavior**, and identify emerging **network regimes** for exploratory research.
-        """
-    )
+            """
+        )
 
 def select_preferred_region(zone_dirs: List[Path], keywords: List[str]) -> None:
     """Select the newest available region matching any keyword."""
@@ -817,6 +829,110 @@ def select_preferred_region(zone_dirs: List[Path], keywords: List[str]) -> None:
             return
 
 
+
+
+def _summary_for_zone(zone_dir: Path) -> Dict[str, object]:
+    """Compact app-facing summary from network_summary.json plus region metadata."""
+    summary = load_network_summary(str(zone_dir.resolve())) or {}
+    interp = summary.get("joint_interpretation") or summary.get("interpretation") or {}
+    state = str(interp.get("network_state", "Not available"))
+    score_raw = interp.get("descriptive_score_0_100")
+    try:
+        score = float(score_raw) if score_raw is not None else None
+    except Exception:
+        score = None
+    color, short_state = get_network_state_style(state)
+    score_level = str(interp.get("descriptive_score_level", "not available")).upper()
+    return {
+        "zone": zone_dir,
+        "name": compact_region_name_for_button(zone_dir.name),
+        "display": clean_zone_display_name(zone_dir.name),
+        "state": state,
+        "short_state": short_state,
+        "score": score,
+        "score_level": score_level,
+        "color": color,
+        "rtype": physical_region_type(zone_dir.name),
+        "flag": get_flag(get_country_code_from_name(zone_dir.name)),
+    }
+
+
+def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]:
+    scores = [float(x["score"]) for x in items if x.get("score") is not None]
+    if not scores:
+        return "⚪ No summary", "Network summaries not available yet", "#94a3b8"
+    top = max(scores)
+    if top >= 75:
+        return "🔴 High structure", "At least one region shows a strong descriptive structure score", "#ef4444"
+    if top >= 50:
+        return "🟠 Moderate structure", "Some regions show organized or transient multistation structure", "#f59e0b"
+    if top >= 30:
+        return "🟡 Low–moderate", "Mostly background with some localized structure", "#eab308"
+    return "🟢 Mostly quiet", "No region currently dominates the descriptive structure ranking", "#22c55e"
+
+
+def render_global_status_radar(zone_dirs: List[Path]) -> None:
+    """Fast first-screen app layer: global state + top active regions.
+
+    This is intentionally simple and visual: Android users understand the app
+    before entering the full scientific detail.
+    """
+    items = [_summary_for_zone(z) for z in zone_dirs]
+    items_sorted = sorted(items, key=lambda x: (-1 if x.get("score") is None else -float(x["score"]), str(x.get("name", ""))))
+    top_items = items_sorted[:6]
+    label, subtitle, global_color = _global_status_label(items)
+
+    cards = []
+    for it in top_items:
+        score = it.get("score")
+        score_txt = "—" if score is None else f"{float(score):.1f}"
+        flag = f"{it.get('flag')} " if it.get("flag") else ""
+        cards.append(
+            f"""
+            <div class="radar-region-card" style="border-color:{it['color']};">
+              <div class="radar-region-name">{html.escape(flag + str(it['name']))}</div>
+              <div class="radar-region-type">{html.escape(str(it['rtype']))}</div>
+              <div class="radar-score-row"><span>{html.escape(score_txt)}</span><small>/100</small></div>
+              <div class="radar-state" style="color:{it['color']};">{html.escape(str(it['short_state']))}</div>
+            </div>
+            """
+        )
+
+    st.markdown(
+        f"""
+<div class="global-radar-card">
+  <div class="radar-head-row">
+    <div>
+      <div class="radar-kicker">GLOBAL STATUS RADAR</div>
+      <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
+      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
+    </div>
+    <div class="radar-live-pill">T−1 h · updated data</div>
+  </div>
+  <div class="radar-grid">{''.join(cards)}</div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("🌍 Explore radar regions", key="radar_explore_regions", use_container_width=True):
+            st.session_state.show_region_catalog = True
+            st.session_state.selected_layer = "All regions"
+            request_scroll("region_selector")
+            st.rerun()
+    with c2:
+        if top_items and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
+            st.session_state.show_region_catalog = False
+            st.session_state.selected_zone_name = top_items[0]["zone"].name
+            request_scroll("focused_region")
+            st.rerun()
+    with c3:
+        if st.button("💬 Send feedback", key="radar_feedback", use_container_width=True):
+            st.session_state.page = "feedback"
+            request_scroll("page_feedback")
+            st.rerun()
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
     st.markdown("<div id='start_here'></div>", unsafe_allow_html=True)
@@ -1995,6 +2111,40 @@ def inject_css() -> None:
     st.markdown(
         """
         <style>
+        .global-radar-card {
+            border: 1px solid rgba(56,189,248,.34);
+            background: radial-gradient(circle at top left, rgba(14,165,233,.18), rgba(15,23,42,.94) 42%, rgba(2,6,23,.96));
+            border-radius: 24px;
+            padding: 20px;
+            margin: 16px 0 14px 0;
+            box-shadow: 0 18px 48px rgba(0,0,0,.30), 0 0 34px rgba(56,189,248,.10);
+        }
+        .radar-head-row { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:16px; }
+        .radar-kicker { color:#38bdf8; font-weight:950; letter-spacing:.18em; font-size:.86rem; text-transform:uppercase; }
+        .radar-main { font-size:2rem; font-weight:950; letter-spacing:-.03em; line-height:1.12; margin-top:5px; }
+        .radar-subtitle { color:#cbd5e1; font-size:1.02rem; line-height:1.45; margin-top:5px; }
+        .radar-live-pill { border:1px solid rgba(34,197,94,.45); color:#bbf7d0; background:rgba(20,83,45,.22); border-radius:999px; padding:8px 12px; font-weight:900; white-space:nowrap; font-size:.86rem; }
+        .radar-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:10px; }
+        .radar-region-card { border:1px solid #334155; background:rgba(2,6,23,.54); border-radius:18px; padding:12px; min-height:128px; }
+        .radar-region-name { color:#f8fafc; font-size:.98rem; font-weight:950; line-height:1.2; min-height:2.35rem; }
+        .radar-region-type { color:#94a3b8; font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; font-weight:850; margin-top:4px; }
+        .radar-score-row { margin-top:10px; display:flex; align-items:baseline; gap:3px; }
+        .radar-score-row span { color:#f8fafc; font-size:1.55rem; font-weight:950; }
+        .radar-score-row small { color:#94a3b8; font-weight:800; }
+        .radar-state { font-size:.84rem; font-weight:950; line-height:1.25; margin-top:4px; }
+        .mobile-disclaimer-card { border:1px solid rgba(248,113,113,.44); background:linear-gradient(135deg, rgba(127,29,29,.28), rgba(15,23,42,.92)); border-radius:18px; padding:14px 16px; margin:14px 0; }
+        .mobile-disclaimer-title { color:#fecaca; font-weight:950; letter-spacing:.04em; text-transform:uppercase; font-size:.95rem; }
+        .mobile-disclaimer-text { color:#e5e7eb; margin-top:6px; line-height:1.5; font-size:1rem; }
+        .feedback-card { border:1px solid rgba(56,189,248,.32); background:linear-gradient(135deg, rgba(15,23,42,.96), rgba(2,6,23,.92)); border-radius:20px; padding:18px; margin:12px 0; }
+        .feedback-title { color:#f8fafc; font-size:1.35rem; font-weight:950; margin-bottom:6px; }
+        .feedback-text { color:#cbd5e1; line-height:1.55; font-size:1.02rem; }
+        @media (max-width: 1100px) { .radar-grid { grid-template-columns:repeat(3, minmax(0, 1fr)); } }
+        @media (max-width: 700px) {
+            .radar-head-row { flex-direction:column; }
+            .radar-main { font-size:1.55rem; }
+            .radar-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+            .radar-region-card { min-height:118px; padding:10px; }
+        }
         .start-here-card {
             border: 1px solid rgba(56,189,248,.22);
             border-radius: 18px;
@@ -3085,6 +3235,50 @@ def render_back_to_top_button() -> None:
         width=0,
     )
 
+
+
+def render_floating_feedback_button() -> None:
+    """Fixed feedback button for Android/WebView."""
+    components.html(
+        f"""
+        <script>
+        (function() {{
+            const doc = window.parent.document;
+            let btn = doc.getElementById('franjamarFeedbackBtn');
+            if (!btn) {{
+                btn = doc.createElement('button');
+                btn.id = 'franjamarFeedbackBtn';
+                btn.innerHTML = '💬 Feedback';
+                btn.onclick = function() {{
+                    window.parent.location.href = 'mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}';
+                }};
+                doc.body.appendChild(btn);
+            }}
+            const styleId = 'franjamarFeedbackStyle';
+            if (!doc.getElementById(styleId)) {{
+                const style = doc.createElement('style');
+                style.id = styleId;
+                style.textContent = `
+                    #franjamarFeedbackBtn {{
+                        position: fixed; right: 22px; bottom: 70px; z-index: 2147483647;
+                        padding: 10px 15px; border-radius: 999px;
+                        border: 1px solid rgba(244,114,182,.82);
+                        background: linear-gradient(135deg, rgba(219,39,119,.98), rgba(124,58,237,.98));
+                        color: white; font-weight: 900; font-size: 13px; letter-spacing: .03em;
+                        cursor: pointer; box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 20px rgba(244,114,182,.30);
+                    }}
+                    @media (max-width: 700px) {{
+                        #franjamarFeedbackBtn {{ right: 12px; bottom: 55px; padding: 9px 12px; font-size: 12px; }}
+                    }}
+                `;
+                doc.head.appendChild(style);
+            }}
+        }})();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
 # ============================================================
 # UI
 # ============================================================
@@ -3163,7 +3357,7 @@ def render_top_app_bar() -> None:
             unsafe_allow_html=True,
         )
 
-    nav_cols = st.columns(5)
+    nav_cols = st.columns(6)
     with nav_cols[0]:
         nav_button("📡 Monitor", "monitor")
     with nav_cols[1]:
@@ -3174,6 +3368,8 @@ def render_top_app_bar() -> None:
         nav_button("📊 Read outputs", "read")
     with nav_cols[4]:
         nav_button("📄 DOI / Papers", "papers")
+    with nav_cols[5]:
+        nav_button("💬 Feedback", "feedback")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -3186,6 +3382,7 @@ def render_app_navigation() -> None:
 def render_monitor_page() -> None:
     st.markdown("<div id='page_monitor'></div>", unsafe_allow_html=True)
     ensure_selector_state(zone_dirs)
+    render_global_status_radar(zone_dirs)
     render_disclaimer()
     render_start_here_block(zone_dirs)
 
@@ -3275,6 +3472,41 @@ def render_read_outputs_page() -> None:
     render_quick_guide_outputs()
 
 
+
+
+def render_feedback_page() -> None:
+    st.markdown("<div id='page_feedback'></div>", unsafe_allow_html=True)
+    st.markdown("## Feedback / Suggestions")
+    st.markdown(
+        """
+<div class="feedback-card">
+  <div class="feedback-title">Help improve the app</div>
+  <div class="feedback-text">
+    This is an independent, experimental and non-predictive research app. Feedback is especially useful on usability, scientific interpretation, unclear labels, missing regions, Android display issues, or bugs.
+  </div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+    mailto = f"mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}"
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.link_button("📩 Send feedback by email", mailto, use_container_width=True)
+    with c2:
+        st.link_button("🐞 Report issue", mailto + "%20-%20bug", use_container_width=True)
+    with c3:
+        st.link_button("🌍 Suggest region", mailto + "%20-%20new%20region", use_container_width=True)
+
+    st.markdown("### Suggested feedback format")
+    st.code(
+        """App section:
+What confused me:
+What worked well:
+Device/browser:
+Suggested region or improvement:
+""",
+        language="text",
+    )
 def render_papers_page() -> None:
     st.markdown("<div id='page_papers'></div>", unsafe_allow_html=True)
     st.markdown("## DOI / Papers")
@@ -3313,6 +3545,8 @@ elif st.session_state.page == "how":
     render_how_page()
 elif st.session_state.page == "read":
     render_read_outputs_page()
+elif st.session_state.page == "feedback":
+    render_feedback_page()
 elif st.session_state.page == "papers":
     render_papers_page()
 
@@ -3320,6 +3554,7 @@ if st.session_state.page != "monitor":
     perform_deferred_scroll()
 
 render_back_to_top_button()
+render_floating_feedback_button()
 
 if auto_refresh:
     time.sleep(refresh_seconds)
