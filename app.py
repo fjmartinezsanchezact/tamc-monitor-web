@@ -1279,13 +1279,19 @@ def render_header(zone_dirs: List[Path]) -> None:
 
 
 def render_version_status_card() -> None:
-    """Compact external status/version card shown outside the hero."""
+    """Compact status/version strip shown outside the hero.
+
+    It is intentionally rendered as plain status text, not as separate pill
+    buttons, because these labels are informational and not clickable.
+    """
     st.markdown(
         f"""
         <div class="version-status-card">
-            <span class="version-pill beta">BETA VERSION</span>
-            <span class="version-pill data">REAL UPDATED DATA</span>
-            <span class="version-pill version">{APP_VERSION_ID} · APP.PY UPLOADED {APP_VERSION_UTC}</span>
+            <span class="version-status-beta">BETA VERSION</span>
+            <span class="version-separator">·</span>
+            <span class="version-status-data">REAL UPDATED DATA</span>
+            <span class="version-separator">·</span>
+            <span class="version-status-version">{APP_VERSION_ID} · APP.PY UPLOADED {APP_VERSION_UTC}</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2276,14 +2282,16 @@ def inject_css() -> None:
         .version-status-card {
             display:flex; flex-wrap:wrap; gap:10px; align-items:center;
             border:1px solid rgba(56,189,248,.38);
-            background:linear-gradient(135deg, rgba(15,23,42,.92), rgba(8,47,73,.40));
-            border-radius:18px; padding:14px 16px; margin:0 0 18px 0;
-            box-shadow:0 14px 34px rgba(0,0,0,.24);
+            background:linear-gradient(135deg, rgba(15,23,42,.72), rgba(8,47,73,.28));
+            border-radius:18px; padding:13px 16px; margin:0 0 18px 0;
+            box-shadow:0 14px 34px rgba(0,0,0,.22);
+            font-weight:900; letter-spacing:.05em; text-transform:uppercase;
+            color:#cbd5e1;
         }
-        .version-pill { display:inline-flex; align-items:center; padding:7px 13px; border-radius:999px; font-weight:950; letter-spacing:.08em; font-size:.78rem; text-transform:uppercase; }
-        .version-pill.beta { border:1px solid rgba(244,114,182,.60); background:rgba(80,7,36,.38); color:#fbcfe8; }
-        .version-pill.data { border:1px solid rgba(56,189,248,.62); background:rgba(8,47,73,.45); color:#bae6fd; }
-        .version-pill.version { border:1px solid rgba(148,163,184,.38); background:rgba(15,23,42,.66); color:#cbd5e1; letter-spacing:.045em; }
+        .version-status-beta { color:#f9a8d4; }
+        .version-status-data { color:#7dd3fc; }
+        .version-status-version { color:#cbd5e1; }
+        .version-separator { color:#64748b; font-weight:950; }
         @media (max-width: 900px) {
             .radar-head-row { flex-direction:column; }
             .radar-layout { grid-template-columns:1fr; }
@@ -3315,57 +3323,54 @@ def perform_deferred_scroll(default_delay_ms: int = 350) -> None:
 
 
 def render_back_to_top_button() -> None:
-    """Bottom-centred fixed navigation: Monitor + Inicio.
+    """Bottom-centred fixed Inicio button.
 
-    The button bar is injected into the parent document so it remains floating
-    while scrolling, not just at the physical bottom of the Streamlit page.
+    Only the Inicio button is kept at the bottom to avoid duplicating the
+    top Monitor navigation. It is injected into the parent document so it
+    remains floating while scrolling.
     """
     components.html(
-        f"""
+        """
         <script>
-        (function() {{
+        (function() {
             const doc = window.parent.document;
             const oldFeedback = doc.getElementById('franjamarFeedbackBtn');
             if (oldFeedback) oldFeedback.remove();
+            const oldMonitor = doc.getElementById('franjamarBottomMonitorBtn');
+            if (oldMonitor) oldMonitor.remove();
 
             let bar = doc.getElementById('franjamarBottomNav');
-            if (!bar) {{
+            if (!bar) {
                 bar = doc.createElement('div');
                 bar.id = 'franjamarBottomNav';
+                doc.body.appendChild(bar);
+            }
 
-                const monitor = doc.createElement('button');
-                monitor.id = 'franjamarBottomMonitorBtn';
-                monitor.innerHTML = '← Monitor';
-                monitor.onclick = function() {{
-                    window.parent.location.href = '{APP_HOME_URL}';
-                }};
-
-                const top = doc.createElement('button');
+            let top = doc.getElementById('franjamarBottomTopBtn');
+            if (!top) {
+                top = doc.createElement('button');
                 top.id = 'franjamarBottomTopBtn';
                 top.innerHTML = '⬆ Inicio';
-                top.onclick = function() {{
-                    const el = doc.getElementById('app_top_anchor');
-                    if (el) {{
-                        el.scrollIntoView({{behavior: 'smooth', block: 'start'}});
-                    }} else {{
-                        window.parent.scrollTo({{top: 0, behavior: 'smooth'}});
-                    }}
-                }};
-
-                bar.appendChild(monitor);
                 bar.appendChild(top);
-                doc.body.appendChild(bar);
-            }}
+            }
+            top.onclick = function() {
+                const el = doc.getElementById('app_top_anchor');
+                if (el) {
+                    el.scrollIntoView({behavior: 'smooth', block: 'start'});
+                } else {
+                    window.parent.scrollTo({top: 0, behavior: 'smooth'});
+                }
+            };
 
             const styleId = 'franjamarBottomNavStyle';
             let style = doc.getElementById(styleId);
-            if (!style) {{
+            if (!style) {
                 style = doc.createElement('style');
                 style.id = styleId;
                 doc.head.appendChild(style);
-            }}
+            }
             style.textContent = `
-                #franjamarBottomNav {{
+                #franjamarBottomNav {
                     position: fixed !important;
                     left: 50% !important;
                     bottom: 18px !important;
@@ -3382,8 +3387,8 @@ def render_back_to_top_button() -> None:
                     backdrop-filter: blur(10px) !important;
                     box-shadow: 0 12px 34px rgba(0,0,0,.55) !important;
                     pointer-events: auto !important;
-                }}
-                #franjamarBottomNav button {{
+                }
+                #franjamarBottomNav button {
                     min-width: 118px !important;
                     padding: 10px 16px !important;
                     border-radius: 999px !important;
@@ -3395,17 +3400,17 @@ def render_back_to_top_button() -> None:
                     letter-spacing: .03em !important;
                     cursor: pointer !important;
                     box-shadow: 0 8px 22px rgba(0,0,0,.35) !important;
-                }}
-                #franjamarBottomNav button:hover {{
+                }
+                #franjamarBottomNav button:hover {
                     transform: translateY(-1px) !important;
                     box-shadow: 0 0 18px rgba(56,189,248,.35) !important;
-                }}
-                @media (max-width: 700px) {{
-                    #franjamarBottomNav {{ bottom: 10px !important; gap: 7px !important; padding: 6px !important; }}
-                    #franjamarBottomNav button {{ min-width: 92px !important; padding: 9px 11px !important; font-size: 12px !important; }}
-                }}
+                }
+                @media (max-width: 700px) {
+                    #franjamarBottomNav { bottom: 10px !important; gap: 7px !important; padding: 6px !important; }
+                    #franjamarBottomNav button { min-width: 92px !important; padding: 9px 11px !important; font-size: 12px !important; }
+                }
             `;
-        }})();
+        })();
         </script>
         """,
         height=0,
@@ -3508,6 +3513,7 @@ def nav_button(label: str, page_key: str) -> None:
             go_monitor_home()
         else:
             st.session_state.page = page_key
+            st.session_state.show_full_ranking = False
             request_scroll(f"page_{page_key}")
         st.rerun()
 
@@ -3544,7 +3550,7 @@ def render_top_app_bar() -> None:
         )
 
     # Extra vertical separation so Monitor aligns below the subtitle, not over it.
-    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:22px'></div>", unsafe_allow_html=True)
 
     nav_cols = st.columns(6)
     with nav_cols[0]:
