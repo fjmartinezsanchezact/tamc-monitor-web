@@ -928,7 +928,7 @@ def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """App-facing radar plus a full classification control."""
+    """App-facing radar plus native Streamlit navigation controls."""
     items_sorted = _sorted_region_summaries(zone_dirs)
     top_items = items_sorted[:6]
     top_item = top_items[0] if top_items else None
@@ -973,12 +973,21 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
       <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
       <div class="radar-tap-hint">Use the buttons below to open region details or view the complete ranking.</div>
     </div>
-    <div class="radar-live-pill">T−1 h · updated data</div>
   </div>
   <div class="radar-layout">{top_html}<div class="radar-grid">{cards_html}</div></div>
 </div>
     """
     st.markdown(radar_html, unsafe_allow_html=True)
+
+    # The classification control is placed where the former T−1 badge was visually expected.
+    rank_left, rank_right = st.columns([0.70, 0.30])
+    with rank_right:
+        if st.button("📋 Classification: all regions", key="radar_full_ranking_top", use_container_width=True):
+            st.session_state.page = "monitor"
+            st.session_state.show_full_ranking = not st.session_state.get("show_full_ranking", False)
+            st.session_state.show_region_catalog = False
+            request_scroll("full_ranking")
+            st.rerun()
 
     if top_items:
         st.markdown("<div class='radar-button-title'>Open region details</div>", unsafe_allow_html=True)
@@ -986,24 +995,30 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         for idx, it in enumerate(top_items):
             flag = f"{it.get('flag')} " if it.get("flag") else ""
             with button_cols[idx % 3]:
-                href = region_query_url(it["zone"].name)
-                st.markdown(
-                    f'<a class="radar-open-link" href="{href}" target="_self">{html.escape(flag + str(it["name"]))} · {score_text(it)}/100</a>',
-                    unsafe_allow_html=True,
-                )
+                if st.button(
+                    f"{flag}{it['name']} · {score_text(it)}/100",
+                    key=f"radar_open_region_{idx}_{it['zone'].name}",
+                    use_container_width=True,
+                ):
+                    open_region_from_summary(it)
+                    st.rerun()
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns(2)
     with c1:
-        st.markdown('<a class="radar-open-link" href="?page=monitor&ranking=1#full_ranking" target="_self">📋 Classification: all regions</a>', unsafe_allow_html=True)
+        if st.button("🌍 Explore all regions", key="radar_explore_regions", use_container_width=True):
+            st.session_state.page = "monitor"
+            st.session_state.show_region_catalog = True
+            st.session_state.show_full_ranking = False
+            st.session_state.selected_layer = "All regions"
+            request_scroll("region_selector")
+            st.rerun()
     with c2:
-        st.markdown('<a class="radar-open-link" href="?page=monitor&catalog=1#region_selector" target="_self">🌍 Explore all regions</a>', unsafe_allow_html=True)
-    with c3:
-        if top_item:
-            st.markdown(f'<a class="radar-open-link" href="{region_query_url(top_item["zone"].name)}" target="_self">🔥 Open highest score</a>', unsafe_allow_html=True)
+        if top_item and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
+            open_region_from_summary(top_item)
+            st.rerun()
 
     if st.session_state.get("show_full_ranking", False):
         render_region_classification_table(items_sorted)
-
 
 def render_region_classification_table(items_sorted: List[Dict[str, object]]) -> None:
     """Full descending classification by descriptive score, with open buttons."""
@@ -1021,8 +1036,9 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
         cols[2].markdown(f"`{score_txt}/100`")
         cols[3].markdown(html.escape(str(it.get("short_state", ""))))
         with cols[4]:
-            href = region_query_url(it["zone"].name)
-            st.markdown(f'<a class="ranking-open-link" href="{href}" target="_self">Open</a>', unsafe_allow_html=True)
+            if st.button("Open", key=f"ranking_open_{idx}_{it['zone'].name}", use_container_width=True):
+                open_region_from_summary(it)
+                st.rerun()
 
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
@@ -1042,19 +1058,25 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
     c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
+            st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
             request_scroll("focused_region")
             st.rerun()
     with c2:
         if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
+            st.session_state.show_full_ranking = False
             select_preferred_region(zone_dirs, ["yellowstone"])
             request_scroll("focused_region")
             st.rerun()
     with c3:
         if st.button("🌍 Explore all regions", key="quick_explore_all_regions", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = True
+            st.session_state.show_full_ranking = False
             st.session_state.selected_layer = "All regions"
             request_scroll("region_selector")
             st.rerun()
@@ -1220,11 +1242,6 @@ def render_header(zone_dirs: List[Path]) -> None:
                     Framework: <b>TAMC–FRANJAMAR v3</b> ·
                     <a href="{SEISMIC_DOI}" target="_blank" rel="noopener noreferrer">DOI: 10.5281/zenodo.19665949</a>
                 </div>
-                <div class="hero-status-row">
-                    <span class="hero-pill beta">Beta version</span>
-                    <span class="hero-pill">Real updated data</span>
-                    <span class="hero-pill version">{APP_VERSION_ID} · app.py uploaded {APP_VERSION_UTC}</span>
-                </div>
             </div>
             <div class="metric-grid">
                 <div class="metric"><span>{len(zone_dirs)}</span><small>regions monitored</small></div>
@@ -1245,6 +1262,20 @@ def render_header(zone_dirs: List[Path]) -> None:
                 <b>{window_txt}</b>
                 <small>24 h window · T−1 h consolidation delay</small>
             </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_version_status_card() -> None:
+    """Compact external status/version card shown outside the hero."""
+    st.markdown(
+        f"""
+        <div class="version-status-card">
+            <span class="version-pill beta">BETA VERSION</span>
+            <span class="version-pill data">REAL UPDATED DATA</span>
+            <span class="version-pill version">{APP_VERSION_ID} · APP.PY UPLOADED {APP_VERSION_UTC}</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2230,6 +2261,19 @@ def inject_css() -> None:
         .radar-top-state, .radar-state { margin-top:10px; font-weight:950; line-height:1.35; }
         .radar-button-title { color:#93c5fd; font-weight:900; margin:10px 0 8px 0; }
         .feedback-card { border:1px solid rgba(56,189,248,.35); border-radius:18px; padding:18px; background:rgba(15,23,42,.82); margin:14px 0; line-height:1.55; }
+        .bottom-native-nav { margin: 26px 0 90px 0; }
+        .bottom-native-nav + div { margin-top: 0; }
+        .version-status-card {
+            display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+            border:1px solid rgba(56,189,248,.38);
+            background:linear-gradient(135deg, rgba(15,23,42,.92), rgba(8,47,73,.40));
+            border-radius:18px; padding:14px 16px; margin:0 0 18px 0;
+            box-shadow:0 14px 34px rgba(0,0,0,.24);
+        }
+        .version-pill { display:inline-flex; align-items:center; padding:7px 13px; border-radius:999px; font-weight:950; letter-spacing:.08em; font-size:.78rem; text-transform:uppercase; }
+        .version-pill.beta { border:1px solid rgba(244,114,182,.60); background:rgba(80,7,36,.38); color:#fbcfe8; }
+        .version-pill.data { border:1px solid rgba(56,189,248,.62); background:rgba(8,47,73,.45); color:#bae6fd; }
+        .version-pill.version { border:1px solid rgba(148,163,184,.38); background:rgba(15,23,42,.66); color:#cbd5e1; letter-spacing:.045em; }
         @media (max-width: 900px) {
             .radar-head-row { flex-direction:column; }
             .radar-layout { grid-template-columns:1fr; }
@@ -3257,16 +3301,27 @@ def perform_deferred_scroll(default_delay_ms: int = 350) -> None:
 
 
 def render_back_to_top_button() -> None:
-    """Bottom-centred fixed navigation using real links, not JS buttons.
+    """Bottom navigation: native fallback plus fixed visual controls."""
+    st.markdown("<div class='bottom-native-nav'>", unsafe_allow_html=True)
+    left, c1, c2, right = st.columns([0.33, 0.17, 0.17, 0.33])
+    with c1:
+        if st.button("← Monitor", key="bottom_native_monitor", use_container_width=True):
+            go_monitor_home()
+            st.rerun()
+    with c2:
+        if st.button("⬆ Inicio", key="bottom_native_inicio", use_container_width=True):
+            scroll_to_top()
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    Real <a> links are more reliable in Streamlit Cloud and Android WebView
-    than injected JS onclick handlers inside components.html iframes.
-    """
+    # Fixed overlay for Android/desktop. Uses JS and href fallback.
     components.html(
         f"""
         <div id="franjamarBottomNav">
-            <a id="franjamarBottomMonitorBtn" href="{APP_HOME_URL}" target="_parent">← Monitor</a>
-            <a id="franjamarBottomTopBtn" href="#app_top_anchor" target="_parent">⬆ Inicio</a>
+            <button id="franjamarBottomMonitorBtn" type="button"
+                onclick="try{{window.parent.location.href='{APP_HOME_URL}';}}catch(e){{window.top.location.href='{APP_HOME_URL}';}}">← Monitor</button>
+            <button id="franjamarBottomTopBtn" type="button"
+                onclick="try{{window.parent.document.getElementById('app_top_anchor').scrollIntoView({{behavior:'smooth',block:'start'}});}}catch(e){{try{{window.parent.scrollTo({{top:0,behavior:'smooth'}});}}catch(x){{window.top.location.hash='app_top_anchor';}}}}">⬆ Inicio</button>
         </div>
         <style>
             #franjamarBottomNav {{
@@ -3287,7 +3342,7 @@ def render_back_to_top_button() -> None:
                 box-shadow: 0 12px 34px rgba(0,0,0,.55);
                 pointer-events: auto;
             }}
-            #franjamarBottomNav a {{
+            #franjamarBottomNav button {{
                 min-width: 118px;
                 padding: 10px 16px;
                 border-radius: 999px;
@@ -3298,23 +3353,23 @@ def render_back_to_top_button() -> None:
                 font-size: 13px;
                 letter-spacing: .03em;
                 text-align: center;
-                text-decoration: none !important;
                 cursor: pointer;
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             }}
-            #franjamarBottomNav a:hover {{
+            #franjamarBottomNav button:hover {{
                 transform: translateY(-1px);
                 box-shadow: 0 0 18px rgba(56,189,248,.35);
             }}
             @media (max-width: 700px) {{
                 #franjamarBottomNav {{ bottom: 10px; gap: 7px; padding: 6px; }}
-                #franjamarBottomNav a {{ min-width: 92px; padding: 9px 11px; font-size: 12px; }}
+                #franjamarBottomNav button {{ min-width: 92px; padding: 9px 11px; font-size: 12px; }}
             }}
         </style>
         """,
         height=0,
         width=0,
     )
+
 
 # ============================================================
 # UI
@@ -3380,6 +3435,25 @@ def ensure_page_state() -> None:
         st.session_state.page = "monitor"
 
 
+def go_monitor_home() -> None:
+    """Reset the app to the public monitor landing page."""
+    st.session_state.page = "monitor"
+    st.session_state.show_region_catalog = False
+    st.session_state.show_full_ranking = False
+    st.session_state.selected_layer = "All regions"
+    if zone_dirs:
+        st.session_state.selected_zone_name = zone_dirs[0].name
+    try:
+        st.query_params.clear()
+    except Exception:
+        pass
+    request_scroll("app_top_anchor")
+
+
+def scroll_to_top() -> None:
+    request_scroll("app_top_anchor")
+
+
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
@@ -3389,8 +3463,11 @@ def nav_button(label: str, page_key: str) -> None:
         use_container_width=True,
         type="primary" if selected else "secondary",
     ):
-        st.session_state.page = page_key
-        request_scroll(f"page_{page_key}")
+        if page_key == "monitor":
+            go_monitor_home()
+        else:
+            st.session_state.page = page_key
+            request_scroll(f"page_{page_key}")
         st.rerun()
 
 
@@ -3596,6 +3673,7 @@ apply_query_params_to_state(zone_dirs)
 
 render_top_app_bar()
 render_header(zone_dirs)
+render_version_status_card()
 
 if st.session_state.page == "monitor":
     render_monitor_page()
