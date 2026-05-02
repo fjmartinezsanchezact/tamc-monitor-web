@@ -928,7 +928,11 @@ def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """App-facing radar plus native Streamlit navigation controls."""
+    """App-facing radar plus native Streamlit navigation controls.
+
+    The visual cards are clickable internal links. The Streamlit buttons below
+    remain as reliable fallbacks.
+    """
     items_sorted = _sorted_region_summaries(zone_dirs)
     top_items = items_sorted[:6]
     top_item = top_items[0] if top_items else None
@@ -939,29 +943,34 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         score = it.get("score")
         return "—" if score is None else f"{float(score):.1f}"
 
+    def href_for(it: Dict[str, object]) -> str:
+        return region_query_url(str(it["zone"].name))
+
     top_html = ""
     if top_item:
         top_flag = f"{top_item.get('flag')} " if top_item.get("flag") else ""
         top_html = (
-            f'<div class="radar-top-card" style="border-color:{top_item["color"]};">'
-            f'<div class="radar-top-badge">TOP REGION</div>'
+            f'<a class="radar-card-link" href="{href_for(top_item)}" target="_self" title="Open {html.escape(str(top_item["name"]))}">'
+            f'<div class="radar-top-card clickable-radar-card" style="border-color:{top_item["color"]};">'
+            f'<div class="radar-top-badge">TOP REGION · TAP TO OPEN</div>'
             f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
             f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
             f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
             f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     cards_html = ""
     for it in secondary_items:
         flag = f"{it.get('flag')} " if it.get("flag") else ""
         cards_html += (
-            f'<div class="radar-region-card" style="border-color:{it["color"]};">'
+            f'<a class="radar-card-link" href="{href_for(it)}" target="_self" title="Open {html.escape(str(it["name"]))}">'
+            f'<div class="radar-region-card clickable-radar-card" style="border-color:{it["color"]};">'
             f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
             f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
             f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
             f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     radar_html = f"""
@@ -971,7 +980,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
       <div class="radar-kicker">GLOBAL STATUS RADAR</div>
       <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
       <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
-      <div class="radar-tap-hint">Use the buttons below to open region details or view the complete ranking.</div>
+      <div class="radar-tap-hint">Tap/click a radar card or use the buttons below to open region details.</div>
     </div>
   </div>
   <div class="radar-layout">{top_html}<div class="radar-grid">{cards_html}</div></div>
@@ -979,7 +988,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
     """
     st.markdown(radar_html, unsafe_allow_html=True)
 
-    # The classification control is placed where the former T−1 badge was visually expected.
+    # Classification control remains native because it was already working reliably.
     rank_left, rank_right = st.columns([0.70, 0.30])
     with rank_right:
         if st.button("📋 Classification: all regions", key="radar_full_ranking_top", use_container_width=True):
@@ -1019,6 +1028,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
 
     if st.session_state.get("show_full_ranking", False):
         render_region_classification_table(items_sorted)
+
 
 def render_region_classification_table(items_sorted: List[Dict[str, object]]) -> None:
     """Full descending classification by descriptive score, with open buttons."""
@@ -2289,6 +2299,10 @@ def inject_css() -> None:
             box-shadow: inset 0 0 0 1px rgba(148,163,184,.04);
         }
         .start-here-text { color: #cbd5e1; font-size: 1.02rem; margin-top: 8px; line-height: 1.45; }
+        .radar-card-link { display:block; height:100%; color:inherit !important; text-decoration:none !important; }
+        .radar-card-link:hover .clickable-radar-card { border-color:#38bdf8 !important; box-shadow:0 0 0 1px rgba(56,189,248,.35), 0 16px 34px rgba(0,0,0,.38); transform:translateY(-2px); }
+        .clickable-radar-card { cursor:pointer; transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease; }
+
         :root {
             --bg: #070a12;
             --card: #111827;
@@ -3301,75 +3315,102 @@ def perform_deferred_scroll(default_delay_ms: int = 350) -> None:
 
 
 def render_back_to_top_button() -> None:
-    """Bottom navigation: native fallback plus fixed visual controls."""
-    st.markdown("<div class='bottom-native-nav'>", unsafe_allow_html=True)
-    left, c1, c2, right = st.columns([0.33, 0.17, 0.17, 0.33])
-    with c1:
-        if st.button("← Monitor", key="bottom_native_monitor", use_container_width=True):
-            go_monitor_home()
-            st.rerun()
-    with c2:
-        if st.button("⬆ Inicio", key="bottom_native_inicio", use_container_width=True):
-            scroll_to_top()
-            st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+    """Bottom-centred fixed navigation: Monitor + Inicio.
 
-    # Fixed overlay for Android/desktop. Uses JS and href fallback.
+    The button bar is injected into the parent document so it remains floating
+    while scrolling, not just at the physical bottom of the Streamlit page.
+    """
     components.html(
         f"""
-        <div id="franjamarBottomNav">
-            <button id="franjamarBottomMonitorBtn" type="button"
-                onclick="try{{window.parent.location.href='{APP_HOME_URL}';}}catch(e){{window.top.location.href='{APP_HOME_URL}';}}">← Monitor</button>
-            <button id="franjamarBottomTopBtn" type="button"
-                onclick="try{{window.parent.document.getElementById('app_top_anchor').scrollIntoView({{behavior:'smooth',block:'start'}});}}catch(e){{try{{window.parent.scrollTo({{top:0,behavior:'smooth'}});}}catch(x){{window.top.location.hash='app_top_anchor';}}}}">⬆ Inicio</button>
-        </div>
-        <style>
-            #franjamarBottomNav {{
-                position: fixed;
-                left: 50%;
-                bottom: 18px;
-                transform: translateX(-50%);
-                z-index: 2147483647;
-                display: flex;
-                gap: 10px;
-                align-items: center;
-                justify-content: center;
-                padding: 7px;
-                border-radius: 999px;
-                border: 1px solid rgba(56,189,248,.38);
-                background: rgba(2,6,23,.72);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 12px 34px rgba(0,0,0,.55);
-                pointer-events: auto;
+        <script>
+        (function() {{
+            const doc = window.parent.document;
+            const oldFeedback = doc.getElementById('franjamarFeedbackBtn');
+            if (oldFeedback) oldFeedback.remove();
+
+            let bar = doc.getElementById('franjamarBottomNav');
+            if (!bar) {{
+                bar = doc.createElement('div');
+                bar.id = 'franjamarBottomNav';
+
+                const monitor = doc.createElement('button');
+                monitor.id = 'franjamarBottomMonitorBtn';
+                monitor.innerHTML = '← Monitor';
+                monitor.onclick = function() {{
+                    window.parent.location.href = '{APP_HOME_URL}';
+                }};
+
+                const top = doc.createElement('button');
+                top.id = 'franjamarBottomTopBtn';
+                top.innerHTML = '⬆ Inicio';
+                top.onclick = function() {{
+                    const el = doc.getElementById('app_top_anchor');
+                    if (el) {{
+                        el.scrollIntoView({{behavior: 'smooth', block: 'start'}});
+                    }} else {{
+                        window.parent.scrollTo({{top: 0, behavior: 'smooth'}});
+                    }}
+                }};
+
+                bar.appendChild(monitor);
+                bar.appendChild(top);
+                doc.body.appendChild(bar);
             }}
-            #franjamarBottomNav button {{
-                min-width: 118px;
-                padding: 10px 16px;
-                border-radius: 999px;
-                border: 1px solid rgba(125,211,252,.75);
-                background: linear-gradient(135deg, rgba(14,165,233,.98), rgba(37,99,235,.98));
-                color: white !important;
-                font-weight: 900;
-                font-size: 13px;
-                letter-spacing: .03em;
-                text-align: center;
-                cursor: pointer;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+            const styleId = 'franjamarBottomNavStyle';
+            let style = doc.getElementById(styleId);
+            if (!style) {{
+                style = doc.createElement('style');
+                style.id = styleId;
+                doc.head.appendChild(style);
             }}
-            #franjamarBottomNav button:hover {{
-                transform: translateY(-1px);
-                box-shadow: 0 0 18px rgba(56,189,248,.35);
-            }}
-            @media (max-width: 700px) {{
-                #franjamarBottomNav {{ bottom: 10px; gap: 7px; padding: 6px; }}
-                #franjamarBottomNav button {{ min-width: 92px; padding: 9px 11px; font-size: 12px; }}
-            }}
-        </style>
+            style.textContent = `
+                #franjamarBottomNav {{
+                    position: fixed !important;
+                    left: 50% !important;
+                    bottom: 18px !important;
+                    transform: translateX(-50%) !important;
+                    z-index: 2147483647 !important;
+                    display: flex !important;
+                    gap: 10px !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    padding: 7px !important;
+                    border-radius: 999px !important;
+                    border: 1px solid rgba(56,189,248,.38) !important;
+                    background: rgba(2,6,23,.72) !important;
+                    backdrop-filter: blur(10px) !important;
+                    box-shadow: 0 12px 34px rgba(0,0,0,.55) !important;
+                    pointer-events: auto !important;
+                }}
+                #franjamarBottomNav button {{
+                    min-width: 118px !important;
+                    padding: 10px 16px !important;
+                    border-radius: 999px !important;
+                    border: 1px solid rgba(125,211,252,.75) !important;
+                    background: linear-gradient(135deg, rgba(14,165,233,.98), rgba(37,99,235,.98)) !important;
+                    color: white !important;
+                    font-weight: 900 !important;
+                    font-size: 13px !important;
+                    letter-spacing: .03em !important;
+                    cursor: pointer !important;
+                    box-shadow: 0 8px 22px rgba(0,0,0,.35) !important;
+                }}
+                #franjamarBottomNav button:hover {{
+                    transform: translateY(-1px) !important;
+                    box-shadow: 0 0 18px rgba(56,189,248,.35) !important;
+                }}
+                @media (max-width: 700px) {{
+                    #franjamarBottomNav {{ bottom: 10px !important; gap: 7px !important; padding: 6px !important; }}
+                    #franjamarBottomNav button {{ min-width: 92px !important; padding: 9px 11px !important; font-size: 12px !important; }}
+                }}
+            `;
+        }})();
+        </script>
         """,
         height=0,
         width=0,
     )
-
 
 # ============================================================
 # UI
@@ -3501,6 +3542,9 @@ def render_top_app_bar() -> None:
             """,
             unsafe_allow_html=True,
         )
+
+    # Extra vertical separation so Monitor aligns below the subtitle, not over it.
+    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
     nav_cols = st.columns(6)
     with nav_cols[0]:
