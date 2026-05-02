@@ -928,7 +928,7 @@ def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """App-facing radar plus native Streamlit navigation controls."""
+    """App-facing radar plus reliable link navigation controls."""
     items_sorted = _sorted_region_summaries(zone_dirs)
     top_items = items_sorted[:6]
     top_item = top_items[0] if top_items else None
@@ -939,39 +939,48 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         score = it.get("score")
         return "—" if score is None else f"{float(score):.1f}"
 
+    classification_link = app_link(
+        "?page=monitor&ranking=1#full_ranking",
+        "📋 Classification: all regions",
+        "radar-corner-link",
+    )
+
     top_html = ""
     if top_item:
         top_flag = f"{top_item.get('flag')} " if top_item.get("flag") else ""
         top_html = (
+            f'<a class="radar-card-link" href="{region_query_url(top_item["zone"].name)}" target="_self">'
             f'<div class="radar-top-card" style="border-color:{top_item["color"]};">'
-            f'<div class="radar-top-badge">TOP REGION</div>'
+            f'<div class="radar-top-badge">TOP REGION · TAP TO OPEN</div>'
             f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
             f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
             f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
             f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     cards_html = ""
     for it in secondary_items:
         flag = f"{it.get('flag')} " if it.get("flag") else ""
         cards_html += (
+            f'<a class="radar-card-link" href="{region_query_url(it["zone"].name)}" target="_self">'
             f'<div class="radar-region-card" style="border-color:{it["color"]};">'
             f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
             f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
             f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
             f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     radar_html = f"""
-<div class="global-radar-card">
+<div class="global-radar-card radar-card-with-corner">
+  <div class="radar-corner-action">{classification_link}</div>
   <div class="radar-head-row">
     <div>
       <div class="radar-kicker">GLOBAL STATUS RADAR</div>
       <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
       <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
-      <div class="radar-tap-hint">Use the buttons below to open region details or view the complete ranking.</div>
+      <div class="radar-tap-hint">Tap/click a region card or use the buttons below to open region details.</div>
     </div>
   </div>
   <div class="radar-layout">{top_html}<div class="radar-grid">{cards_html}</div></div>
@@ -979,49 +988,29 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
     """
     st.markdown(radar_html, unsafe_allow_html=True)
 
-    # The classification control is placed where the former T−1 badge was visually expected.
-    rank_left, rank_right = st.columns([0.70, 0.30])
-    with rank_right:
-        if st.button("📋 Classification: all regions", key="radar_full_ranking_top", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_full_ranking = not st.session_state.get("show_full_ranking", False)
-            st.session_state.show_region_catalog = False
-            request_scroll("full_ranking")
-            st.rerun()
-
     if top_items:
         st.markdown("<div class='radar-button-title'>Open region details</div>", unsafe_allow_html=True)
         button_cols = st.columns(3)
         for idx, it in enumerate(top_items):
             flag = f"{it.get('flag')} " if it.get("flag") else ""
             with button_cols[idx % 3]:
-                if st.button(
-                    f"{flag}{it['name']} · {score_text(it)}/100",
-                    key=f"radar_open_region_{idx}_{it['zone'].name}",
-                    use_container_width=True,
-                ):
-                    open_region_from_summary(it)
-                    st.rerun()
+                st.markdown(
+                    app_link(region_query_url(it["zone"].name), f"{flag}{it['name']} · {score_text(it)}/100", "radar-open-link"),
+                    unsafe_allow_html=True,
+                )
 
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("🌍 Explore all regions", key="radar_explore_regions", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_region_catalog = True
-            st.session_state.show_full_ranking = False
-            st.session_state.selected_layer = "All regions"
-            request_scroll("region_selector")
-            st.rerun()
+        st.markdown(app_link("?page=monitor&catalog=1#region_selector", "🌍 Explore all regions", "radar-open-link"), unsafe_allow_html=True)
     with c2:
-        if top_item and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
-            open_region_from_summary(top_item)
-            st.rerun()
+        if top_item:
+            st.markdown(app_link(region_query_url(top_item["zone"].name), "🔥 Open highest score", "radar-open-link"), unsafe_allow_html=True)
 
     if st.session_state.get("show_full_ranking", False):
         render_region_classification_table(items_sorted)
 
 def render_region_classification_table(items_sorted: List[Dict[str, object]]) -> None:
-    """Full descending classification by descriptive score, with open buttons."""
+    """Full descending classification by descriptive score, with open links."""
     st.markdown("<div id='full_ranking'></div>", unsafe_allow_html=True)
     st.markdown("### 📋 Region classification · highest to lowest score")
     st.caption("Descriptive ranking only. It is not a warning, forecast or risk estimate.")
@@ -1036,9 +1025,7 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
         cols[2].markdown(f"`{score_txt}/100`")
         cols[3].markdown(html.escape(str(it.get("short_state", ""))))
         with cols[4]:
-            if st.button("Open", key=f"ranking_open_{idx}_{it['zone'].name}", use_container_width=True):
-                open_region_from_summary(it)
-                st.rerun()
+            st.markdown(app_link(region_query_url(it["zone"].name), "Open", "ranking-open-link"), unsafe_allow_html=True)
 
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
@@ -1055,32 +1042,20 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
         unsafe_allow_html=True,
     )
 
+    def preferred_href(keywords: List[str]) -> str:
+        for z in zone_dirs:
+            name = z.name.lower()
+            if any(k.lower() in name for k in keywords):
+                return region_query_url(z.name)
+        return "?page=monitor#page_monitor"
+
     c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_region_catalog = False
-            st.session_state.show_full_ranking = False
-            select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
-            request_scroll("focused_region")
-            st.rerun()
+        st.markdown(app_link(preferred_href(["san_andreas", "sanandreas"]), "⚡ San Andreas", "radar-open-link"), unsafe_allow_html=True)
     with c2:
-        if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_region_catalog = False
-            st.session_state.show_full_ranking = False
-            select_preferred_region(zone_dirs, ["yellowstone"])
-            request_scroll("focused_region")
-            st.rerun()
+        st.markdown(app_link(preferred_href(["yellowstone"]), "🌋 Yellowstone", "radar-open-link"), unsafe_allow_html=True)
     with c3:
-        if st.button("🌍 Explore all regions", key="quick_explore_all_regions", use_container_width=True):
-            st.session_state.page = "monitor"
-            st.session_state.show_region_catalog = True
-            st.session_state.show_full_ranking = False
-            st.session_state.selected_layer = "All regions"
-            request_scroll("region_selector")
-            st.rerun()
-
+        st.markdown(app_link("?page=monitor&catalog=1#region_selector", "🌍 Explore all regions", "radar-open-link"), unsafe_allow_html=True)
 
 def render_header(zone_dirs: List[Path]) -> None:
     """Render main hero, framework DOI, beta/version label and data-window cards."""
@@ -3182,6 +3157,75 @@ def inject_css() -> None:
             max-width: 0 !important;
             overflow: hidden !important;
         }
+
+        .app-link-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.64rem 0.85rem;
+            border-radius: 0.78rem;
+            border: 1px solid rgba(96,165,250,0.45);
+            background: rgba(15,23,42,0.82);
+            color: #e5e7eb !important;
+            font-weight: 850;
+            text-decoration: none !important;
+            line-height: 1.2;
+            box-sizing: border-box;
+        }
+        .app-link-button:hover {
+            border-color: rgba(56,189,248,0.9);
+            background: rgba(8,47,73,0.58);
+            color: #ffffff !important;
+            box-shadow: 0 0 18px rgba(56,189,248,0.18);
+        }
+        .app-link-button.selected {
+            background: linear-gradient(135deg, rgba(8,47,73,.70), rgba(15,23,42,.92));
+            border-color: rgba(56,189,248,.72);
+            box-shadow: 0 0 20px rgba(56,189,248,.16);
+        }
+        .radar-card-link { display:block; color:inherit !important; text-decoration:none !important; }
+        .radar-card-link:hover .radar-top-card,
+        .radar-card-link:hover .radar-region-card { transform: translateY(-2px); box-shadow:0 14px 34px rgba(0,0,0,.22); }
+        .radar-card-with-corner { position:relative; padding-top: 1.15rem !important; }
+        .radar-corner-action { position:absolute; top:18px; right:18px; min-width: 280px; z-index: 2; }
+        .radar-corner-link { border-color: rgba(56,189,248,.65); background: rgba(8,47,73,.45); color:#e0f2fe !important; }
+        .bottom-link-nav {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%);
+            z-index: 2147483647;
+            display:flex;
+            gap:10px;
+            align-items:center;
+            justify-content:center;
+            padding:7px;
+            border-radius:999px;
+            border:1px solid rgba(56,189,248,.38);
+            background:rgba(2,6,23,.78);
+            backdrop-filter:blur(10px);
+            box-shadow:0 12px 34px rgba(0,0,0,.55);
+        }
+        .bottom-link-nav a {
+            min-width:118px;
+            padding:10px 16px;
+            border-radius:999px;
+            border:1px solid rgba(125,211,252,.75);
+            background:linear-gradient(135deg, rgba(14,165,233,.98), rgba(37,99,235,.98));
+            color:white !important;
+            font-weight:900;
+            font-size:13px;
+            letter-spacing:.03em;
+            text-align:center;
+            text-decoration:none !important;
+        }
+        .bottom-link-nav a:hover { transform:translateY(-1px); box-shadow:0 0 18px rgba(56,189,248,.35); }
+        @media (max-width: 900px) {
+            .radar-corner-action { position:static; margin:0 0 14px 0; min-width:0; }
+            .bottom-link-nav { bottom:10px; gap:7px; padding:6px; }
+            .bottom-link-nav a { min-width:92px; padding:9px 11px; font-size:12px; }
+        }
+
         .stApp { padding-bottom: 0 !important; }
         .block-container { padding-bottom: 0.75rem !important; }
         @media (max-width: 768px) {
@@ -3301,135 +3345,29 @@ def perform_deferred_scroll(default_delay_ms: int = 350) -> None:
 
 
 def render_back_to_top_button() -> None:
-    """Bottom navigation: native fallback plus fixed visual controls."""
-    st.markdown("<div class='bottom-native-nav'>", unsafe_allow_html=True)
-    left, c1, c2, right = st.columns([0.33, 0.17, 0.17, 0.33])
-    with c1:
-        if st.button("← Monitor", key="bottom_native_monitor", use_container_width=True):
-            go_monitor_home()
-            st.rerun()
-    with c2:
-        if st.button("⬆ Inicio", key="bottom_native_inicio", use_container_width=True):
-            scroll_to_top()
-            st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # Fixed overlay for Android/desktop. Uses JS and href fallback.
-    components.html(
+    """Fixed bottom navigation with simple links: Monitor + Inicio, centered."""
+    st.markdown(
         f"""
-        <div id="franjamarBottomNav">
-            <button id="franjamarBottomMonitorBtn" type="button"
-                onclick="try{{window.parent.location.href='{APP_HOME_URL}';}}catch(e){{window.top.location.href='{APP_HOME_URL}';}}">← Monitor</button>
-            <button id="franjamarBottomTopBtn" type="button"
-                onclick="try{{window.parent.document.getElementById('app_top_anchor').scrollIntoView({{behavior:'smooth',block:'start'}});}}catch(e){{try{{window.parent.scrollTo({{top:0,behavior:'smooth'}});}}catch(x){{window.top.location.hash='app_top_anchor';}}}}">⬆ Inicio</button>
+        <div class="bottom-link-nav">
+            <a href="{APP_HOME_URL}" target="_self">← Monitor</a>
+            <a href="#app_top_anchor" target="_self">⬆ Inicio</a>
         </div>
-        <style>
-            #franjamarBottomNav {{
-                position: fixed;
-                left: 50%;
-                bottom: 18px;
-                transform: translateX(-50%);
-                z-index: 2147483647;
-                display: flex;
-                gap: 10px;
-                align-items: center;
-                justify-content: center;
-                padding: 7px;
-                border-radius: 999px;
-                border: 1px solid rgba(56,189,248,.38);
-                background: rgba(2,6,23,.72);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 12px 34px rgba(0,0,0,.55);
-                pointer-events: auto;
-            }}
-            #franjamarBottomNav button {{
-                min-width: 118px;
-                padding: 10px 16px;
-                border-radius: 999px;
-                border: 1px solid rgba(125,211,252,.75);
-                background: linear-gradient(135deg, rgba(14,165,233,.98), rgba(37,99,235,.98));
-                color: white !important;
-                font-weight: 900;
-                font-size: 13px;
-                letter-spacing: .03em;
-                text-align: center;
-                cursor: pointer;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            }}
-            #franjamarBottomNav button:hover {{
-                transform: translateY(-1px);
-                box-shadow: 0 0 18px rgba(56,189,248,.35);
-            }}
-            @media (max-width: 700px) {{
-                #franjamarBottomNav {{ bottom: 10px; gap: 7px; padding: 6px; }}
-                #franjamarBottomNav button {{ min-width: 92px; padding: 9px 11px; font-size: 12px; }}
-            }}
-        </style>
         """,
-        height=0,
-        width=0,
+        unsafe_allow_html=True,
     )
 
 
-# ============================================================
-# UI
-# ============================================================
-st.set_page_config(page_title="TAMC–FRANJAMAR Monitor", layout="wide", initial_sidebar_state="collapsed")
-st.markdown("<div id='app_top_anchor'></div>", unsafe_allow_html=True)
-inject_google_analytics()
-inject_css()
+def app_link(href: str, label: str, extra_class: str = "") -> str:
+    """Return a styled in-app link. Links are reliable in Android/WebView."""
+    safe_href = html.escape(str(href), quote=True)
+    safe_label = html.escape(str(label))
+    klass = f"app-link-button {extra_class}".strip()
+    return f'<a class="{klass}" href="{safe_href}" target="_self">{safe_label}</a>'
 
-st.markdown(
-    """
-    <style>
-    .block-container { padding-bottom: 7.5rem !important; }
-    a.ranking-open-link,
-    a.radar-open-link {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 0.62rem 0.8rem;
-        border-radius: 0.75rem;
-        border: 1px solid rgba(96,165,250,0.45);
-        background: rgba(15,23,42,0.82);
-        color: #e5e7eb !important;
-        text-decoration: none !important;
-        font-weight: 800;
-    }
-    a.ranking-open-link:hover,
-    a.radar-open-link:hover {
-        border-color: rgba(56,189,248,0.85);
-        color: #bae6fd !important;
-        background: rgba(14,165,233,0.16);
-    }
-    @media (max-width: 700px) {
-        .block-container { padding-bottom: 8.5rem !important; }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-inject_streamlit_badge_remover()
 
-# Public/app mode: no Streamlit sidebar controls.
-# The dashboard always reads the fixed web_data/latest folder.
-resultados_dir = get_resultados_dir()
-auto_refresh = False
-refresh_seconds = 60
-show_all = False
+def monitor_home_href() -> str:
+    return APP_HOME_URL
 
-if resultados_dir is None or not resultados_dir.exists():
-    st.error("The fixed results folder web_data/latest was not found.")
-    st.stop()
-
-zone_dirs = sorted(list_zone_dirs(resultados_dir), key=zone_sort_key, reverse=True)
-if not zone_dirs:
-    st.warning("No zone subfolders were found inside the results folder.")
-    st.stop()
-
-# ============================================================
-# TOP APP NAVIGATION
-# ============================================================
 def ensure_page_state() -> None:
     if "page" not in st.session_state:
         st.session_state.page = "monitor"
@@ -3457,19 +3395,8 @@ def scroll_to_top() -> None:
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
-    if st.button(
-        final_label,
-        key=f"nav_{page_key}",
-        use_container_width=True,
-        type="primary" if selected else "secondary",
-    ):
-        if page_key == "monitor":
-            go_monitor_home()
-        else:
-            st.session_state.page = page_key
-            request_scroll(f"page_{page_key}")
-        st.rerun()
-
+    href = monitor_home_href() if page_key == "monitor" else f"?page={page_key}#page_{page_key}"
+    st.markdown(app_link(href, final_label, "selected" if selected else ""), unsafe_allow_html=True)
 
 def render_top_app_bar() -> None:
     """Top app bar with visible icon and main navigation.
