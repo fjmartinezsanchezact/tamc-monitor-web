@@ -23,6 +23,7 @@ except ImportError:
 # CONFIGURATION
 # ============================================================
 DEFAULT_RESULTADOS_DIR = "web_data/latest"
+APP_HOME_URL = "https://franjamar-monitor.streamlit.app/"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 RAW_DATA_DIR_NAMES = {"raw", "mseed", "waveforms", "data"}
 
@@ -875,8 +876,8 @@ def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
     """Fast first-screen app layer: global state + top active regions.
 
-    The HTML cards provide the visual radar; the native Streamlit buttons below
-    make each radar item directly navigable on desktop and Android/WebView.
+    Visual radar cards are clickable via normal links, and native Streamlit
+    buttons below provide a reliable Android/WebView fallback.
     """
     items = [_summary_for_zone(z) for z in zone_dirs]
     items_sorted = sorted(
@@ -892,29 +893,35 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         score = it.get("score")
         return "—" if score is None else f"{float(score):.1f}"
 
+    def region_href(it: Dict[str, object]) -> str:
+        zone_name = quote(str(it["zone"].name), safe="")
+        return f"?page=monitor&region={zone_name}&catalog=0#focused_region"
+
     top_html = ""
     if top_item:
         top_flag = f"{top_item.get('flag')} " if top_item.get("flag") else ""
         top_html = (
-            f'<div class="radar-top-card" style="border-color:{top_item["color"]};">'
-            f'<div class="radar-top-badge">TOP REGION</div>'
+            f'<a class="radar-card-link" href="{region_href(top_item)}" target="_self" title="Open {html.escape(str(top_item["name"]))}">'
+            f'<div class="radar-top-card clickable-radar-card" style="border-color:{top_item["color"]};">'
+            f'<div class="radar-top-badge">TOP REGION · TAP TO OPEN</div>'
             f'<div class="radar-top-name">{html.escape(top_flag + str(top_item["name"]))}</div>'
             f'<div class="radar-top-meta">{html.escape(str(top_item["rtype"]))} · descriptive score</div>'
             f'<div class="radar-top-score"><span>{html.escape(score_text(top_item))}</span><small>/100</small></div>'
             f'<div class="radar-top-state" style="color:{top_item["color"]};">{html.escape(str(top_item["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     cards_html = ""
     for it in secondary_items:
         flag = f"{it.get('flag')} " if it.get("flag") else ""
         cards_html += (
-            f'<div class="radar-region-card" style="border-color:{it["color"]};">'
+            f'<a class="radar-card-link" href="{region_href(it)}" target="_self" title="Open {html.escape(str(it["name"]))}">'
+            f'<div class="radar-region-card clickable-radar-card" style="border-color:{it["color"]};">'
             f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
             f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
             f'<div class="radar-score-row"><span>{html.escape(score_text(it))}</span><small>/100</small></div>'
             f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
-            f'</div>'
+            f'</div></a>'
         )
 
     radar_html = (
@@ -924,7 +931,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
         f'<div class="radar-kicker">GLOBAL STATUS RADAR</div>'
         f'<div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>'
         f'<div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>'
-        f'<div class="radar-tap-hint">Tap a region below to open the full monitoring outputs.</div>'
+        f'<div class="radar-tap-hint">Tap/click a region card or use the buttons below to open the full monitoring outputs.</div>'
         f'</div>'
         f'<div class="radar-live-pill">T−1 h · updated data</div>'
         f'</div>'
@@ -945,25 +952,45 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
                     key=f"radar_open_region_{idx}_{it['zone'].name}",
                     use_container_width=True,
                 ):
+                    st.session_state.page = "monitor"
                     st.session_state.show_region_catalog = False
                     st.session_state.selected_layer = "All regions"
                     st.session_state.selected_zone_name = it["zone"].name
+                    try:
+                        st.query_params["page"] = "monitor"
+                        st.query_params["region"] = it["zone"].name
+                        st.query_params["catalog"] = "0"
+                    except Exception:
+                        pass
                     request_scroll("focused_region")
                     st.rerun()
 
     c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("🌍 Explore all radar regions", key="radar_explore_regions", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = True
             st.session_state.selected_layer = "All regions"
+            try:
+                st.query_params["page"] = "monitor"
+                st.query_params["catalog"] = "1"
+            except Exception:
+                pass
             request_scroll("region_selector")
             st.rerun()
 
     with c2:
         if top_items and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             st.session_state.selected_layer = "All regions"
             st.session_state.selected_zone_name = top_items[0]["zone"].name
+            try:
+                st.query_params["page"] = "monitor"
+                st.query_params["region"] = top_items[0]["zone"].name
+                st.query_params["catalog"] = "0"
+            except Exception:
+                pass
             request_scroll("focused_region")
             st.rerun()
 
@@ -990,20 +1017,40 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
     c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             select_preferred_region(zone_dirs, ["san_andreas", "sanandreas"])
+            try:
+                st.query_params["page"] = "monitor"
+                st.query_params["region"] = st.session_state.selected_zone_name
+                st.query_params["catalog"] = "0"
+            except Exception:
+                pass
             request_scroll("focused_region")
             st.rerun()
     with c2:
         if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             select_preferred_region(zone_dirs, ["yellowstone"])
+            try:
+                st.query_params["page"] = "monitor"
+                st.query_params["region"] = st.session_state.selected_zone_name
+                st.query_params["catalog"] = "0"
+            except Exception:
+                pass
             request_scroll("focused_region")
             st.rerun()
     with c3:
         if st.button("🌍 Explore all regions", key="quick_explore_all_regions", use_container_width=True):
+            st.session_state.page = "monitor"
             st.session_state.show_region_catalog = True
             st.session_state.selected_layer = "All regions"
+            try:
+                st.query_params["page"] = "monitor"
+                st.query_params["catalog"] = "1"
+            except Exception:
+                pass
             request_scroll("region_selector")
             st.rerun()
 
@@ -2057,6 +2104,15 @@ def ensure_selector_state(zone_dirs: List[Path]) -> None:
         # Full region catalogue opens only after pressing "Explore all regions".
         st.session_state.show_region_catalog = False
 
+    # URL-driven navigation for HTML radar cards and Android/WebView links.
+    query_region = _get_query_value("region")
+    if query_region and any(z.name == query_region for z in zone_dirs):
+        st.session_state.selected_layer = "All regions"
+        st.session_state.selected_zone_name = query_region
+        catalog_value = (_get_query_value("catalog") or "").lower()
+        st.session_state.show_region_catalog = catalog_value in {"1", "true", "yes"}
+        request_scroll("focused_region")
+
     if "selected_zone_name" not in st.session_state or not any(z.name == st.session_state.selected_zone_name for z in zone_dirs):
         st.session_state.selected_zone_name = zone_dirs[0].name if zone_dirs else None
 
@@ -2177,6 +2233,9 @@ def inject_css() -> None:
         .radar-region-card { border:1px solid #334155; background:rgba(2,6,23,.54); border-radius:18px; padding:12px; min-height:128px; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
         .radar-region-card:hover, .radar-top-card:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.26), 0 0 18px rgba(56,189,248,.10); }
         .radar-button-title { color:#93c5fd; font-size:.86rem; font-weight:950; letter-spacing:.10em; text-transform:uppercase; margin:2px 0 8px 0; }
+        .radar-card-link { display:block; color:inherit !important; text-decoration:none !important; height:100%; }
+        .clickable-radar-card { cursor:pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease; }
+        .clickable-radar-card:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 14px 32px rgba(0,0,0,.35); }
         .radar-region-name { color:#f8fafc; font-size:.98rem; font-weight:950; line-height:1.2; min-height:2.35rem; }
         .radar-region-type { color:#94a3b8; font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; font-weight:850; margin-top:4px; }
         .radar-score-row { margin-top:10px; display:flex; align-items:baseline; gap:3px; }
@@ -3350,9 +3409,7 @@ def render_floating_monitor_back_button() -> None:
                 btn.id = 'franjamarBackMonitorBtn';
                 btn.innerHTML = '⬅ Monitor';
                 btn.onclick = function() {
-                    const url = new URL(window.parent.location.href);
-                    url.searchParams.set('page', 'monitor');
-                    window.parent.location.href = url.toString();
+                    window.parent.location.href = 'https://franjamar-monitor.streamlit.app/';
                 };
                 doc.body.appendChild(btn);
             }
@@ -3423,6 +3480,17 @@ def _get_query_page() -> str | None:
         return None
 
 
+def _get_query_value(key: str) -> str | None:
+    """Read arbitrary query-param values in a Streamlit-version-safe way."""
+    try:
+        value = st.query_params.get(key)
+        if isinstance(value, list):
+            value = value[0] if value else None
+        return str(value) if value else None
+    except Exception:
+        return None
+
+
 def navigate_to(page_key: str, scroll_target: str | None = None) -> None:
     """Single navigation path used by all buttons and Android/WebView links."""
     if page_key not in VALID_PAGES:
@@ -3450,6 +3518,13 @@ def ensure_page_state() -> None:
 
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
+
+    # The Monitor button is a true home link, so it always reloads the public
+    # landing page cleanly from any internal state or Android/WebView route.
+    if page_key == "monitor":
+        st.link_button(("✅ " if selected else "") + label, APP_HOME_URL, use_container_width=True)
+        return
+
     final_label = ("✅ " if selected else "") + label
     if st.button(
         final_label,
@@ -3459,7 +3534,6 @@ def nav_button(label: str, page_key: str) -> None:
     ):
         navigate_to(page_key, f"page_{page_key}")
         st.rerun()
-
 
 def render_top_app_bar() -> None:
     """Top app bar with visible icon and main navigation.
