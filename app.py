@@ -3911,8 +3911,11 @@ elif st.session_state.page == "feedback":
 elif st.session_state.page == "papers":
     render_papers_page()
 
-if st.session_state.page != "monitor":
-    perform_deferred_scroll()
+# Execute pending smooth-scroll requests after the target page has rendered.
+# This must run for *all* pages, including monitor; otherwise the top
+# Monitor button can change back to the monitor page but fail to jump
+# down to START HERE when pressed from another section.
+perform_deferred_scroll()
 
 render_back_to_top_button()
 
