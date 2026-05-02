@@ -3354,8 +3354,12 @@ def render_back_to_top_button() -> None:
                 bar.appendChild(top);
             }
             top.onclick = function() {
-                // Go to the real public landing page, not just scroll inside the current state.
-                window.parent.location.href = 'https://franjamar-monitor.streamlit.app/';
+                const el = doc.getElementById('app_top_anchor');
+                if (el) {
+                    el.scrollIntoView({behavior: 'smooth', block: 'start'});
+                } else {
+                    window.parent.scrollTo({top: 0, behavior: 'smooth'});
+                }
             };
 
             const styleId = 'franjamarBottomNavStyle';
@@ -3444,23 +3448,6 @@ st.markdown(
         color: #bae6fd !important;
         background: rgba(14,165,233,0.16);
     }
-
-    a.top-monitor-link {
-        display:block;
-        width:100%;
-        text-align:center;
-        padding:0.65rem 0.8rem;
-        border-radius:0.75rem;
-        border:1px solid rgba(96,165,250,0.45);
-        background:rgba(15,23,42,0.82);
-        color:#e5e7eb !important;
-        text-decoration:none !important;
-        font-weight:900;
-    }
-    a.top-monitor-link:hover {
-        border-color:rgba(56,189,248,0.85);
-        background:rgba(14,165,233,0.16);
-    }
     @media (max-width: 700px) {
         .block-container { padding-bottom: 8.5rem !important; }
     }
@@ -3516,28 +3503,18 @@ def scroll_to_top() -> None:
 def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
-
-    # Monitor is the public landing page. Use a real link so it works from
-    # every state/page and also inside Android/WebView wrappers.
-    if page_key == "monitor":
-        try:
-            st.link_button(final_label, APP_HOME_URL, use_container_width=True)
-        except Exception:
-            st.markdown(
-                f'<a class="top-monitor-link" href="{APP_HOME_URL}" target="_self">{html.escape(final_label)}</a>',
-                unsafe_allow_html=True,
-            )
-        return
-
     if st.button(
         final_label,
         key=f"nav_{page_key}",
         use_container_width=True,
         type="primary" if selected else "secondary",
     ):
-        st.session_state.page = page_key
-        st.session_state.show_full_ranking = False
-        request_scroll(f"page_{page_key}")
+        if page_key == "monitor":
+            go_monitor_home()
+        else:
+            st.session_state.page = page_key
+            st.session_state.show_full_ranking = False
+            request_scroll(f"page_{page_key}")
         st.rerun()
 
 
