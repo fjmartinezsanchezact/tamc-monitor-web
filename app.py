@@ -872,48 +872,45 @@ def _global_status_label(items: List[Dict[str, object]]) -> Tuple[str, str, str]
 
 
 def render_global_status_radar(zone_dirs: List[Path]) -> None:
-    """Fast first-screen app layer: global state + top active regions.
-
-    This is intentionally simple and visual: Android users understand the app
-    before entering the full scientific detail.
-    """
+    """Fast first-screen app layer: global state + top active regions."""
     items = [_summary_for_zone(z) for z in zone_dirs]
-    items_sorted = sorted(items, key=lambda x: (-1 if x.get("score") is None else -float(x["score"]), str(x.get("name", ""))))
+    items_sorted = sorted(
+        items,
+        key=lambda x: (-1 if x.get("score") is None else -float(x["score"]), str(x.get("name", "")))
+    )
     top_items = items_sorted[:6]
     label, subtitle, global_color = _global_status_label(items)
 
-    cards = []
+    cards_html = ""
     for it in top_items:
         score = it.get("score")
         score_txt = "—" if score is None else f"{float(score):.1f}"
         flag = f"{it.get('flag')} " if it.get("flag") else ""
-        cards.append(
-            f"""
-            <div class="radar-region-card" style="border-color:{it['color']};">
-              <div class="radar-region-name">{html.escape(flag + str(it['name']))}</div>
-              <div class="radar-region-type">{html.escape(str(it['rtype']))}</div>
-              <div class="radar-score-row"><span>{html.escape(score_txt)}</span><small>/100</small></div>
-              <div class="radar-state" style="color:{it['color']};">{html.escape(str(it['short_state']))}</div>
-            </div>
-            """
+
+        cards_html += (
+            f'<div class="radar-region-card" style="border-color:{it["color"]};">'
+            f'<div class="radar-region-name">{html.escape(flag + str(it["name"]))}</div>'
+            f'<div class="radar-region-type">{html.escape(str(it["rtype"]))}</div>'
+            f'<div class="radar-score-row"><span>{html.escape(score_txt)}</span><small>/100</small></div>'
+            f'<div class="radar-state" style="color:{it["color"]};">{html.escape(str(it["short_state"]))}</div>'
+            f'</div>'
         )
 
-    st.markdown(
-        f"""
-<div class="global-radar-card">
-  <div class="radar-head-row">
-    <div>
-      <div class="radar-kicker">GLOBAL STATUS RADAR</div>
-      <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
-      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
-    </div>
-    <div class="radar-live-pill">T−1 h · updated data</div>
-  </div>
-  <div class="radar-grid">{''.join(cards)}</div>
-</div>
-        """,
-        unsafe_allow_html=True,
+    radar_html = (
+        f'<div class="global-radar-card">'
+        f'<div class="radar-head-row">'
+        f'<div>'
+        f'<div class="radar-kicker">GLOBAL STATUS RADAR</div>'
+        f'<div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>'
+        f'<div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>'
+        f'</div>'
+        f'<div class="radar-live-pill">T−1 h · updated data</div>'
+        f'</div>'
+        f'<div class="radar-grid">{cards_html}</div>'
+        f'</div>'
     )
+
+    st.markdown(radar_html, unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -922,17 +919,20 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
             st.session_state.selected_layer = "All regions"
             request_scroll("region_selector")
             st.rerun()
+
     with c2:
         if top_items and st.button("🔥 Open highest score", key="radar_open_top", use_container_width=True):
             st.session_state.show_region_catalog = False
             st.session_state.selected_zone_name = top_items[0]["zone"].name
             request_scroll("focused_region")
             st.rerun()
+
     with c3:
         if st.button("💬 Send feedback", key="radar_feedback", use_container_width=True):
             st.session_state.page = "feedback"
             request_scroll("page_feedback")
             st.rerun()
+
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
     st.markdown("<div id='start_here'></div>", unsafe_allow_html=True)
