@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, List, Tuple
+from urllib.parse import quote
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -968,8 +969,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
 
     with c3:
         if st.button("💬 Help improve this app", key="radar_feedback", use_container_width=True):
-            st.session_state.page = "feedback"
-            request_scroll("page_feedback")
+            navigate_to("feedback", "page_feedback")
             st.rerun()
 
 def render_start_here_block(zone_dirs: List[Path]) -> None:
@@ -3302,7 +3302,7 @@ def render_floating_feedback_button() -> None:
                 btn.id = 'franjamarFeedbackBtn';
                 btn.innerHTML = '💬 Feedback';
                 btn.onclick = function() {{
-                    window.parent.location.href = 'mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}';
+                    window.parent.location.href = 'mailto:{FEEDBACK_EMAIL}?subject={quote(FEEDBACK_SUBJECT)}';
                 }};
                 doc.body.appendChild(btn);
             }}
@@ -3326,6 +3326,56 @@ def render_floating_feedback_button() -> None:
                 doc.head.appendChild(style);
             }}
         }})();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
+def render_floating_monitor_back_button() -> None:
+    """Always-visible back button that returns to the monitor page via URL query params.
+
+    This works even from HTML/Android WebView because it does not depend on
+    Streamlit session-state callbacks inside an iframe.
+    """
+    components.html(
+        """
+        <script>
+        (function() {
+            const doc = window.parent.document;
+            let btn = doc.getElementById('franjamarBackMonitorBtn');
+            if (!btn) {
+                btn = doc.createElement('button');
+                btn.id = 'franjamarBackMonitorBtn';
+                btn.innerHTML = '⬅ Monitor';
+                btn.onclick = function() {
+                    const url = new URL(window.parent.location.href);
+                    url.searchParams.set('page', 'monitor');
+                    window.parent.location.href = url.toString();
+                };
+                doc.body.appendChild(btn);
+            }
+            const styleId = 'franjamarBackMonitorStyle';
+            if (!doc.getElementById(styleId)) {
+                const style = doc.createElement('style');
+                style.id = styleId;
+                style.textContent = `
+                    #franjamarBackMonitorBtn {
+                        position: fixed; left: 22px; bottom: 22px; z-index: 2147483647;
+                        padding: 10px 15px; border-radius: 999px;
+                        border: 1px solid rgba(96,165,250,.85);
+                        background: linear-gradient(135deg, rgba(30,64,175,.98), rgba(14,165,233,.98));
+                        color: white; font-weight: 900; font-size: 13px; letter-spacing: .03em;
+                        cursor: pointer; box-shadow: 0 12px 30px rgba(0,0,0,.55), 0 0 20px rgba(96,165,250,.30);
+                    }
+                    @media (max-width: 700px) {
+                        #franjamarBackMonitorBtn { left: 12px; bottom: 12px; padding: 9px 12px; font-size: 12px; }
+                    }
+                `;
+                doc.head.appendChild(style);
+            }
+        })();
         </script>
         """,
         height=0,
@@ -3359,8 +3409,42 @@ if not zone_dirs:
 # ============================================================
 # TOP APP NAVIGATION
 # ============================================================
+VALID_PAGES = {"monitor", "what", "how", "read", "papers", "feedback"}
+
+
+def _get_query_page() -> str | None:
+    """Read ?page=... in a Streamlit-version-safe way."""
+    try:
+        value = st.query_params.get("page")
+        if isinstance(value, list):
+            value = value[0] if value else None
+        return str(value) if value else None
+    except Exception:
+        return None
+
+
+def navigate_to(page_key: str, scroll_target: str | None = None) -> None:
+    """Single navigation path used by all buttons and Android/WebView links."""
+    if page_key not in VALID_PAGES:
+        page_key = "monitor"
+    st.session_state.page = page_key
+    try:
+        st.query_params["page"] = page_key
+    except Exception:
+        pass
+    if scroll_target:
+        request_scroll(scroll_target)
+
+
+def go_monitor_top() -> None:
+    navigate_to("monitor", "app_top_anchor")
+
+
 def ensure_page_state() -> None:
-    if "page" not in st.session_state:
+    query_page = _get_query_page()
+    if query_page in VALID_PAGES:
+        st.session_state.page = query_page
+    elif "page" not in st.session_state or st.session_state.page not in VALID_PAGES:
         st.session_state.page = "monitor"
 
 
@@ -3373,8 +3457,7 @@ def nav_button(label: str, page_key: str) -> None:
         use_container_width=True,
         type="primary" if selected else "secondary",
     ):
-        st.session_state.page = page_key
-        request_scroll(f"page_{page_key}")
+        navigate_to(page_key, f"page_{page_key}")
         st.rerun()
 
 
@@ -3429,6 +3512,19 @@ def render_top_app_bar() -> None:
 # Backward-compatible name in case older code calls it.
 def render_app_navigation() -> None:
     render_top_app_bar()
+
+
+def render_back_controls() -> None:
+    """Native fallback back button. Visible on every non-monitor page."""
+    ensure_page_state()
+    if st.session_state.page != "monitor":
+        c1, c2 = st.columns([0.18, 0.82])
+        with c1:
+            if st.button("⬅ Volver al monitor", key="native_back_to_monitor", use_container_width=True):
+                go_monitor_top()
+                st.rerun()
+        with c2:
+            st.caption("Vuelve a la pantalla principal del monitor.")
 
 
 def render_monitor_page() -> None:
@@ -3540,14 +3636,25 @@ def render_feedback_page() -> None:
         """,
         unsafe_allow_html=True,
     )
-    mailto = f"mailto:{FEEDBACK_EMAIL}?subject={FEEDBACK_SUBJECT.replace(' ', '%20')}"
+    base_subject = quote(FEEDBACK_SUBJECT)
+    mailto_feedback = f"mailto:{FEEDBACK_EMAIL}?subject={base_subject}"
+    mailto_bug = f"mailto:{FEEDBACK_EMAIL}?subject={quote(FEEDBACK_SUBJECT + ' - bug')}"
+    mailto_region = f"mailto:{FEEDBACK_EMAIL}?subject={quote(FEEDBACK_SUBJECT + ' - new region')}"
+
+    st.markdown("**Contact email:**")
+    st.code(FEEDBACK_EMAIL, language="text")
+
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.link_button("📩 Send feedback by email", mailto, use_container_width=True)
+        st.link_button("📩 Send feedback by email", mailto_feedback, use_container_width=True)
     with c2:
-        st.link_button("🐞 Report issue", mailto + "%20-%20bug", use_container_width=True)
+        st.link_button("🐞 Report issue", mailto_bug, use_container_width=True)
     with c3:
-        st.link_button("🌍 Suggest region", mailto + "%20-%20new%20region", use_container_width=True)
+        st.link_button("🌍 Suggest region", mailto_region, use_container_width=True)
+
+    if st.button("⬅ Back to monitor", key="feedback_back_monitor", use_container_width=True):
+        go_monitor_top()
+        st.rerun()
 
     st.markdown("### Suggested feedback format")
     st.code(
@@ -3587,6 +3694,7 @@ All monitoring outputs shown here are direct applications of the same fixed-para
 
 
 render_top_app_bar()
+render_back_controls()
 render_header(zone_dirs)
 
 if st.session_state.page == "monitor":
@@ -3606,6 +3714,7 @@ if st.session_state.page != "monitor":
     perform_deferred_scroll()
 
 render_back_to_top_button()
+render_floating_monitor_back_button()
 render_floating_feedback_button()
 
 if auto_refresh:
