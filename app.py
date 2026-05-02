@@ -3693,7 +3693,7 @@ def render_support_callout(compact: bool = False) -> None:
         "This is a personal research project, developed independently and without funding. "
 	"The results shown are generated using the project's reproducible pipeline. "
 	"If you find this work useful or interesting, you can support its development and evolution, "
-	"helping to implement upcoming improvements.""
+	"helping to implement upcoming improvements."
     )
     st.link_button("☕ Apoyar el proyecto", BUYMEACOFFEE_URL, use_container_width=True)
 
