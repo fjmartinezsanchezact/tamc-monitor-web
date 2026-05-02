@@ -3489,26 +3489,18 @@ def nav_button(label: str, page_key: str) -> None:
     selected = st.session_state.page == page_key
     final_label = ("✅ " if selected else "") + label
 
-    # Monitor must always behave as a real home navigation control.
-    # Using a native link button avoids the Streamlit state bug where a selected
-    # st.button can rerun without visually returning to the landing page.
     if page_key == "monitor":
-        try:
-            st.link_button(
-                final_label,
-                APP_HOME_URL,
-                use_container_width=True,
-                type="primary" if selected else "secondary",
-            )
-        except Exception:
-            if st.button(
-                final_label,
-                key="nav_monitor_native_fallback",
-                use_container_width=True,
-                type="primary" if selected else "secondary",
-            ):
-                go_monitor_home()
-                st.rerun()
+        # Keep Monitor as a real native Streamlit button so it is always visible
+        # in the top navigation bar. It resets the app state to the public
+        # monitor landing view instead of using an external link.
+        if st.button(
+            final_label,
+            key="nav_monitor_home_button",
+            use_container_width=True,
+            type="primary" if selected else "secondary",
+        ):
+            go_monitor_home()
+            st.rerun()
         return
 
     if st.button(
