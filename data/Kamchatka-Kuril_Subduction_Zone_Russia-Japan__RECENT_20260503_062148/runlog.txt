@@ -1,0 +1,17 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Kamchatka-Kuril Subduction Zone (Russia-Japan)
+LAT=52.5
+LON=160.0
+WINDOW_START=2026-05-02T06:21:48.794194Z
+WINDOW_END=2026-05-03T06:21:48.794194Z
+[RECENT] NODATA IU.PET.00 dist_km=108.2
+[RECENT] OK   IM.SHEM. dist_km=953.8 cov=1.000 traces=6
+[RECENT] OK   AT.SMY. dist_km=954.1 cov=1.000 traces=3
+[RECENT] NODATA IU.MA2.00 dist_km=973.6
+[RECENT] DROP AV.LSNW. dist_km=1262.8 cov=0.825
+[RECENT] DROP AV.LSSA. dist_km=1263.0 cov=0.825
+[RECENT] OK   AV.LSPA. dist_km=1266.9 cov=1.000 traces=6
+[RECENT] OK   AV.LSSE. dist_km=1267.1 cov=1.000 traces=6
+[RECENT] OK   AV.CETU. dist_km=1329.0 cov=1.000 traces=6
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\fixed_stations.json

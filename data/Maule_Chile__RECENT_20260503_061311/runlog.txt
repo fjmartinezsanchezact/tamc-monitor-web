@@ -1,0 +1,17 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Maule (Chile)
+LAT=-35.4264
+LON=-72.3975
+WINDOW_START=2026-05-02T06:13:11.096701Z
+WINDOW_END=2026-05-03T06:13:11.096701Z
+[RECENT] DROP C1.ML03. dist_km=32.3 cov=0.463
+[RECENT] OK   C.GO05. dist_km=62.8 cov=1.000 traces=3
+[RECENT] NODATA C.COCH. dist_km=85.8
+[RECENT] OK   C1.BI06. dist_km=85.8 cov=1.000 traces=3
+[RECENT] NODATA C1.ML02. dist_km=96.3
+[RECENT] OK   C1.BO03. dist_km=110.6 cov=1.000 traces=3
+[RECENT] NODATA C.CCH2. dist_km=133.7
+[RECENT] OK   C1.BI05. dist_km=163.1 cov=1.000 traces=3
+[RECENT] OK   C1.BO02. dist_km=163.3 cov=1.000 traces=3
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Maule_Chile__RECENT_20260503_061311\fixed_stations.json

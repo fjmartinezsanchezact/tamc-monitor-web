@@ -1,0 +1,14 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Hikurangi Subduction Zone (New Zealand)
+LAT=-39.5
+LON=178.5
+WINDOW_START=2026-05-02T06:19:17.803882Z
+WINDOW_END=2026-05-03T06:19:17.803882Z
+[RECENT] OK   IU.SNZO.00 dist_km=379.6 cov=1.000 traces=6
+[RECENT] OK   IU.RAO.00 dist_km=1183.8 cov=1.000 traces=6
+[RECENT] OK   AU.NFK.00 dist_km=1511.4 cov=1.000 traces=6
+[RECENT] OK   AU.LHI.00 dist_km=1967.4 cov=1.000 traces=6
+[RECENT] NODATA YC.TNG1.00 dist_km=2118.9
+[RECENT] OK   AU.MCQ.00 dist_km=2219.3 cov=1.000 traces=6
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Hikurangi_Subduction_Zone_New_Zealand__RECENT_20260503_061917\fixed_stations.json

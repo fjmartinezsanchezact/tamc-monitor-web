@@ -1,0 +1,29 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Sumatra-Andaman Subduction Zone (Indonesia)
+LAT=2.5
+LON=95.5
+WINDOW_START=2026-05-02T06:23:10.927727Z
+WINDOW_END=2026-05-03T06:23:10.927727Z
+[RECENT] NODATA GE.GSI. dist_km=266.1
+[RECENT] NODATA GE.LHMI. dist_km=341.9
+[RECENT] OK   PS.PSI. dist_km=381.3 cov=1.000 traces=6
+[RECENT] NODATA MY.KUM. dist_km=649.8
+[RECENT] OK   MY.IPM. dist_km=651.8 cov=1.000 traces=3
+[RECENT] NODATA GE.BKNI. dist_km=661.6
+[RECENT] NODATA TM.SKLT. dist_km=767.6
+[RECENT] NODATA TM.SRIT. dist_km=812.9
+[RECENT] NODATA TM.SURA. dist_km=867.4
+[RECENT] NODATA MS.BTDF.02 dist_km=929.2
+[RECENT] OK   MY.KOM. dist_km=931.8 cov=1.000 traces=3
+[RECENT] OK   MS.UBIN. dist_km=948.1 cov=0.969 traces=26
+[RECENT] NODATA PS.KSI.00 dist_km=1043.0
+[RECENT] NODATA GE.MNAI. dist_km=1124.0
+[RECENT] NODATA GE.PMBI. dist_km=1185.2
+[RECENT] NODATA TM.PRAC. dist_km=1200.2
+[RECENT] NODATA TM.TMDB. dist_km=1357.0
+[RECENT] NODATA TM.CHBT. dist_km=1361.5
+[RECENT] NODATA TM.SRDT. dist_km=1374.5
+[RECENT] NODATA TM.NAYO. dist_km=1455.0
+[RECENT] OK   II.COCO.00 dist_km=1631.2 cov=1.000 traces=3
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Sumatra-Andaman_Subduction_Zone_Indonesia__RECENT_20260503_062310\fixed_stations.json

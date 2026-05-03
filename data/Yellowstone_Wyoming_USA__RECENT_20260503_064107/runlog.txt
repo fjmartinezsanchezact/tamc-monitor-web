@@ -1,0 +1,15 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Yellowstone (Wyoming, USA)
+LAT=44.428
+LON=-110.5885
+WINDOW_START=2026-05-02T06:41:07.069252Z
+WINDOW_END=2026-05-03T06:41:07.069252Z
+[RECENT] NODATA WY.YDD.01 dist_km=3.8
+[RECENT] OK   IW.FLWY.00 dist_km=39.4 cov=1.000 traces=6
+[RECENT] OK   IW.IMW.00 dist_km=65.9 cov=1.000 traces=6
+[RECENT] OK   IW.MOOW.00 dist_km=76.5 cov=1.000 traces=6
+[RECENT] OK   IW.LOHW.00 dist_km=90.6 cov=1.000 traces=6
+[RECENT] NODATA IW.FXWY.00 dist_km=94.5
+[RECENT] OK   IW.TPAW.00 dist_km=108.4 cov=1.000 traces=6
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Yellowstone_Wyoming_USA__RECENT_20260503_064107\fixed_stations.json

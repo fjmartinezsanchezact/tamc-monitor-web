@@ -1,0 +1,17 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Kermadec Subduction Zone (New Zealand)
+LAT=-29.04
+LON=-177.88
+WINDOW_START=2026-05-02T06:30:59.237365Z
+WINDOW_END=2026-05-03T06:30:59.237365Z
+[RECENT] OK   IU.RAO.00 dist_km=23.2 cov=1.000 traces=6
+[RECENT] NODATA YC.TNG1.00 dist_km=912.6
+[RECENT] NODATA YC.TNG4.00 dist_km=1081.5
+[RECENT] NODATA YC.TNG2.00 dist_km=1216.6
+[RECENT] OK   II.MSVF.00 dist_km=1317.9 cov=1.000 traces=3
+[RECENT] OK   AU.NIUE.00 dist_km=1367.2 cov=1.000 traces=6
+[RECENT] OK   AU.NFK.00 dist_km=1380.4 cov=1.000 traces=6
+[RECENT] NODATA YC.TNG8.00 dist_km=1508.8
+[RECENT] OK   IU.SNZO.00 dist_km=1518.1 cov=1.000 traces=6
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\data\Kermadec_Subduction_Zone_New_Zealand__RECENT_20260503_063059\fixed_stations.json

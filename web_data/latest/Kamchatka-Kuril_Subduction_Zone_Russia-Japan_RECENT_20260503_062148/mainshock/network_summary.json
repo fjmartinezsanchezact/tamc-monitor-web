@@ -1,0 +1,415 @@
+{
+  "schema_version": "3.0",
+  "generated_utc": "2026-05-03T07:43:00Z",
+  "region_name": "Kamchatka Kuril Subduction Zone Russia Japan",
+  "event_folder": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148",
+  "mode": "monitor",
+  "summary_type": "multistation_network_coherence_analysis",
+  "data_policy": {
+    "uses_images": false,
+    "uses_station_level_csv": false,
+    "uses_allstations_csv": true,
+    "ignored_folders": [
+      "rot"
+    ],
+    "core_sources": [
+      "sync/sync_multistation.csv",
+      "metrics/tamc_24h_metrics_allstations.csv",
+      "scan/scan_*_allstations.csv"
+    ],
+    "context_sources": [
+      "forzantes/forzantes_*_24h.csv",
+      "robust_precursors/null_summary.csv",
+      "robust_precursors/precursors_timeseries.csv",
+      "robust_precursors/robust_summary.json"
+    ]
+  },
+  "sync": {
+    "available": true,
+    "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\sync\\sync_multistation.csv",
+    "n_samples": 86400,
+    "n_stations": 5,
+    "sync_events": 533,
+    "sync_fraction": 0.006169,
+    "sync_fraction_percent": 0.6169,
+    "mean_active_frac": 0.017245,
+    "mean_active_frac_percent": 1.7245,
+    "max_active_frac": 0.8,
+    "max_active_frac_percent": 80.0,
+    "max_active_count": 4,
+    "max_sync_run_samples": 2,
+    "coherence_level": "high",
+    "background_network_occupancy": "low",
+    "temporal_structure": "sparse synchronization episodes",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "multistation synchrony",
+      "title": "Multistation synchrony",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\sync\\sync_multistation.csv",
+      "key_message": "High peak synchrony, but sparse or non-persistent.",
+      "reading": "The synchrony CSV shows that up to 4 of 5 stations were simultaneously active. The maximum active fraction is 0.8 (80.0%), whereas the mean active fraction is 0.017245 (1.7245%). Synchronized samples represent 0.6169% of the analyzed window, with a maximum synchronized run of 2 sample(s). The temporal structure is classified as 'sparse synchronization episodes'.",
+      "technical_interpretation": {
+        "coherence_level": "high",
+        "temporal_structure": "sparse synchronization episodes",
+        "max_active_fraction_percent": 80.0,
+        "mean_active_fraction_percent": 1.7245,
+        "sync_fraction_percent": 0.6169,
+        "max_sync_run_samples": 2
+      },
+      "caveat": "The peak value is high, but the low sync fraction and short run length indicate transient synchronization rather than sustained network-wide coherence."
+    }
+  },
+  "metrics": {
+    "available": true,
+    "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+    "n_rows": 429792,
+    "n_stations": 5,
+    "mean_abs_zscore": 0.797198,
+    "median_abs_zscore": 0.689699,
+    "p95_abs_zscore": 1.848373,
+    "p99_abs_zscore": 2.810636,
+    "max_abs_zscore": 6.53755,
+    "anomaly_level": "low",
+    "isolated_outlier_flag": false,
+    "graph_interpretation": {
+      "available": true,
+      "graph": "station-resolved z-scores",
+      "title": "Station-resolved z-scores",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+      "key_message": "The global z-score distribution remains mostly near background.",
+      "reading": "The allstations metrics CSV contains 429792 station-time rows. The mean |z| is 0.797198, median |z| is 0.689699, p95 |z| is 1.848373, p99 |z| is 2.810636, and max |z| is 6.53755. Using p95 |z|, the global anomaly level is classified as 'low'.",
+      "technical_interpretation": {
+        "anomaly_level": "low",
+        "mean_abs_zscore": 0.797198,
+        "median_abs_zscore": 0.689699,
+        "p95_abs_zscore": 1.848373,
+        "p99_abs_zscore": 2.810636,
+        "max_abs_zscore": 6.53755,
+        "isolated_outlier_flag": false
+      },
+      "caveat": null
+    }
+  },
+  "scan": {
+    "available": true,
+    "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\scan\\scan_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h_allstations.csv",
+    "n_extremes": 11271,
+    "kind_counts": {
+      "peak": 11271
+    },
+    "max_extremes_per_30min_bin": 381,
+    "occupied_30min_bins": 48,
+    "total_30min_bins_estimated": 49,
+    "occupied_30min_fraction": 0.979592,
+    "occupied_30min_fraction_percent": 97.96,
+    "temporal_pattern": "strongly clustered extremes",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "extreme anomaly distribution",
+      "title": "Extreme anomaly distribution",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\scan\\scan_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h_allstations.csv",
+      "key_message": "Extremes are strongly concentrated in time.",
+      "reading": "The allstations scan CSV identifies 11271 extreme samples. The maximum number of extremes in a 30-minute bin is 381, with extremes occupying 48 30-minute bin(s). The temporal pattern is classified as 'strongly clustered extremes'.",
+      "technical_interpretation": {
+        "n_extremes": 11271,
+        "kind_counts": {
+          "peak": 11271
+        },
+        "max_extremes_per_30min_bin": 381,
+        "occupied_30min_bins": 48,
+        "temporal_pattern": "strongly clustered extremes"
+      },
+      "caveat": "Temporal clustering of extremes is meaningful only when read together with synchrony and z-score summaries."
+    }
+  },
+  "forcing": {
+    "available": true,
+    "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\forzantes\\forzantes_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h.csv",
+    "numeric_columns": [
+      "bin",
+      "mean_z",
+      "p90_z",
+      "mean_z_smooth",
+      "tide_norm"
+    ],
+    "forcing_candidate_columns": [
+      "tide_norm"
+    ],
+    "anomaly_candidate_columns": [
+      "mean_z",
+      "p90_z",
+      "mean_z_smooth"
+    ],
+    "max_abs_correlation": 0.463105,
+    "best_column_pair": {
+      "anomaly_column": "p90_z",
+      "forcing_column": "tide_norm",
+      "correlation": 0.463105
+    },
+    "relationship_to_anomaly": "moderate_linear_tracking",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "anomaly vs synthetic tidal forcing",
+      "title": "Anomaly vs synthetic tidal forcing",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\forzantes\\forzantes_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h.csv",
+      "key_message": "The anomaly shows moderate linear tracking of the forcing reference.",
+      "reading": "The forcing CSV was read as a contextual reference. The strongest absolute correlation between candidate anomaly columns and forcing-like columns is 0.463105. The relationship is classified as 'moderate_linear_tracking'. This curve is treated as a smooth reference, not as a prediction signal.",
+      "technical_interpretation": {
+        "max_abs_correlation": 0.463105,
+        "best_column_pair": {
+          "anomaly_column": "p90_z",
+          "forcing_column": "tide_norm",
+          "correlation": 0.463105
+        },
+        "relationship_to_anomaly": "moderate_linear_tracking"
+      },
+      "caveat": "The forcing curve is contextual only. It should not be interpreted as a forecasting input or causal proof."
+    }
+  },
+  "robust_precursors": {
+    "available": true,
+    "source_files": {
+      "null_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\null_summary.csv",
+      "precursors_timeseries": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\precursors_timeseries.csv",
+      "robust_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\robust_summary.json"
+    },
+    "robust_summary_json_available": true,
+    "precursors_rows": 145,
+    "precursors_numeric_columns": [
+      "f_active",
+      "mean_absz",
+      "n_stations",
+      "t_rel_h"
+    ],
+    "null_rows": 500,
+    "null_numeric_columns": [
+      "mc",
+      "max_f_active",
+      "n_episodes",
+      "max_episode_duration_min"
+    ],
+    "max_robust_value": 30.0,
+    "max_null_value": 499.0,
+    "robust_to_null_ratio": 0.06012,
+    "statistical_support": "consistent_with_null",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "robust precursors / null model",
+      "title": "Robustness / null-model comparison",
+      "source_files": {
+        "null_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\null_summary.csv",
+        "precursors_timeseries": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\precursors_timeseries.csv",
+        "robust_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\robust_summary.json"
+      },
+      "key_message": "The robust layer is broadly consistent with null expectations.",
+      "reading": "The robust precursor layer was evaluated from available CSV/JSON outputs. The statistical support is classified as 'consistent_with_null'. The strongest detected robust value is 30.0, and the strongest null-reference value is 499.0.",
+      "technical_interpretation": {
+        "statistical_support": "consistent_with_null",
+        "max_robust_value": 30.0,
+        "max_null_value": 499.0,
+        "robust_to_null_ratio": 0.06012
+      },
+      "caveat": "This is a descriptive robustness check. It does not convert the monitor into a predictive or warning system."
+    }
+  },
+  "graph_interpretations": {
+    "sync_multistation": {
+      "available": true,
+      "graph": "multistation synchrony",
+      "title": "Multistation synchrony",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\sync\\sync_multistation.csv",
+      "key_message": "High peak synchrony, but sparse or non-persistent.",
+      "reading": "The synchrony CSV shows that up to 4 of 5 stations were simultaneously active. The maximum active fraction is 0.8 (80.0%), whereas the mean active fraction is 0.017245 (1.7245%). Synchronized samples represent 0.6169% of the analyzed window, with a maximum synchronized run of 2 sample(s). The temporal structure is classified as 'sparse synchronization episodes'.",
+      "technical_interpretation": {
+        "coherence_level": "high",
+        "temporal_structure": "sparse synchronization episodes",
+        "max_active_fraction_percent": 80.0,
+        "mean_active_fraction_percent": 1.7245,
+        "sync_fraction_percent": 0.6169,
+        "max_sync_run_samples": 2
+      },
+      "caveat": "The peak value is high, but the low sync fraction and short run length indicate transient synchronization rather than sustained network-wide coherence."
+    },
+    "zscore_multistation": {
+      "available": true,
+      "graph": "station-resolved z-scores",
+      "title": "Station-resolved z-scores",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+      "key_message": "The global z-score distribution remains mostly near background.",
+      "reading": "The allstations metrics CSV contains 429792 station-time rows. The mean |z| is 0.797198, median |z| is 0.689699, p95 |z| is 1.848373, p99 |z| is 2.810636, and max |z| is 6.53755. Using p95 |z|, the global anomaly level is classified as 'low'.",
+      "technical_interpretation": {
+        "anomaly_level": "low",
+        "mean_abs_zscore": 0.797198,
+        "median_abs_zscore": 0.689699,
+        "p95_abs_zscore": 1.848373,
+        "p99_abs_zscore": 2.810636,
+        "max_abs_zscore": 6.53755,
+        "isolated_outlier_flag": false
+      },
+      "caveat": null
+    },
+    "extreme_anomaly_distribution": {
+      "available": true,
+      "graph": "extreme anomaly distribution",
+      "title": "Extreme anomaly distribution",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\scan\\scan_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h_allstations.csv",
+      "key_message": "Extremes are strongly concentrated in time.",
+      "reading": "The allstations scan CSV identifies 11271 extreme samples. The maximum number of extremes in a 30-minute bin is 381, with extremes occupying 48 30-minute bin(s). The temporal pattern is classified as 'strongly clustered extremes'.",
+      "technical_interpretation": {
+        "n_extremes": 11271,
+        "kind_counts": {
+          "peak": 11271
+        },
+        "max_extremes_per_30min_bin": 381,
+        "occupied_30min_bins": 48,
+        "temporal_pattern": "strongly clustered extremes"
+      },
+      "caveat": "Temporal clustering of extremes is meaningful only when read together with synchrony and z-score summaries."
+    },
+    "anomaly_vs_synthetic_tidal_forcing": {
+      "available": true,
+      "graph": "anomaly vs synthetic tidal forcing",
+      "title": "Anomaly vs synthetic tidal forcing",
+      "source_file": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\forzantes\\forzantes_Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148_mainshock_24h.csv",
+      "key_message": "The anomaly shows moderate linear tracking of the forcing reference.",
+      "reading": "The forcing CSV was read as a contextual reference. The strongest absolute correlation between candidate anomaly columns and forcing-like columns is 0.463105. The relationship is classified as 'moderate_linear_tracking'. This curve is treated as a smooth reference, not as a prediction signal.",
+      "technical_interpretation": {
+        "max_abs_correlation": 0.463105,
+        "best_column_pair": {
+          "anomaly_column": "p90_z",
+          "forcing_column": "tide_norm",
+          "correlation": 0.463105
+        },
+        "relationship_to_anomaly": "moderate_linear_tracking"
+      },
+      "caveat": "The forcing curve is contextual only. It should not be interpreted as a forecasting input or causal proof."
+    },
+    "robust_precursors": {
+      "available": true,
+      "graph": "robust precursors / null model",
+      "title": "Robustness / null-model comparison",
+      "source_files": {
+        "null_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\null_summary.csv",
+        "precursors_timeseries": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\precursors_timeseries.csv",
+        "robust_summary": "resultados\\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148\\mainshock\\robust_precursors\\robust_summary.json"
+      },
+      "key_message": "The robust layer is broadly consistent with null expectations.",
+      "reading": "The robust precursor layer was evaluated from available CSV/JSON outputs. The statistical support is classified as 'consistent_with_null'. The strongest detected robust value is 30.0, and the strongest null-reference value is 499.0.",
+      "technical_interpretation": {
+        "statistical_support": "consistent_with_null",
+        "max_robust_value": 30.0,
+        "max_null_value": 499.0,
+        "robust_to_null_ratio": 0.06012
+      },
+      "caveat": "This is a descriptive robustness check. It does not convert the monitor into a predictive or warning system."
+    }
+  },
+  "joint_interpretation": {
+    "title": "Joint network interpretation",
+    "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
+    "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
+    "coherence_level": "high",
+    "anomaly_level": "low",
+    "temporal_structure": "sparse synchronization episodes",
+    "extreme_structure": "strongly clustered extremes",
+    "forcing_relationship": "moderate_linear_tracking",
+    "robust_statistical_support": "consistent_with_null",
+    "pattern_tags": [
+      "coherence: high",
+      "sparse synchronization episodes",
+      "anomaly: low",
+      "strongly clustered extremes",
+      "forcing: moderate_linear_tracking",
+      "robust: consistent_with_null",
+      "LOCALIZED TRANSIENT SYNCHRONIZATION"
+    ],
+    "evidence": [
+      "Synchrony reaches 4 of 5 stations at peak, but synchronized samples represent 0.6169% of the window.",
+      "The z-score distribution has p95 |z| = 1.848373 and max |z| = 6.53755.",
+      "The extreme scan contains 11271 extremes, with up to 381 extremes in a 30-minute bin.",
+      "The forcing-reference layer shows moderate_linear_tracking with the anomaly candidates (max |corr| = 0.463105).",
+      "The robust/null layer is classified as consistent_with_null (robust/null ratio = 0.06012)."
+    ],
+    "cross_plot_consistency": [
+      "Peak synchrony is high, but persistence is low; this supports transient rather than sustained coherence.",
+      "Extremes are temporally clustered even though the global z-score distribution remains mostly low."
+    ],
+    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows localized transient synchronization: the network can reach high simultaneous activation, but only in sparse or short-lived episodes. The z-score background is not broadly elevated, while the extreme scan may show temporal concentration. This indicates short-lived collective structure, not a sustained network-wide anomaly.",
+    "interpretation_logic": {
+      "sync_used": true,
+      "metrics_allstations_used": true,
+      "scan_allstations_used": true,
+      "forcing_used_as_context": true,
+      "robust_null_used": true,
+      "ignored_station_level_csv": true,
+      "ignored_images": true,
+      "fusion_method": "rule-based multivariate interpretation from CSV/JSON pipeline outputs"
+    },
+    "descriptive_score_0_100": 57.94,
+    "descriptive_score_level": "moderate",
+    "score_components": {
+      "sync_peak_score": 24.0,
+      "sync_persistence_score": 3.234,
+      "anomaly_distribution_score": 15.403,
+      "isolated_extreme_score": 0.308,
+      "scan_cluster_score": 15.0,
+      "forcing_context_score": 0.0
+    },
+    "score_notice": "This is a descriptive structure score for UI ranking only. It is not seismic risk, probability, forecast or warning.",
+    "notice": "Descriptive network-level analysis only. Not predictive. Not an early-warning or risk-assessment system."
+  },
+  "interpretation": {
+    "title": "Joint network interpretation",
+    "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
+    "network_state": "LOCALIZED TRANSIENT SYNCHRONIZATION",
+    "coherence_level": "high",
+    "anomaly_level": "low",
+    "temporal_structure": "sparse synchronization episodes",
+    "extreme_structure": "strongly clustered extremes",
+    "forcing_relationship": "moderate_linear_tracking",
+    "robust_statistical_support": "consistent_with_null",
+    "pattern_tags": [
+      "coherence: high",
+      "sparse synchronization episodes",
+      "anomaly: low",
+      "strongly clustered extremes",
+      "forcing: moderate_linear_tracking",
+      "robust: consistent_with_null",
+      "LOCALIZED TRANSIENT SYNCHRONIZATION"
+    ],
+    "evidence": [
+      "Synchrony reaches 4 of 5 stations at peak, but synchronized samples represent 0.6169% of the window.",
+      "The z-score distribution has p95 |z| = 1.848373 and max |z| = 6.53755.",
+      "The extreme scan contains 11271 extremes, with up to 381 extremes in a 30-minute bin.",
+      "The forcing-reference layer shows moderate_linear_tracking with the anomaly candidates (max |corr| = 0.463105).",
+      "The robust/null layer is classified as consistent_with_null (robust/null ratio = 0.06012)."
+    ],
+    "cross_plot_consistency": [
+      "Peak synchrony is high, but persistence is low; this supports transient rather than sustained coherence.",
+      "Extremes are temporally clustered even though the global z-score distribution remains mostly low."
+    ],
+    "summary": "Kamchatka Kuril Subduction Zone Russia Japan shows localized transient synchronization: the network can reach high simultaneous activation, but only in sparse or short-lived episodes. The z-score background is not broadly elevated, while the extreme scan may show temporal concentration. This indicates short-lived collective structure, not a sustained network-wide anomaly.",
+    "interpretation_logic": {
+      "sync_used": true,
+      "metrics_allstations_used": true,
+      "scan_allstations_used": true,
+      "forcing_used_as_context": true,
+      "robust_null_used": true,
+      "ignored_station_level_csv": true,
+      "ignored_images": true,
+      "fusion_method": "rule-based multivariate interpretation from CSV/JSON pipeline outputs"
+    },
+    "descriptive_score_0_100": 57.94,
+    "descriptive_score_level": "moderate",
+    "score_components": {
+      "sync_peak_score": 24.0,
+      "sync_persistence_score": 3.234,
+      "anomaly_distribution_score": 15.403,
+      "isolated_extreme_score": 0.308,
+      "scan_cluster_score": 15.0,
+      "forcing_context_score": 0.0
+    },
+    "score_notice": "This is a descriptive structure score for UI ranking only. It is not seismic risk, probability, forecast or warning.",
+    "notice": "Descriptive network-level analysis only. Not predictive. Not an early-warning or risk-assessment system."
+  }
+}

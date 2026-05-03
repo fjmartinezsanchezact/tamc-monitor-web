@@ -1,0 +1,21 @@
+# Core scientific stack
+numpy
+scipy
+pandas
+matplotlib
+
+# Seismology / waveform handling
+obspy
+
+# Statistics and clustering
+scikit-learn
+
+# Utilities
+tqdm
+requests
+
+# Optional (used if available)
+seaborn
+
+# LaTeX table export (pandas Styler)
+Jinja2

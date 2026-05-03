@@ -1,0 +1,27 @@
+{
+  "observed": {
+    "event": "Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260503_062148/mainshock",
+    "mainshock_utc": "2026-05-03 06:21:48+00:00",
+    "hours": 24.0,
+    "bin_min": 10,
+    "z0": 3.0,
+    "f0": 0.3,
+    "min_dur_min": 30,
+    "n_stations_seen": 5,
+    "episodes_n": 0,
+    "episodes_max_duration_min": 0.0,
+    "max_f_active": 0.0,
+    "max_mean_absz": 1.7881772723055467,
+    "p_max_f_active": 1.0,
+    "p_n_episodes": 1.0,
+    "p_max_episode_duration_min": 1.0
+  },
+  "null_percentiles": {
+    "p95_max_f": 0.0,
+    "p99_max_f": 0.0,
+    "p95_n_episodes": 0.0,
+    "p99_n_episodes": 0.0,
+    "p95_max_dur": 0.0,
+    "p99_max_dur": 0.0
+  }
+}
