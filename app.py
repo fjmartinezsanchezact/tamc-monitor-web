@@ -1265,7 +1265,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
     <div>
       <div class="radar-kicker">GLOBAL STATUS RADAR</div>
       <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
-      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive structure ranking</div>
+      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
       <div class="radar-tap-hint">Tap/click a radar card or use the buttons below to open region details.</div>
     </div>
   </div>
@@ -1292,7 +1292,7 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
     """Full descending classification by descriptive score, with open buttons."""
     st.markdown("<div id='full_ranking'></div>", unsafe_allow_html=True)
     st.markdown("### 📋 Region classification · highest to lowest score")
-    st.caption("Descriptive structure ranking only.")
+    st.caption("Descriptive ranking only. It is not a warning, forecast or risk estimate.")
 
     for idx, it in enumerate(items_sorted, start=1):
         score = it.get("score")
@@ -1433,8 +1433,6 @@ def render_quick_guide_wizard() -> None:
 
     # Styled HTML link for a reliable pink framed button. The query parameter is
     # consumed below and avoids fragile custom JavaScript callbacks.
-    st.caption("First time here? Follow the quick guide — it takes about 20 seconds.")
-
     st.markdown(
         """
 <div class="quick-guide-button-wrap">
@@ -1474,41 +1472,37 @@ setTimeout(() => {
 
     steps = {
         1: {
-            "title": "1️⃣ Choose a region or event",
+            "title": "1️⃣ Choose a monitoring region",
             "body": (
-                "Start with <b>San Andreas</b>, <b>Yellowstone</b>, <b>Explore all regions</b>, "
-                "or select a real event in <b>Event analysis</b>. Begin with one familiar case, then compare others later."
+                "Start with <b>San Andreas</b>, <b>Yellowstone</b>, or open <b>Explore all regions</b>. "
+                "This loads the latest fixed-pipeline output for one network, so every region can be compared under the same rules."
             ),
-            "target": "Scientific exploration only: this app describes statistical patterns; it does not predict earthquakes, eruptions, timing, magnitude or risk.",
-            "note": "Start simple · one region or event first"
+            "target": "Tip: use the quick region buttons first, then compare with other regions later."
         },
         2: {
-            "title": "2️⃣ Explore the five core outputs",
+            "title": "2️⃣ Inspect the five core outputs",
             "body": (
-                "Look at <b>synchrony</b>, <b>extreme anomalies</b>, <b>mean behaviour</b>, "
-                "<b>station deviations</b>, and the <b>forcing comparison</b>. "
-                "You are not reading one plot — you are observing how the network behaves as a whole."
+                "Look at synchrony, extreme anomalies, mean anomaly/susceptibility, station z-scores, and the forcing comparison. "
+                "You are not reading one isolated graph: you are checking how the station network behaves as a whole."
             ),
-            "target": "A useful pattern should make sense across several panels, not only in one graph.",
-            "note": "Read the panels together"
+            "target": "A useful signal should make sense across several panels, not only in one plot."
         },
         3: {
             "title": "3️⃣ Look for consistency across panels",
             "body": (
-                "Focus on signals that appear across multiple outputs. Short spikes can happen, "
-                "but repeated or consistent patterns across panels are more meaningful."
+                "Check whether several signals change together: higher synchrony, clustered extremes, and simultaneous station deviations. "
+                "Short spikes can be interesting, but sustained or repeated agreement across outputs is more informative."
             ),
-            "target": "The system is designed to describe network structure, not isolated single-station noise.",
-            "note": "Consistency matters more than one spike"
+            "target": "The dashboard is designed to describe collective structure, not single-station noise."
         },
         4: {
             "title": "4️⃣ Read and verify the interpretation",
             "body": (
-                "Use the <b>network state</b> and <b>structure score</b> as the summary. "
-                "Then open <b>Deeper network analysis</b> for context and check <b>JSON-derived station metadata</b> if needed."
+                "Read the <b>network state</b> and <b>structure score</b> as the summary. Then open <b>Deeper network analysis</b> "
+                "for the detailed explanation. Finally, review <b>JSON-derived station metadata</b> to see which stations, coordinates, "
+                "and distances produced the result."
             ),
-            "target": "Final step: interpret the pattern, not a single value.",
-            "note": "Summary first · details second"
+            "target": "Next: open “Deeper network analysis”, then review “JSON-derived station metadata”."
         },
     }
 
@@ -1525,7 +1519,7 @@ setTimeout(() => {
   <div class="quick-guide-title">{item['title']}</div>
   <div class="quick-guide-body">{item['body']}</div>
   <div class="quick-guide-next-target">{item['target']}</div>
-  <div class="quick-guide-note">{item.get('note', 'Scientific exploration')}</div>
+  <div class="quick-guide-note">Pattern recognition · not prediction · descriptive research only</div>
 </div>
         """,
         unsafe_allow_html=True,
@@ -1543,7 +1537,7 @@ setTimeout(() => {
                 st.session_state.quick_guide_step = step + 1
                 st.rerun()
         else:
-            if st.button("Finish guide ✅ → Start exploring", key="quick_guide_finish", use_container_width=True):
+            if st.button("Finish guide ✅", key="quick_guide_finish", use_container_width=True):
                 st.session_state.quick_guide_open = False
                 st.session_state.quick_guide_step = 1
                 st.rerun()
@@ -1559,28 +1553,11 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
     st.markdown("<div id='start_here'></div>", unsafe_allow_html=True)
     st.markdown(
         """
-        <style>
-        .first-use-note {
-            margin: 0.75rem 0 1.0rem 0;
-            padding: 0.72rem 0.95rem;
-            border-radius: 14px;
-            border: 1px solid rgba(56,189,248,0.30);
-            background: rgba(8,47,73,0.22);
-            color: rgba(226,232,240,0.90);
-            font-weight: 700;
-            line-height: 1.45;
-        }
-        </style>
         <div class="start-here-card">
             <div class="button-section-title">START HERE</div>
             <div class="start-here-text">
-                Start by selecting a region below.<br><br>
-                This tool shows how seismic networks behave as a system — not individual signals.<br><br>
-                Inspect the five outputs and read the network state to understand the current structure.
+                Start with a reference region. Inspect the five outputs, then read the network state classification.
             </div>
-        </div>
-        <div class="first-use-note">
-            This is not a traditional earthquake-alert app. It analyzes patterns in network behavior for scientific exploration.
         </div>
         """,
         unsafe_allow_html=True,
@@ -1590,7 +1567,7 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("⚡ Try San Andreas", key="quick_san_andreas", use_container_width=True):
+        if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
             st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
@@ -1598,7 +1575,7 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
             request_scroll("focused_region")
             st.rerun()
     with c2:
-        if st.button("🌋 Try Yellowstone", key="quick_yellowstone", use_container_width=True):
+        if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
             st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
@@ -1880,7 +1857,6 @@ def render_zone_card(zone_dir: Path) -> None:
     c3.metric("Mode", "T−1 h")
 
     st.markdown("**Five core outputs**")
-    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
     graph_cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
         with graph_cols[idx % 5]:
@@ -1888,14 +1864,14 @@ def render_zone_card(zone_dir: Path) -> None:
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
-                    with st.popover("🔍 View details", use_container_width=True):
+                    with st.popover("Expand", use_container_width=True):
                         st.markdown(f"### {prettify_zone_name(zone_dir.name)} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
                         if station_details:
                             render_station_metadata(station_details, station_source_label, station_source_files)
                 except Exception:
-                    with st.expander("🔍 View details"):
+                    with st.expander("Expand"):
                         st.markdown(f"### {prettify_zone_name(zone_dir.name)} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
@@ -2566,7 +2542,6 @@ def render_zone_detail(zone_dir: Path, show_all: bool) -> None:
 
     st.markdown("---")
     st.markdown("### Five core outputs")
-    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
 
     cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
@@ -2575,14 +2550,14 @@ def render_zone_detail(zone_dir: Path, show_all: bool) -> None:
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
-                    with st.popover("🔍 View details", use_container_width=True):
+                    with st.popover("Expand", use_container_width=True):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
                         if station_details:
                             render_station_metadata(station_details, station_source_label, station_source_files)
                 except Exception:
-                    with st.expander("🔍 View details"):
+                    with st.expander("Expand"):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
@@ -4156,6 +4131,7 @@ def render_monitor_page() -> None:
     st.markdown("<div id='page_monitor'></div>", unsafe_allow_html=True)
     ensure_selector_state(zone_dirs)
     render_global_status_radar(zone_dirs)
+    render_disclaimer()
     render_start_here_block(zone_dirs)
 
     selected_zone = next(
@@ -4200,7 +4176,6 @@ def render_real_events_page() -> None:
         "This section is separated from the near-real-time monitor so daily updates cannot overwrite it."
     )
     st.info("These cases use the same multistation framework. They are descriptive analyses, not prediction, warning or risk estimation.")
-    render_quick_guide_wizard()
 
     event_dir = get_event_analysis_dir()
     if event_dir is None:
@@ -4256,7 +4231,6 @@ def render_event_detail(event_dir: Path) -> None:
     render_event_context_block(event_dir.name)
 
     st.markdown("### Five core outputs")
-    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
     cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
         with cols[idx % 5]:
@@ -4264,14 +4238,14 @@ def render_event_detail(event_dir: Path) -> None:
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
-                    with st.popover("🔍 View details", use_container_width=True):
+                    with st.popover("Expand", use_container_width=True):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
                         if station_details:
                             render_station_metadata(station_details, station_source_label, station_source_files)
                 except Exception:
-                    with st.expander("🔍 View details"):
+                    with st.expander("Expand"):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
@@ -4292,34 +4266,29 @@ def render_what_page() -> None:
     st.markdown("<div id='page_what'></div>", unsafe_allow_html=True)
     st.markdown("## What is this?")
     st.markdown(f"""
-This is an **experimental scientific exploration system** based on the **TAMC–FRANJAMAR** framework.
+This is an experimental scientific monitoring system based on the **TAMC–FRANJAMAR** framework.
 
-It studies how seismic networks behave **as a collective system**, rather than treating each station as an isolated signal.
-
-The core idea is simple:
-
-> the relevant structure is not a single peak at one station, but the emergence of coordinated behaviour across multiple stations over time.
-
-The dashboard is directly based on the reproducible research record:
+The system is directly based on the work:
 
 **“TAMC–FRANJAMAR v3: A retrospective and reproducible framework for the analysis of collective statistical behavior in multistation seismic networks”**  
 [{SEISMIC_DOI}]({SEISMIC_DOI})
 
-All monitored regions are processed with the same fixed pipeline, using identical parameters and no region-specific tuning. This allows direct comparison between earthquake regions, volcanic systems, fault systems, subduction zones and low-activity baselines.
+This dashboard uses the exact pipeline described in that work, operated in **monitoring mode**.
 
-The app operates in **monitoring mode** using rolling **24 h windows** with a short consolidation delay (**T−1 h**). It generates plots, JSON/CSV summaries and descriptive network-state classifications from the same reproducible output structure.
+Rather than analysing individual signals in isolation, the system evaluates how multiple seismic stations behave collectively over time. It focuses on the emergence of coordinated patterns across the network — **multistation coherence**.
 
-### What this is not
+All regions are processed using the same fixed pipeline, with identical parameters and no regional tuning. This enables direct comparison across fundamentally different systems: earthquakes, volcanic regions, subduction zones and low-activity baselines.
 
-This is **not** an earthquake prediction app, not an eruption prediction app, not an early-warning system and not an operational risk platform.
+The pipeline is fully reproducible and can be executed locally by any user by downloading the materials from the Zenodo archive.
 
-It does **not** estimate event timing, magnitude, location or risk.
+This is not an event detection or forecasting tool.
 
-### What it is for
-
-It is designed for scientific exploration: to characterize statistical structure, detect deviations from baseline behaviour, compare regions under a fixed pipeline and study how distributed geophysical systems organize as a whole.
-""")
+It is a framework designed to reveal structure: how distributed systems organize, evolve, and respond as a whole.
+    """)
     st.info("Focus: collective behaviour across stations, not individual amplitudes alone.")
+    st.markdown("---")
+    st.markdown("### What this is NOT")
+    st.write("This system is not an earthquake prediction tool, not an early warning system, and not an operational safety platform. It does not estimate when an earthquake will occur, where it will occur, or how large it will be.")
 
 
 def render_how_page() -> None:
@@ -4437,11 +4406,13 @@ def render_support_callout(compact: bool = False) -> None:
       <div class="support-callout-kicker">Independent research</div>
       <div class="support-callout-title">☕ Support this project</div>
       <div class="support-callout-text">
-        Independent research project developed by a single author.<br>
-        Scientific paper + reproducible pipeline + web dashboard + Android app.<br><br>
-        If you find it useful, you can support development, infrastructure, and future improvements.
+        This is an independent research project fully developed by a single author.
+	It includes the scientific paper, the reproducible pipeline, the web application, and the Android app.
+	The monitor you see here is only one part of a broader system designed to study collective behaviour in seismic networks under a fixed and reproducible 	framework.
+
+If you find it useful or interesting, you can support its development, infrastructure, and future improvements.
       </div>
-      <div class="support-callout-note">Descriptive research · fixed pipeline · reproducible outputs</div>
+      <div class="support-callout-note">Descriptive research · fixed pipeline · no forecasting claims</div>
     </div>
     <a class="support-callout-button" href="{BUYMEACOFFEE_URL}" target="_blank" rel="noopener noreferrer">☕ Support / Buy Me a Coffee</a>
   </div>
