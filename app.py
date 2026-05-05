@@ -19,10 +19,76 @@ except ImportError:
     ZoneInfo = None
 
 
+def hide_streamlit_chrome() -> None:
+    """Hide Streamlit footer/status UI without touching the app layout."""
+    st.markdown("""
+<style>
+/* Classic footer and main menu */
+footer {display: none !important; visibility: hidden !important; height: 0 !important;}
+#MainMenu {display: none !important; visibility: hidden !important;}
+
+/* Streamlit status / bottom widgets */
+[data-testid="stStatusWidget"],
+[data-testid="stDecoration"],
+[data-testid="stToolbar"],
+[data-testid="stAppDeployButton"],
+[data-testid="stBottomBlockContainer"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="manage-app-button"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Hosted / viewer badge variants */
+.viewerBadge_container__1QSob,
+.viewerBadge_link__1S137,
+.viewerBadge_container__r5tak,
+.viewerBadge_link__qRIco,
+a[href*="streamlit.io"],
+a[href*="share.streamlit.io"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* Avoid ghost bottom gap + remove Streamlit top gap */
+.block-container {
+    padding-top: 0rem !important;
+    margin-top: 0rem !important;
+    padding-bottom: 1rem !important;
+}
+
+header,
+[data-testid="stHeader"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+}
+
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+section.main {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+html, body {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # ============================================================
 # CONFIGURATION
 # ============================================================
 DEFAULT_RESULTADOS_DIR = "web_data/latest"
+EVENT_ANALYSIS_DIR = "event_analysis"
 APP_HOME_URL = "https://franjamar-monitor.streamlit.app/"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
 RAW_DATA_DIR_NAMES = {"raw", "mseed", "waveforms", "data"}
@@ -286,6 +352,16 @@ def get_resultados_dir() -> Path | None:
     return None
 
 
+def get_event_analysis_dir() -> Path | None:
+    """Fixed folder for retrospective real-event case studies.
+
+    It is intentionally outside web_data/latest so daily monitor updates
+    cannot overwrite these analyses.
+    """
+    p = Path(EVENT_ANALYSIS_DIR).expanduser().resolve()
+    return p if p.exists() and p.is_dir() else None
+
+
 def list_zone_dirs(resultados_dir: Path) -> List[Path]:
     return sorted([p for p in resultados_dir.iterdir() if p.is_dir()], key=lambda x: x.name.lower())
 
@@ -472,6 +548,215 @@ def render_zone_context(raw_name: str) -> None:
         return
     title, body = ctx
     st.markdown(f"<div class='region-context'><b>{title}</b><br>{body}</div>", unsafe_allow_html=True)
+
+
+def event_location_from_name(raw_name: str) -> Dict[str, object] | None:
+    """Approximate public event/reference coordinates for fixed case studies.
+
+    These coordinates are used only for the visual station/event geometry map.
+    They do not affect any TAMC calculation.
+    """
+    name = raw_name.lower().replace("-", "_")
+    known = [
+        (["tohoku", "20110311"], "Event location", 38.322, 142.369),
+        (["maule", "20100227"], "Event location", -35.846, -72.719),
+        (["miyako", "20260420"], "Event/reference location", 39.85, 143.22),
+        (["kamchatka", "20250729"], "Event/reference location", 52.51, 160.32),
+        (["lorca", "20110511"], "Event/reference location", 37.70, -1.67),
+    ]
+    for keys, label, lat, lon in known:
+        if any(k in name for k in keys):
+            return {"label": label, "lat": lat, "lon": lon}
+    return None
+
+
+def event_context_from_name(raw_name: str) -> Tuple[str, str]:
+    """Short context for retrospective event-analysis cases."""
+    name = raw_name.lower().replace("-", "_")
+    if "tohoku" in name:
+        return (
+            "2011 Great Tohoku earthquake, Japan",
+            "Major megathrust event associated with the Japan Trench. In this section it is used as a high-magnitude reference case processed with the same fixed pipeline as the other events.",
+        )
+    if "maule" in name:
+        return (
+            "2010 Maule earthquake, Chile",
+            "Large subduction-zone earthquake used as a contrasting megathrust case. The goal is to compare multistation network structure, not magnitude.",
+        )
+    if "miyako" in name:
+        return (
+            "Miyako-region earthquake, Japan",
+            "Modern Japanese event used to compare compact event-centered network responses against larger historical earthquakes under identical processing.",
+        )
+    if "kamchatka" in name:
+        return (
+            "Kamchatka Peninsula earthquake",
+            "Large subduction-zone case in the Kamchatka–Kuril system, useful for comparing clustered extremes, synchrony and post-event structure.",
+        )
+    return (
+        "Real earthquake event analysis",
+        "Retrospective case study processed with the same fixed TAMC–FRANJAMAR pipeline. This is descriptive analysis, not warning, forecasting or risk estimation.",
+    )
+
+
+def render_event_context_block(raw_name: str) -> None:
+    title, body = event_context_from_name(raw_name)
+    st.markdown(
+        f"""
+<div class="event-context-card">
+  <div class="event-context-kicker">REAL EVENT CASE STUDY</div>
+  <div class="event-context-title">{html.escape(title)}</div>
+  <div class="event-context-body">{html.escape(body)}</div>
+  <div class="event-context-note">Same fixed pipeline · no event-specific tuning · score describes structure, not magnitude.</div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _map_zoom_from_span(lat_values: List[float], lon_values: List[float]) -> int:
+    span = max((max(lat_values) - min(lat_values)) if lat_values else 0, (max(lon_values) - min(lon_values)) if lon_values else 0)
+    if span < 0.4:
+        return 8
+    if span < 1.0:
+        return 7
+    if span < 3.0:
+        return 6
+    if span < 8.0:
+        return 5
+    if span < 18.0:
+        return 4
+    return 3
+
+
+def render_station_geometry_map(details: List[Dict[str, object]], raw_name: str, include_event: bool = False) -> None:
+    """Render a reliable Leaflet map: stations in blue, event/reference in red.
+
+    This avoids Streamlit's native st.map/pydeck rendering issues on some
+    dark-theme/mobile deployments and keeps the map centered on the local
+    event/station geometry instead of the whole globe.
+    """
+    rows: List[Dict[str, object]] = []
+    distances: List[float] = []
+
+    for d in details:
+        lat = d.get("lat")
+        lon = d.get("lon")
+        if lat is None or lon is None:
+            continue
+        try:
+            lat_f = float(lat)
+            lon_f = float(lon)
+        except Exception:
+            continue
+        if not (-90 <= lat_f <= 90 and -180 <= lon_f <= 180):
+            continue
+
+        dist = d.get("dist_km")
+        try:
+            if dist is not None:
+                distances.append(float(dist))
+        except Exception:
+            pass
+
+        rows.append({
+            "lat": lat_f,
+            "lon": lon_f,
+            "label": str(d.get("code", "station")),
+            "kind": "station",
+        })
+
+    event_point = event_location_from_name(raw_name) if include_event else None
+    if event_point is not None:
+        try:
+            rows.append({
+                "lat": float(event_point["lat"]),
+                "lon": float(event_point["lon"]),
+                "label": str(event_point.get("label", "Event/reference")),
+                "kind": "event",
+            })
+        except Exception:
+            event_point = None
+
+    if not rows:
+        st.info("No station coordinates available for the geometry map.")
+        return
+
+    station_count = len([r for r in rows if r.get("kind") == "station"])
+    title = "### 🗺️ Station/event geometry map" if event_point else "### 🗺️ Station geometry map"
+    st.markdown(title)
+    if event_point:
+        st.caption("Blue points are stations. The larger red point is the event/reference location. The map is centered on this local geometry.")
+    else:
+        st.caption("Blue points are stations from `fixed_stations.json`. The map is centered on the local station geometry.")
+
+    lats = [float(r["lat"]) for r in rows]
+    lons = [float(r["lon"]) for r in rows]
+    center_lat = sum(lats) / len(lats)
+    center_lon = sum(lons) / len(lons)
+    zoom = _map_zoom_from_span(lats, lons)
+    markers_json = json.dumps(rows, ensure_ascii=False)
+    map_id = "tamc_map_" + re.sub(r"[^a-zA-Z0-9_]", "_", raw_name)[:80] + "_" + str(abs(hash(raw_name)) % 100000)
+
+    map_html = f"""
+<div id="{map_id}" style="height:430px; width:100%; border-radius:18px; overflow:hidden; border:1px solid rgba(96,165,250,0.35); background:#dbeafe;"></div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {{
+  const markers = {markers_json};
+  const map = L.map('{map_id}', {{ scrollWheelZoom: false }}).setView([{center_lat:.6f}, {center_lon:.6f}], {zoom});
+  L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }}).addTo(map);
+
+  const bounds = [];
+  markers.forEach(function(m) {{
+    const isEvent = m.kind === 'event';
+    const marker = L.circleMarker([m.lat, m.lon], {{
+      radius: isEvent ? 11 : 6,
+      color: isEvent ? '#991b1b' : '#1d4ed8',
+      weight: isEvent ? 3 : 2,
+      fillColor: isEvent ? '#ef4444' : '#2563eb',
+      fillOpacity: isEvent ? 0.95 : 0.85
+    }}).addTo(map);
+    marker.bindTooltip(m.label, {{permanent:false, direction:'top'}});
+    marker.bindPopup((isEvent ? '<b>Event/reference</b><br>' : '<b>Station</b><br>') + m.label);
+    bounds.push([m.lat, m.lon]);
+  }});
+
+  if (bounds.length > 1) {{
+    map.fitBounds(bounds, {{ padding: [35, 35], maxZoom: 8 }});
+  }}
+
+  setTimeout(function() {{ map.invalidateSize(); }}, 250);
+}})();
+</script>
+"""
+
+    map_col, info_col = st.columns([0.70, 0.30])
+    with map_col:
+        components.html(map_html, height=450, scrolling=False)
+        hide_streamlit_chrome()
+
+    with info_col:
+        st.markdown(
+            f"""
+<div class="station-map-card">
+  <div class="station-map-kicker">NETWORK GEOMETRY</div>
+  <div class="station-map-value">{station_count}</div>
+  <div class="station-map-label">stations mapped</div>
+</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if event_point:
+            st.metric("Event/reference", "red point")
+        if distances:
+            st.metric("Distance range", f"{min(distances):.1f}–{max(distances):.1f} km")
+            st.metric("Mean distance", f"{sum(distances)/len(distances):.1f} km")
+        st.caption("Geometry is read automatically from the run metadata; the map is not manually drawn.")
 
 
 def parse_station_code_from_mseed(filename: str) -> str | None:
@@ -895,7 +1180,7 @@ def apply_query_params_to_state(zone_dirs: List[Path]) -> None:
     page = params.get("page", None)
     if isinstance(page, list):
         page = page[0] if page else None
-    if page in {"monitor", "what", "how", "read", "roadmap", "feedback", "papers"}:
+    if page in {"monitor", "events", "what", "how", "read", "roadmap", "feedback", "papers"}:
         st.session_state.page = page
 
     region = params.get("region", None)
@@ -980,7 +1265,7 @@ def render_global_status_radar(zone_dirs: List[Path]) -> None:
     <div>
       <div class="radar-kicker">GLOBAL STATUS RADAR</div>
       <div class="radar-main" style="color:{global_color};">{html.escape(label)}</div>
-      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive, non-predictive ranking</div>
+      <div class="radar-subtitle">{html.escape(subtitle)} · descriptive structure ranking</div>
       <div class="radar-tap-hint">Tap/click a radar card or use the buttons below to open region details.</div>
     </div>
   </div>
@@ -1007,7 +1292,7 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
     """Full descending classification by descriptive score, with open buttons."""
     st.markdown("<div id='full_ranking'></div>", unsafe_allow_html=True)
     st.markdown("### 📋 Region classification · highest to lowest score")
-    st.caption("Descriptive ranking only. It is not a warning, forecast or risk estimate.")
+    st.caption("Descriptive structure ranking only.")
 
     for idx, it in enumerate(items_sorted, start=1):
         score = it.get("score")
@@ -1023,24 +1308,289 @@ def render_region_classification_table(items_sorted: List[Dict[str, object]]) ->
                 open_region_from_summary(it)
                 st.rerun()
 
+def render_quick_guide_wizard() -> None:
+    """Small guided onboarding wizard shown from the Start Here block.
+
+    It tells first-time users what to do, then points them to the detailed
+    interpretation and the JSON-derived station metadata.
+    """
+    if "quick_guide_open" not in st.session_state:
+        st.session_state.quick_guide_open = False
+    if "quick_guide_step" not in st.session_state:
+        st.session_state.quick_guide_step = 1
+
+    st.markdown(
+        """
+<style>
+.quick-guide-button-wrap {
+    margin-top: 0.75rem;
+    display: inline-flex;
+}
+.quick-guide-button-wrap a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.56rem 1.05rem;
+    border-radius: 999px;
+    border: 1px solid rgba(244,114,182,0.92);
+    background: linear-gradient(135deg, rgba(236,72,153,0.24), rgba(59,130,246,0.16));
+    color: #fbcfe8 !important;
+    text-decoration: none !important;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    box-shadow: 0 0 0 1px rgba(244,114,182,0.18), 0 0 22px rgba(236,72,153,0.24);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    animation: quickGuidePulse 2.2s infinite;
+}
+.quick-guide-button-wrap a:hover {
+    transform: translateY(-1px);
+    border-color: rgba(251,207,232,1);
+    box-shadow: 0 0 0 1px rgba(244,114,182,0.38), 0 0 34px rgba(236,72,153,0.42);
+    color: #ffffff !important;
+}
+.quick-guide-card {
+    margin: 1.0rem 0 0.8rem 0;
+    padding: 1.15rem 1.2rem;
+    border-radius: 18px;
+    border: 1px solid rgba(244,114,182,0.72);
+    background: linear-gradient(135deg, rgba(83,13,55,0.34), rgba(15,23,42,0.96));
+    box-shadow: 0 0 0 1px rgba(244,114,182,0.14), 0 16px 34px rgba(0,0,0,0.28), 0 0 28px rgba(236,72,153,0.18);
+    animation: quickGuideCardGlow 1.35s ease-out 1;
+}
+.quick-guide-top-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.75rem;
+    margin-bottom:0.8rem;
+}
+.quick-guide-kicker {
+    color:#f472b6;
+    font-size:0.78rem;
+    font-weight:900;
+    letter-spacing:0.15em;
+}
+.quick-guide-progress {
+    color:#cbd5e1;
+    font-size:0.78rem;
+    font-weight:800;
+    border:1px solid rgba(244,114,182,0.34);
+    border-radius:999px;
+    padding:0.22rem 0.62rem;
+    background:rgba(15,23,42,0.72);
+}
+.quick-guide-title {
+    color:#ffffff;
+    font-size:1.08rem;
+    font-weight:900;
+    margin-bottom:0.42rem;
+}
+.quick-guide-body {
+    color:#e5e7eb;
+    line-height:1.58;
+    font-size:0.98rem;
+    max-width:980px;
+}
+.quick-guide-body b { color:#93c5fd; }
+.quick-guide-note {
+    margin-top:0.75rem;
+    color:#fcd34d;
+    font-size:0.86rem;
+    font-weight:800;
+}
+.quick-guide-next-target {
+    margin-top:0.75rem;
+    padding:0.72rem 0.9rem;
+    border-radius:14px;
+    border:1px solid rgba(56,189,248,0.32);
+    background:rgba(8,47,73,0.30);
+    color:#bae6fd;
+    font-size:0.9rem;
+    line-height:1.45;
+}
+@keyframes quickGuidePulse {
+    0% { box-shadow: 0 0 0 0 rgba(236,72,153,0.42), 0 0 22px rgba(236,72,153,0.24); }
+    70% { box-shadow: 0 0 0 9px rgba(236,72,153,0), 0 0 28px rgba(236,72,153,0.30); }
+    100% { box-shadow: 0 0 0 0 rgba(236,72,153,0), 0 0 22px rgba(236,72,153,0.24); }
+}
+@keyframes quickGuideCardGlow {
+    0% { transform: translateY(4px); box-shadow: 0 0 0 1px rgba(244,114,182,0.26), 0 0 44px rgba(236,72,153,0.42); }
+    100% { transform: translateY(0); box-shadow: 0 0 0 1px rgba(244,114,182,0.14), 0 16px 34px rgba(0,0,0,0.28), 0 0 28px rgba(236,72,153,0.18); }
+}
+@media (max-width: 900px) {
+    .quick-guide-button-wrap { width:100%; }
+    .quick-guide-button-wrap a { width:100%; }
+    .quick-guide-card { padding:1rem; }
+}
+</style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Stable anchor used to keep the viewport near the guide after Streamlit reruns.
+    st.markdown("<div id='quick_guide_anchor'></div>", unsafe_allow_html=True)
+
+    # Styled HTML link for a reliable pink framed button. The query parameter is
+    # consumed below and avoids fragile custom JavaScript callbacks.
+    st.caption("First time here? Follow the quick guide — it takes about 20 seconds.")
+
+    st.markdown(
+        """
+<div class="quick-guide-button-wrap">
+  <a href="?quickguide=1#quick_guide_anchor" target="_self">🧭 Quick guide</a>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    try:
+        quickguide_param = st.query_params.get("quickguide", None)
+    except Exception:
+        quickguide_param = None
+
+    if quickguide_param == "1" and not st.session_state.quick_guide_open:
+        st.session_state.quick_guide_open = True
+        st.session_state.quick_guide_step = 1
+
+    if not st.session_state.quick_guide_open:
+        return
+
+    # Streamlit reruns can jump to the top of the page after opening/advancing the guide.
+    # This small script recenters the viewport on the guide block.
+    components.html(
+        """
+<script>
+setTimeout(() => {
+  const el = window.parent.document.getElementById("quick_guide_anchor");
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}, 180);
+</script>
+        """,
+        height=0,
+    )
+
+    steps = {
+        1: {
+            "title": "1️⃣ Choose a region or event",
+            "body": (
+                "Start with <b>San Andreas</b>, <b>Yellowstone</b>, <b>Explore all regions</b>, "
+                "or select a real event in <b>Event analysis</b>. Begin with one familiar case, then compare others later."
+            ),
+            "target": "Scientific exploration only: this app describes statistical patterns; it does not predict earthquakes, eruptions, timing, magnitude or risk.",
+            "note": "Start simple · one region or event first"
+        },
+        2: {
+            "title": "2️⃣ Explore the five core outputs",
+            "body": (
+                "Look at <b>synchrony</b>, <b>extreme anomalies</b>, <b>mean behaviour</b>, "
+                "<b>station deviations</b>, and the <b>forcing comparison</b>. "
+                "You are not reading one plot — you are observing how the network behaves as a whole."
+            ),
+            "target": "A useful pattern should make sense across several panels, not only in one graph.",
+            "note": "Read the panels together"
+        },
+        3: {
+            "title": "3️⃣ Look for consistency across panels",
+            "body": (
+                "Focus on signals that appear across multiple outputs. Short spikes can happen, "
+                "but repeated or consistent patterns across panels are more meaningful."
+            ),
+            "target": "The system is designed to describe network structure, not isolated single-station noise.",
+            "note": "Consistency matters more than one spike"
+        },
+        4: {
+            "title": "4️⃣ Read and verify the interpretation",
+            "body": (
+                "Use the <b>network state</b> and <b>structure score</b> as the summary. "
+                "Then open <b>Deeper network analysis</b> for context and check <b>JSON-derived station metadata</b> if needed."
+            ),
+            "target": "Final step: interpret the pattern, not a single value.",
+            "note": "Summary first · details second"
+        },
+    }
+
+    step = max(1, min(4, int(st.session_state.quick_guide_step)))
+    item = steps[step]
+
+    st.markdown(
+        f"""
+<div class="quick-guide-card">
+  <div class="quick-guide-top-row">
+    <div class="quick-guide-kicker">QUICK GUIDE</div>
+    <div class="quick-guide-progress">Step {step} / 4</div>
+  </div>
+  <div class="quick-guide-title">{item['title']}</div>
+  <div class="quick-guide-body">{item['body']}</div>
+  <div class="quick-guide-next-target">{item['target']}</div>
+  <div class="quick-guide-note">{item.get('note', 'Scientific exploration')}</div>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    c_back, c_next, c_close = st.columns([0.24, 0.46, 0.30])
+    with c_back:
+        if step > 1:
+            if st.button("← Back", key="quick_guide_back", use_container_width=True):
+                st.session_state.quick_guide_step = step - 1
+                st.rerun()
+    with c_next:
+        if step < 4:
+            if st.button("Next step →", key="quick_guide_next", use_container_width=True):
+                st.session_state.quick_guide_step = step + 1
+                st.rerun()
+        else:
+            if st.button("Finish guide ✅ → Start exploring", key="quick_guide_finish", use_container_width=True):
+                st.session_state.quick_guide_open = False
+                st.session_state.quick_guide_step = 1
+                st.rerun()
+    with c_close:
+        if st.button("Close", key="quick_guide_close", use_container_width=True):
+            st.session_state.quick_guide_open = False
+            st.session_state.quick_guide_step = 1
+            st.rerun()
+
+
 def render_start_here_block(zone_dirs: List[Path]) -> None:
     """Guided entry point shown before the catalogue."""
     st.markdown("<div id='start_here'></div>", unsafe_allow_html=True)
     st.markdown(
         """
+        <style>
+        .first-use-note {
+            margin: 0.75rem 0 1.0rem 0;
+            padding: 0.72rem 0.95rem;
+            border-radius: 14px;
+            border: 1px solid rgba(56,189,248,0.30);
+            background: rgba(8,47,73,0.22);
+            color: rgba(226,232,240,0.90);
+            font-weight: 700;
+            line-height: 1.45;
+        }
+        </style>
         <div class="start-here-card">
             <div class="button-section-title">START HERE</div>
             <div class="start-here-text">
-                Start with a reference region. Inspect the five outputs, then read the network state classification.
+                Start by selecting a region below.<br><br>
+                This tool shows how seismic networks behave as a system — not individual signals.<br><br>
+                Inspect the five outputs and read the network state to understand the current structure.
             </div>
+        </div>
+        <div class="first-use-note">
+            This is not a traditional earthquake-alert app. It analyzes patterns in network behavior for scientific exploration.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    render_quick_guide_wizard()
+
     c1, c2, c3 = st.columns(3)
     with c1:
-        if st.button("⚡ San Andreas", key="quick_san_andreas", use_container_width=True):
+        if st.button("⚡ Try San Andreas", key="quick_san_andreas", use_container_width=True):
             st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
@@ -1048,7 +1598,7 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
             request_scroll("focused_region")
             st.rerun()
     with c2:
-        if st.button("🌋 Yellowstone", key="quick_yellowstone", use_container_width=True):
+        if st.button("🌋 Try Yellowstone", key="quick_yellowstone", use_container_width=True):
             st.session_state.page = "monitor"
             st.session_state.show_region_catalog = False
             st.session_state.show_full_ranking = False
@@ -1063,7 +1613,6 @@ def render_start_here_block(zone_dirs: List[Path]) -> None:
             st.session_state.selected_layer = "All regions"
             request_scroll("region_selector")
             st.rerun()
-
 
 def render_header(zone_dirs: List[Path]) -> None:
     """Render main hero, framework DOI, beta/version label and data-window cards."""
@@ -1262,7 +1811,7 @@ def render_version_status_card() -> None:
         <div class="version-status-card">
             <span class="version-status-beta">BETA VERSION</span>
             <span class="version-separator">·</span>
-            <span class="version-status-data">REAL UPDATED DATA</span>
+            <span class="version-status-data">Automatically updated daily · fixed pipeline</span>
             <span class="version-separator">·</span>
             <span class="version-status-version">{APP_VERSION_ID} · APP.PY UPLOADED {APP_VERSION_UTC}</span>
         </div>
@@ -1331,6 +1880,7 @@ def render_zone_card(zone_dir: Path) -> None:
     c3.metric("Mode", "T−1 h")
 
     st.markdown("**Five core outputs**")
+    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
     graph_cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
         with graph_cols[idx % 5]:
@@ -1338,14 +1888,14 @@ def render_zone_card(zone_dir: Path) -> None:
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
-                    with st.popover("Expand", use_container_width=True):
+                    with st.popover("🔍 View details", use_container_width=True):
                         st.markdown(f"### {prettify_zone_name(zone_dir.name)} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
                         if station_details:
                             render_station_metadata(station_details, station_source_label, station_source_files)
                 except Exception:
-                    with st.expander("Expand"):
+                    with st.expander("🔍 View details"):
                         st.markdown(f"### {prettify_zone_name(zone_dir.name)} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
@@ -1356,6 +1906,7 @@ def render_zone_card(zone_dir: Path) -> None:
 
     if station_details:
         st.markdown("---")
+        render_station_geometry_map(station_details, zone_dir.name, include_event=False)
         render_station_metadata_visible(station_details, station_source_label, station_source_files)
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -2015,6 +2566,7 @@ def render_zone_detail(zone_dir: Path, show_all: bool) -> None:
 
     st.markdown("---")
     st.markdown("### Five core outputs")
+    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
 
     cols = st.columns(5)
     for idx, (slot, img) in enumerate(assigned.items()):
@@ -2023,14 +2575,14 @@ def render_zone_detail(zone_dir: Path, show_all: bool) -> None:
             if img and Path(img).exists():
                 st.image(img, use_container_width=True)
                 try:
-                    with st.popover("Expand", use_container_width=True):
+                    with st.popover("🔍 View details", use_container_width=True):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
                         if station_details:
                             render_station_metadata(station_details, station_source_label, station_source_files)
                 except Exception:
-                    with st.expander("Expand"):
+                    with st.expander("🔍 View details"):
                         st.markdown(f"### {display_name} · {slot}")
                         st.caption(GRAPH_SLOTS[slot]["description"])
                         st.image(img, caption=Path(img).name, use_container_width=True)
@@ -2423,12 +2975,12 @@ def inject_css() -> None:
         }
 
         .top-app-shell {
-            border: 1px solid #22304a;
-            background: linear-gradient(135deg, rgba(15,23,42,.96), rgba(2,6,23,.94));
-            border-radius: 22px;
-            padding: 14px 16px 16px 16px;
-            margin: 8px 0 16px 0;
-            box-shadow: 0 18px 48px rgba(0,0,0,.30);
+            border: 0 !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 0 18px 0 !important;
+            box-shadow: none !important;
         }
         .app-brand-title {
             color:#e0f2fe;
@@ -3396,14 +3948,37 @@ def render_back_to_top_button() -> None:
 # UI
 # ============================================================
 st.set_page_config(page_title="TAMC–FRANJAMAR Monitor", layout="wide", initial_sidebar_state="collapsed")
-st.markdown("<div id='app_top_anchor'></div>", unsafe_allow_html=True)
+hide_streamlit_chrome()
+st.markdown("<div id='app_top_anchor' style='height:0; margin:0; padding:0; overflow:hidden;'></div>", unsafe_allow_html=True)
 inject_google_analytics()
 inject_css()
 
 st.markdown(
     """
     <style>
-    .block-container { padding-bottom: 7.5rem !important; }
+    .block-container { padding-top: 0rem !important; margin-top: 0rem !important; padding-bottom: 7.5rem !important; }
+    header, [data-testid="stHeader"] { display:none !important; height:0 !important; min-height:0 !important; visibility:hidden !important; }
+    [data-testid="stAppViewContainer"], [data-testid="stMain"], section.main { padding-top:0 !important; margin-top:0 !important; }
+    .top-app-shell {
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 0 18px 0 !important;
+    }
+    .app-brand-title { margin-top: 0 !important; }
+    .event-context-card {
+        margin: 1.0rem 0 1.2rem 0;
+        padding: 1.05rem 1.2rem;
+        border-radius: 18px;
+        border: 1px solid rgba(56,189,248,0.45);
+        background: linear-gradient(135deg, rgba(8,47,73,0.45), rgba(15,23,42,0.95));
+        box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    }
+    .event-context-kicker { color:#38bdf8; font-weight:900; letter-spacing:.16em; font-size:.78rem; }
+    .event-context-title { color:#e5e7eb; font-weight:900; font-size:1.25rem; margin-top:.35rem; }
+    .event-context-body { color:#cbd5e1; line-height:1.55; margin-top:.4rem; }
+    .event-context-note { color:#93c5fd; margin-top:.65rem; font-size:.88rem; font-weight:700; }
     a.ranking-open-link,
     a.radar-open-link {
         display: block;
@@ -3551,20 +4126,22 @@ def render_top_app_bar() -> None:
     # Extra vertical separation so Monitor aligns below the subtitle, not over it.
     st.markdown("<div style='height:22px'></div>", unsafe_allow_html=True)
 
-    nav_cols = st.columns(7)
+    nav_cols = st.columns(8)
     with nav_cols[0]:
         nav_button("📡 Monitor", "monitor")
     with nav_cols[1]:
-        nav_button("📘 What is this", "what")
+        nav_button("🌍 Event analysis", "events")
     with nav_cols[2]:
-        nav_button("⚙️ How it works", "how")
+        nav_button("📘 What is this", "what")
     with nav_cols[3]:
-        nav_button("📊 Read outputs", "read")
+        nav_button("⚙️ How it works", "how")
     with nav_cols[4]:
-        nav_button("📄 DOI / Papers", "papers")
+        nav_button("📊 Read outputs", "read")
     with nav_cols[5]:
-        nav_button("🚀 Roadmap", "roadmap")
+        nav_button("📄 DOI / Papers", "papers")
     with nav_cols[6]:
+        nav_button("🚀 Roadmap", "roadmap")
+    with nav_cols[7]:
         nav_button("💬 Feedback", "feedback")
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -3579,8 +4156,6 @@ def render_monitor_page() -> None:
     st.markdown("<div id='page_monitor'></div>", unsafe_allow_html=True)
     ensure_selector_state(zone_dirs)
     render_global_status_radar(zone_dirs)
-    render_support_callout(compact=True)
-    render_disclaimer()
     render_start_here_block(zone_dirs)
 
     selected_zone = next(
@@ -3603,33 +4178,148 @@ def render_monitor_page() -> None:
     perform_deferred_scroll()
 
 
+
+def real_event_button_label(raw_name: str) -> str:
+    """Compact label for retrospective event buttons."""
+    name = raw_name.lower().replace('-', '_')
+    if 'miyako' in name or '20260420' in name:
+        return 'Miyako (2026, M7.4)'
+    if 'maule' in name or '20100227' in name:
+        return 'Maule (2010, M8.8)'
+    if 'tohoku' in name or '20110311' in name:
+        return 'Tohoku (2011, M9.1)'
+    if 'kamchatka' in name or '20250729' in name:
+        return 'Kamchatka–Kuril (2025, M8.8)'
+    return compact_region_name_for_button(raw_name)
+
+def render_real_events_page() -> None:
+    st.markdown("<div id='page_events'></div>", unsafe_allow_html=True)
+    st.markdown("## 🌍 Real event analysis")
+    st.markdown(
+        "Fixed-pipeline retrospective analyses of confirmed earthquake events. "
+        "This section is separated from the near-real-time monitor so daily updates cannot overwrite it."
+    )
+    st.info("These cases use the same multistation framework. They are descriptive analyses, not prediction, warning or risk estimation.")
+    render_quick_guide_wizard()
+
+    event_dir = get_event_analysis_dir()
+    if event_dir is None:
+        st.warning("The folder `event_analysis` was not found in the repository.")
+        return
+
+    event_dirs = sorted(list_zone_dirs(event_dir), key=lambda p: p.name.lower())
+    if not event_dirs:
+        st.warning("No event case folders were found inside `event_analysis`.")
+        return
+
+    if "selected_event_name" not in st.session_state or not any(p.name == st.session_state.selected_event_name for p in event_dirs):
+        st.session_state.selected_event_name = event_dirs[0].name
+
+    st.markdown("### Select a real event")
+    cols = st.columns(4)
+    for idx, ev in enumerate(event_dirs):
+        label = real_event_button_label(ev.name)
+        flag = get_flag(get_country_code_from_name(ev.name))
+        active = ev.name == st.session_state.selected_event_name
+        with cols[idx % 4]:
+            if st.button(("✅ " if active else "") + f"{flag} {label}".strip(), key=f"event_select_{ev.name}", use_container_width=True):
+                st.session_state.selected_event_name = ev.name
+                request_scroll("selected_real_event")
+                st.rerun()
+
+    selected_event = next((p for p in event_dirs if p.name == st.session_state.selected_event_name), event_dirs[0])
+    st.markdown("---")
+    st.markdown("<div id='selected_real_event'></div>", unsafe_allow_html=True)
+    render_event_detail(selected_event)
+    perform_deferred_scroll()
+
+
+def render_event_detail(event_dir: Path) -> None:
+    display_name = clean_zone_display_name(event_dir.name)
+    assigned, all_images = load_zone_images(str(event_dir.resolve()))
+    stations, station_details, station_source_files, station_source_label = load_zone_station_metadata(str(event_dir.resolve()))
+
+    st.markdown(
+        f"""
+        <div class="zone-title-card visual-zone-title-card">
+            <div class="zone-kicker">SELECTED REAL EVENT ANALYSIS</div>
+            <div class="zone-title zone-title-impact">{html.escape(display_name)}</div>
+            <div class="zone-type-line">{region_type_badge(event_dir.name)}</div>
+            <div class="zone-subtitle compact-zone-subtitle">
+                {format_zone_datetime(event_dir.name)} · fixed TAMC–FRANJAMAR pipeline
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    render_event_context_block(event_dir.name)
+
+    st.markdown("### Five core outputs")
+    st.caption("Each chart shows a different aspect of network behaviour. Read them together, not separately.")
+    cols = st.columns(5)
+    for idx, (slot, img) in enumerate(assigned.items()):
+        with cols[idx % 5]:
+            st.markdown(f"<div class='graph-mini-title'>{slot}</div>", unsafe_allow_html=True)
+            if img and Path(img).exists():
+                st.image(img, use_container_width=True)
+                try:
+                    with st.popover("🔍 View details", use_container_width=True):
+                        st.markdown(f"### {display_name} · {slot}")
+                        st.caption(GRAPH_SLOTS[slot]["description"])
+                        st.image(img, caption=Path(img).name, use_container_width=True)
+                        if station_details:
+                            render_station_metadata(station_details, station_source_label, station_source_files)
+                except Exception:
+                    with st.expander("🔍 View details"):
+                        st.markdown(f"### {display_name} · {slot}")
+                        st.caption(GRAPH_SLOTS[slot]["description"])
+                        st.image(img, caption=Path(img).name, use_container_width=True)
+                        if station_details:
+                            render_station_metadata(station_details, station_source_label, station_source_files)
+            else:
+                st.info("Missing")
+
+    render_network_interpretation(event_dir)
+
+    if station_details:
+        st.markdown("---")
+        render_station_geometry_map(station_details, event_dir.name, include_event=True)
+        render_station_metadata_visible(station_details, station_source_label, station_source_files)
+
+
 def render_what_page() -> None:
     st.markdown("<div id='page_what'></div>", unsafe_allow_html=True)
     st.markdown("## What is this?")
     st.markdown(f"""
-This is an experimental scientific monitoring system based on the **TAMC–FRANJAMAR** framework.
+This is an **experimental scientific exploration system** based on the **TAMC–FRANJAMAR** framework.
 
-The system is directly based on the work:
+It studies how seismic networks behave **as a collective system**, rather than treating each station as an isolated signal.
+
+The core idea is simple:
+
+> the relevant structure is not a single peak at one station, but the emergence of coordinated behaviour across multiple stations over time.
+
+The dashboard is directly based on the reproducible research record:
 
 **“TAMC–FRANJAMAR v3: A retrospective and reproducible framework for the analysis of collective statistical behavior in multistation seismic networks”**  
 [{SEISMIC_DOI}]({SEISMIC_DOI})
 
-This dashboard uses the exact pipeline described in that work, operated in **monitoring mode**.
+All monitored regions are processed with the same fixed pipeline, using identical parameters and no region-specific tuning. This allows direct comparison between earthquake regions, volcanic systems, fault systems, subduction zones and low-activity baselines.
 
-Rather than analysing individual signals in isolation, the system evaluates how multiple seismic stations behave collectively over time. It focuses on the emergence of coordinated patterns across the network — **multistation coherence**.
+The app operates in **monitoring mode** using rolling **24 h windows** with a short consolidation delay (**T−1 h**). It generates plots, JSON/CSV summaries and descriptive network-state classifications from the same reproducible output structure.
 
-All regions are processed using the same fixed pipeline, with identical parameters and no regional tuning. This enables direct comparison across fundamentally different systems: earthquakes, volcanic regions, subduction zones and low-activity baselines.
+### What this is not
 
-The pipeline is fully reproducible and can be executed locally by any user by downloading the materials from the Zenodo archive.
+This is **not** an earthquake prediction app, not an eruption prediction app, not an early-warning system and not an operational risk platform.
 
-This is not an event detection or forecasting tool.
+It does **not** estimate event timing, magnitude, location or risk.
 
-It is a framework designed to reveal structure: how distributed systems organize, evolve, and respond as a whole.
-    """)
+### What it is for
+
+It is designed for scientific exploration: to characterize statistical structure, detect deviations from baseline behaviour, compare regions under a fixed pipeline and study how distributed geophysical systems organize as a whole.
+""")
     st.info("Focus: collective behaviour across stations, not individual amplitudes alone.")
-    st.markdown("---")
-    st.markdown("### What this is NOT")
-    st.write("This system is not an earthquake prediction tool, not an early warning system, and not an operational safety platform. It does not estimate when an earthquake will occur, where it will occur, or how large it will be.")
 
 
 def render_how_page() -> None:
@@ -3676,27 +4366,99 @@ def render_support_callout(compact: bool = False) -> None:
     if compact:
         st.markdown(
             f"""
+<style>
+.support-callout-card {{
+    margin: 1.0rem 0 1.25rem 0;
+    padding: 1.05rem 1.15rem;
+    border-radius: 18px;
+    border: 1px solid rgba(244,114,182,0.48);
+    background: linear-gradient(135deg, rgba(83,13,55,0.24), rgba(8,47,73,0.24), rgba(15,23,42,0.94));
+    box-shadow: 0 0 0 1px rgba(56,189,248,0.08), 0 14px 30px rgba(0,0,0,0.24);
+}}
+.support-callout-grid {{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+}}
+.support-callout-kicker {{
+    color:#f9a8d4;
+    font-size:0.78rem;
+    font-weight:900;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-bottom:0.35rem;
+}}
+.support-callout-title {{
+    color:#ffffff;
+    font-weight:900;
+    font-size:1.02rem;
+    margin-bottom:0.35rem;
+}}
+.support-callout-text {{
+    color:rgba(226,232,240,0.90);
+    line-height:1.55;
+    font-size:0.94rem;
+    max-width: 980px;
+}}
+.support-callout-note {{
+    margin-top:0.45rem;
+    color:#bae6fd;
+    font-size:0.84rem;
+    font-weight:700;
+}}
+.support-callout-button {{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    white-space:nowrap;
+    padding:0.68rem 1.05rem;
+    border-radius:999px;
+    border:1px solid rgba(251,207,232,0.72);
+    background:linear-gradient(135deg, rgba(236,72,153,0.28), rgba(14,165,233,0.18));
+    color:#fce7f3 !important;
+    text-decoration:none !important;
+    font-weight:900;
+    box-shadow:0 0 22px rgba(236,72,153,0.20);
+}}
+.support-callout-button:hover {{
+    border-color:rgba(255,255,255,0.95);
+    color:#ffffff !important;
+    box-shadow:0 0 32px rgba(236,72,153,0.36);
+}}
+@media (max-width: 900px) {{
+    .support-callout-grid {{ grid-template-columns:1fr; }}
+    .support-callout-button {{ width:100%; }}
+}}
+</style>
 <div class="support-callout-card">
-  <div class="support-callout-title">☕ Support this independent project</div>
-  <div class="support-callout-text">
-    This monitor is developed independently. If you find it useful, you can support its development and future roadmap.
+  <div class="support-callout-grid">
+    <div>
+      <div class="support-callout-kicker">Independent research</div>
+      <div class="support-callout-title">☕ Support this project</div>
+      <div class="support-callout-text">
+        Independent research project developed by a single author.<br>
+        Scientific paper + reproducible pipeline + web dashboard + Android app.<br><br>
+        If you find it useful, you can support development, infrastructure, and future improvements.
+      </div>
+      <div class="support-callout-note">Descriptive research · fixed pipeline · reproducible outputs</div>
+    </div>
+    <a class="support-callout-button" href="{BUYMEACOFFEE_URL}" target="_blank" rel="noopener noreferrer">☕ Support / Buy Me a Coffee</a>
   </div>
 </div>
             """,
             unsafe_allow_html=True,
         )
-        st.link_button("☕ Support / Buy Me a Coffee", BUYMEACOFFEE_URL, use_container_width=True)
         return
 
-    st.markdown("### 🤝 Apoyar el proyecto")
+    st.markdown("### 🤝 Support the project")
     st.write(
         "This is a personal research project, developed independently and without funding. "
-	"The results shown are generated using the project's reproducible pipeline. "
-	"If you find this work useful or interesting, you can support its development and evolution, "
-	"helping to implement upcoming improvements."
+        "The results shown are generated using the project's reproducible pipeline. "
+        "If you find this work useful or interesting, you can support its development and evolution, "
+        "helping to implement upcoming improvements."
     )
     st.link_button("☕ Support the project", BUYMEACOFFEE_URL, use_container_width=True)
-
 
 def render_roadmap_page() -> None:
     st.markdown("<div id='page_roadmap'></div>", unsafe_allow_html=True)
@@ -3776,7 +4538,10 @@ render_header(zone_dirs)
 render_version_status_card()
 
 if st.session_state.page == "monitor":
+    render_support_callout(compact=True)
     render_monitor_page()
+elif st.session_state.page == "events":
+    render_real_events_page()
 elif st.session_state.page == "what":
     render_what_page()
 elif st.session_state.page == "how":
