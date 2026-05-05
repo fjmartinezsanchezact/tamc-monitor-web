@@ -4131,7 +4131,6 @@ def render_monitor_page() -> None:
     st.markdown("<div id='page_monitor'></div>", unsafe_allow_html=True)
     ensure_selector_state(zone_dirs)
     render_global_status_radar(zone_dirs)
-    render_disclaimer()
     render_start_here_block(zone_dirs)
 
     selected_zone = next(
@@ -4266,29 +4265,34 @@ def render_what_page() -> None:
     st.markdown("<div id='page_what'></div>", unsafe_allow_html=True)
     st.markdown("## What is this?")
     st.markdown(f"""
-This is an experimental scientific monitoring system based on the **TAMC–FRANJAMAR** framework.
+This is an **experimental scientific exploration system** based on the **TAMC–FRANJAMAR** framework.
 
-The system is directly based on the work:
+It studies how seismic networks behave **as a collective system**, rather than treating each station as an isolated signal.
+
+The core idea is simple:
+
+> the relevant structure is not a single peak at one station, but the emergence of coordinated behaviour across multiple stations over time.
+
+The dashboard is directly based on the reproducible research record:
 
 **“TAMC–FRANJAMAR v3: A retrospective and reproducible framework for the analysis of collective statistical behavior in multistation seismic networks”**  
 [{SEISMIC_DOI}]({SEISMIC_DOI})
 
-This dashboard uses the exact pipeline described in that work, operated in **monitoring mode**.
+All monitored regions are processed with the same fixed pipeline, using identical parameters and no region-specific tuning. This allows direct comparison between earthquake regions, volcanic systems, fault systems, subduction zones and low-activity baselines.
 
-Rather than analysing individual signals in isolation, the system evaluates how multiple seismic stations behave collectively over time. It focuses on the emergence of coordinated patterns across the network — **multistation coherence**.
+The app operates in **monitoring mode** using rolling **24 h windows** with a short consolidation delay (**T−1 h**). It generates plots, JSON/CSV summaries and descriptive network-state classifications from the same reproducible output structure.
 
-All regions are processed using the same fixed pipeline, with identical parameters and no regional tuning. This enables direct comparison across fundamentally different systems: earthquakes, volcanic regions, subduction zones and low-activity baselines.
+### What this is not
 
-The pipeline is fully reproducible and can be executed locally by any user by downloading the materials from the Zenodo archive.
+This is **not** an earthquake prediction app, not an eruption prediction app, not an early-warning system and not an operational risk platform.
 
-This is not an event detection or forecasting tool.
+It does **not** estimate event timing, magnitude, location or risk.
 
-It is a framework designed to reveal structure: how distributed systems organize, evolve, and respond as a whole.
-    """)
+### What it is for
+
+It is designed for scientific exploration: to characterize statistical structure, detect deviations from baseline behaviour, compare regions under a fixed pipeline and study how distributed geophysical systems organize as a whole.
+""")
     st.info("Focus: collective behaviour across stations, not individual amplitudes alone.")
-    st.markdown("---")
-    st.markdown("### What this is NOT")
-    st.write("This system is not an earthquake prediction tool, not an early warning system, and not an operational safety platform. It does not estimate when an earthquake will occur, where it will occur, or how large it will be.")
 
 
 def render_how_page() -> None:
