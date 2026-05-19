@@ -1,0 +1,13 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Miyako (Japan)
+LAT=39.6414
+LON=141.9571
+WINDOW_START=2026-05-18T04:02:21.393687Z
+WINDOW_END=2026-05-19T04:02:21.393687Z
+[RECENT] OK   JP.JTM. dist_km=148.4 cov=1.000 traces=502
+[RECENT] OK   JP.JMM. dist_km=221.4 cov=1.000 traces=615
+[RECENT] OK   II.ERM.00 dist_km=282.4 cov=1.000 traces=3
+[RECENT] OK   JP.JEM. dist_km=282.6 cov=1.000 traces=372
+[RECENT] OK   JP.JEW. dist_km=358.1 cov=1.000 traces=395
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\tamcsismico\data\Miyako_Japan__RECENT_20260519_040221\fixed_stations.json

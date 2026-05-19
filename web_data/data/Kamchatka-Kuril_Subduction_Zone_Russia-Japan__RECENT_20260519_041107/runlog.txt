@@ -1,0 +1,54 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Kamchatka-Kuril Subduction Zone (Russia-Japan)
+LAT=52.5
+LON=160.0
+WINDOW_START=2026-05-18T04:11:07.159528Z
+WINDOW_END=2026-05-19T04:11:07.159528Z
+[RECENT] NODATA IU.PET.00 dist_km=108.2
+[RECENT] OK   IM.SHEM. dist_km=953.8 cov=1.000 traces=3
+[RECENT] OK   AT.SMY. dist_km=954.1 cov=1.000 traces=6
+[RECENT] NODATA IU.MA2.00 dist_km=973.6
+[RECENT] DROP AV.LSNW. dist_km=1262.8 cov=0.793
+[RECENT] DROP AV.LSSA. dist_km=1263.0 cov=0.793
+[RECENT] DROP AV.LSPA. dist_km=1266.9 cov=0.793
+[RECENT] DROP AV.LSSE. dist_km=1267.1 cov=0.793
+[RECENT] DROP AV.CETU. dist_km=1329.0 cov=0.793
+[RECENT] DROP AV.AMKA. dist_km=1329.3 cov=0.793
+[RECENT] DROP AV.CEAP. dist_km=1334.0 cov=0.793
+[RECENT] DROP AV.CESW. dist_km=1335.0 cov=0.793
+[RECENT] DROP AV.CERB. dist_km=1338.9 cov=0.793
+[RECENT] DROP AV.CEPE. dist_km=1339.5 cov=0.793
+[RECENT] DROP AV.CERA. dist_km=1343.1 cov=0.793
+[RECENT] NODATA IU.YSS.00 dist_km=1382.6
+[RECENT] DROP AV.GASW. dist_km=1444.6 cov=0.792
+[RECENT] DROP AV.GANO. dist_km=1447.1 cov=0.799
+[RECENT] DROP AV.GANE. dist_km=1449.0 cov=0.793
+[RECENT] DROP AV.GALA. dist_km=1450.6 cov=0.793
+[RECENT] DROP AV.GAEA. dist_km=1451.8 cov=0.621
+[RECENT] DROP AV.GAKI. dist_km=1452.7 cov=0.792
+[RECENT] DROP AV.TASO. dist_km=1491.0 cov=0.531
+[RECENT] DROP AV.TANO. dist_km=1491.2 cov=0.761
+[RECENT] DROP AV.TASE. dist_km=1498.7 cov=0.793
+[RECENT] DROP AV.TAFP. dist_km=1500.8 cov=0.736
+[RECENT] DROP AV.TAFL. dist_km=1509.8 cov=0.792
+[RECENT] DROP AV.TAPA. dist_km=1514.2 cov=0.793
+[RECENT] DROP AV.KICM. dist_km=1553.7 cov=0.793
+[RECENT] DROP AV.KIMD. dist_km=1554.6 cov=0.793
+[RECENT] DROP AV.KIKV. dist_km=1556.3 cov=0.792
+[RECENT] DROP AV.KINC. dist_km=1558.0 cov=0.704
+[RECENT] DROP AV.KIWB. dist_km=1558.2 cov=0.793
+[RECENT] DROP AV.KIRH. dist_km=1561.0 cov=0.793
+[RECENT] OK   JP.JKA. dist_km=1585.7 cov=1.000 traces=486
+[RECENT] NODATA IU.ADK.00 dist_km=1589.0
+[RECENT] DROP AV.ADAG. dist_km=1592.5 cov=0.761
+[RECENT] DROP AV.ETKA. dist_km=1608.2 cov=0.793
+[RECENT] DROP AV.GSSP. dist_km=1618.5 cov=0.793
+[RECENT] DROP AV.GSTD. dist_km=1621.5 cov=0.793
+[RECENT] DROP AV.GSCK. dist_km=1622.0 cov=0.793
+[RECENT] DROP AV.GSTR. dist_km=1626.4 cov=0.793
+[RECENT] DROP AV.GSMY. dist_km=1627.7 cov=0.793
+[RECENT] DROP AV.GSIG. dist_km=1637.8 cov=0.792
+[RECENT] OK   JP.JEM. dist_km=1719.5 cov=1.000 traces=360
+[RECENT] OK   II.ERM.00 dist_km=1719.6 cov=1.000 traces=3
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\tamcsismico\data\Kamchatka-Kuril_Subduction_Zone_Russia-Japan__RECENT_20260519_041107\fixed_stations.json

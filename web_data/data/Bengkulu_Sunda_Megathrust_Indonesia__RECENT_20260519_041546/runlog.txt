@@ -1,0 +1,22 @@
+RUNLOG
+MODE=RECENT_MONITOR
+NAME=Bengkulu / Sunda Megathrust (Indonesia)
+LAT=-4.438
+LON=101.367
+WINDOW_START=2026-05-18T04:15:46.794348Z
+WINDOW_END=2026-05-19T04:15:46.794348Z
+[RECENT] NODATA PS.KSI.00 dist_km=158.8
+[RECENT] NODATA GE.MNAI. dist_km=176.5
+[RECENT] NODATA GE.PMBI. dist_km=407.3
+[RECENT] NODATA GE.BKNI. dist_km=528.1
+[RECENT] NODATA MS.BTDF.02 dist_km=695.0
+[RECENT] OK   MS.UBIN. dist_km=708.6 cov=1.000 traces=3
+[RECENT] OK   MY.KOM. dist_km=742.1 cov=1.000 traces=3
+[RECENT] NODATA GE.GSI. dist_km=762.2
+[RECENT] NODATA GE.CISI. dist_km=792.7
+[RECENT] OK   AU.XMI.00 dist_km=818.2 cov=1.000 traces=3
+[RECENT] NODATA AU.XMIS. dist_km=818.6
+[RECENT] NODATA PS.PSI. dist_km=834.1
+[RECENT] OK   MY.IPM. dist_km=986.8 cov=1.000 traces=3
+[RECENT] OK   II.COCO.00 dist_km=991.9 cov=1.000 traces=3
+[RECENT] Fixed stations saved: C:\Users\PC\Desktop\tamcsismico\tamcsismico\data\Bengkulu_Sunda_Megathrust_Indonesia__RECENT_20260519_041546\fixed_stations.json
