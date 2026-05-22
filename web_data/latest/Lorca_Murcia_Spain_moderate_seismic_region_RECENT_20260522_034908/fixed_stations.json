@@ -1,0 +1,42 @@
+[
+  {
+    "net": "WM",
+    "sta": "CART",
+    "loc": "",
+    "stalat": 37.5868,
+    "stalon": -1.0012,
+    "dist_km": 62.47633674703662
+  },
+  {
+    "net": "IU",
+    "sta": "PAB",
+    "loc": "00",
+    "stalat": 39.5446,
+    "stalon": -4.3499,
+    "dist_km": 310.60361212802
+  },
+  {
+    "net": "WM",
+    "sta": "SFS",
+    "loc": "",
+    "stalat": 36.4656,
+    "stalon": -6.2055,
+    "dist_km": 422.2855149907282
+  },
+  {
+    "net": "PM",
+    "sta": "PESTR",
+    "loc": "",
+    "stalat": 38.867168,
+    "stalon": -7.590169,
+    "dist_km": 532.083347805751
+  },
+  {
+    "net": "WM",
+    "sta": "MAHO",
+    "loc": "",
+    "stalat": 39.895901,
+    "stalon": 4.2665,
+    "dist_km": 574.1662253563766
+  }
+]
