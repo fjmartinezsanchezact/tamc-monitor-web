@@ -1,0 +1,359 @@
+{
+  "schema_version": "3.0",
+  "generated_utc": "2026-08-28T18:29:10Z",
+  "region_name": "La Palma Canary Islands",
+  "event_folder": "La_Palma_Canary_Islands__RECENT_20260828_171943",
+  "mode": "monitor",
+  "summary_type": "multistation_network_coherence_analysis",
+  "data_policy": {
+    "uses_images": false,
+    "uses_station_level_csv": false,
+    "uses_allstations_csv": true,
+    "ignored_folders": [
+      "rot"
+    ],
+    "core_sources": [
+      "sync/sync_multistation.csv",
+      "metrics/tamc_24h_metrics_allstations.csv",
+      "scan/scan_*_allstations.csv"
+    ],
+    "context_sources": [
+      "forzantes/forzantes_*_24h.csv",
+      "robust_precursors/null_summary.csv",
+      "robust_precursors/precursors_timeseries.csv",
+      "robust_precursors/robust_summary.json"
+    ]
+  },
+  "sync": {
+    "available": true,
+    "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\sync\\sync_multistation.csv",
+    "n_samples": 432000,
+    "n_stations": 5,
+    "sync_events": 0,
+    "sync_fraction": 0.0,
+    "sync_fraction_percent": 0.0,
+    "mean_active_frac": 0.003645,
+    "mean_active_frac_percent": 0.3645,
+    "max_active_frac": 0.2,
+    "max_active_frac_percent": 20.0,
+    "max_active_count": 1,
+    "max_sync_run_samples": 0,
+    "coherence_level": "low",
+    "background_network_occupancy": "low",
+    "temporal_structure": "no clear synchronized episodes",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "multistation synchrony",
+      "title": "Multistation synchrony",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\sync\\sync_multistation.csv",
+      "key_message": "Low or sparse multistation synchrony.",
+      "reading": "The synchrony CSV shows that up to 1 of 5 stations were simultaneously active. The maximum active fraction is 0.2 (20.0%), whereas the mean active fraction is 0.003645 (0.3645%). Synchronized samples represent 0.0% of the analyzed window, with a maximum synchronized run of 0 sample(s). The temporal structure is classified as 'no clear synchronized episodes'.",
+      "technical_interpretation": {
+        "coherence_level": "low",
+        "temporal_structure": "no clear synchronized episodes",
+        "max_active_fraction_percent": 20.0,
+        "mean_active_fraction_percent": 0.3645,
+        "sync_fraction_percent": 0.0,
+        "max_sync_run_samples": 0
+      },
+      "caveat": null
+    }
+  },
+  "metrics": {
+    "available": true,
+    "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+    "n_rows": 432000,
+    "n_stations": 5,
+    "mean_abs_zscore": 0.791783,
+    "median_abs_zscore": 0.683232,
+    "p95_abs_zscore": 1.843025,
+    "p99_abs_zscore": 2.859848,
+    "max_abs_zscore": 12.763148,
+    "anomaly_level": "low",
+    "isolated_outlier_flag": true,
+    "graph_interpretation": {
+      "available": true,
+      "graph": "station-resolved z-scores",
+      "title": "Station-resolved z-scores",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+      "key_message": "The global z-score distribution remains mostly near background.",
+      "reading": "The allstations metrics CSV contains 432000 station-time rows. The mean |z| is 0.791783, median |z| is 0.683232, p95 |z| is 1.843025, p99 |z| is 2.859848, and max |z| is 12.763148. Using p95 |z|, the global anomaly level is classified as 'low'.",
+      "technical_interpretation": {
+        "anomaly_level": "low",
+        "mean_abs_zscore": 0.791783,
+        "median_abs_zscore": 0.683232,
+        "p95_abs_zscore": 1.843025,
+        "p99_abs_zscore": 2.859848,
+        "max_abs_zscore": 12.763148,
+        "isolated_outlier_flag": true
+      },
+      "caveat": "The background distribution is low by p95 |z|, but at least one isolated extreme outlier is present. This should not be read as sustained global anomaly."
+    }
+  },
+  "scan": {
+    "available": true,
+    "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\scan\\scan_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h_allstations.csv",
+    "n_extremes": 11336,
+    "kind_counts": {
+      "peak": 11336
+    },
+    "max_extremes_per_30min_bin": 549,
+    "occupied_30min_bins": 49,
+    "total_30min_bins_estimated": 50,
+    "occupied_30min_fraction": 0.98,
+    "occupied_30min_fraction_percent": 98.0,
+    "temporal_pattern": "strongly clustered extremes",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "extreme anomaly distribution",
+      "title": "Extreme anomaly distribution",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\scan\\scan_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h_allstations.csv",
+      "key_message": "Extremes are strongly concentrated in time.",
+      "reading": "The allstations scan CSV identifies 11336 extreme samples. The maximum number of extremes in a 30-minute bin is 549, with extremes occupying 49 30-minute bin(s). The temporal pattern is classified as 'strongly clustered extremes'.",
+      "technical_interpretation": {
+        "n_extremes": 11336,
+        "kind_counts": {
+          "peak": 11336
+        },
+        "max_extremes_per_30min_bin": 549,
+        "occupied_30min_bins": 49,
+        "temporal_pattern": "strongly clustered extremes"
+      },
+      "caveat": "Temporal clustering of extremes is meaningful only when read together with synchrony and z-score summaries."
+    }
+  },
+  "forcing": {
+    "available": true,
+    "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\forzantes\\forzantes_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h.csv",
+    "numeric_columns": [
+      "bin",
+      "mean_z",
+      "p90_z",
+      "mean_z_smooth",
+      "tide_norm"
+    ],
+    "forcing_candidate_columns": [
+      "tide_norm"
+    ],
+    "anomaly_candidate_columns": [
+      "mean_z",
+      "p90_z",
+      "mean_z_smooth"
+    ],
+    "max_abs_correlation": 0.359061,
+    "best_column_pair": {
+      "anomaly_column": "p90_z",
+      "forcing_column": "tide_norm",
+      "correlation": 0.359061
+    },
+    "relationship_to_anomaly": "weak_or_no_linear_tracking",
+    "graph_interpretation": {
+      "available": true,
+      "graph": "anomaly vs synthetic tidal forcing",
+      "title": "Anomaly vs synthetic tidal forcing",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\forzantes\\forzantes_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h.csv",
+      "key_message": "The anomaly does not strongly track the smooth forcing reference.",
+      "reading": "The forcing CSV was read as a contextual reference. The strongest absolute correlation between candidate anomaly columns and forcing-like columns is 0.359061. The relationship is classified as 'weak_or_no_linear_tracking'. This curve is treated as a smooth reference, not as a prediction signal.",
+      "technical_interpretation": {
+        "max_abs_correlation": 0.359061,
+        "best_column_pair": {
+          "anomaly_column": "p90_z",
+          "forcing_column": "tide_norm",
+          "correlation": 0.359061
+        },
+        "relationship_to_anomaly": "weak_or_no_linear_tracking"
+      },
+      "caveat": "The forcing curve is contextual only. It should not be interpreted as a forecasting input or causal proof."
+    }
+  },
+  "robust_precursors": {
+    "available": false,
+    "source_files": {}
+  },
+  "graph_interpretations": {
+    "sync_multistation": {
+      "available": true,
+      "graph": "multistation synchrony",
+      "title": "Multistation synchrony",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\sync\\sync_multistation.csv",
+      "key_message": "Low or sparse multistation synchrony.",
+      "reading": "The synchrony CSV shows that up to 1 of 5 stations were simultaneously active. The maximum active fraction is 0.2 (20.0%), whereas the mean active fraction is 0.003645 (0.3645%). Synchronized samples represent 0.0% of the analyzed window, with a maximum synchronized run of 0 sample(s). The temporal structure is classified as 'no clear synchronized episodes'.",
+      "technical_interpretation": {
+        "coherence_level": "low",
+        "temporal_structure": "no clear synchronized episodes",
+        "max_active_fraction_percent": 20.0,
+        "mean_active_fraction_percent": 0.3645,
+        "sync_fraction_percent": 0.0,
+        "max_sync_run_samples": 0
+      },
+      "caveat": null
+    },
+    "zscore_multistation": {
+      "available": true,
+      "graph": "station-resolved z-scores",
+      "title": "Station-resolved z-scores",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\metrics\\tamc_24h_metrics_allstations.csv",
+      "key_message": "The global z-score distribution remains mostly near background.",
+      "reading": "The allstations metrics CSV contains 432000 station-time rows. The mean |z| is 0.791783, median |z| is 0.683232, p95 |z| is 1.843025, p99 |z| is 2.859848, and max |z| is 12.763148. Using p95 |z|, the global anomaly level is classified as 'low'.",
+      "technical_interpretation": {
+        "anomaly_level": "low",
+        "mean_abs_zscore": 0.791783,
+        "median_abs_zscore": 0.683232,
+        "p95_abs_zscore": 1.843025,
+        "p99_abs_zscore": 2.859848,
+        "max_abs_zscore": 12.763148,
+        "isolated_outlier_flag": true
+      },
+      "caveat": "The background distribution is low by p95 |z|, but at least one isolated extreme outlier is present. This should not be read as sustained global anomaly."
+    },
+    "extreme_anomaly_distribution": {
+      "available": true,
+      "graph": "extreme anomaly distribution",
+      "title": "Extreme anomaly distribution",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\scan\\scan_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h_allstations.csv",
+      "key_message": "Extremes are strongly concentrated in time.",
+      "reading": "The allstations scan CSV identifies 11336 extreme samples. The maximum number of extremes in a 30-minute bin is 549, with extremes occupying 49 30-minute bin(s). The temporal pattern is classified as 'strongly clustered extremes'.",
+      "technical_interpretation": {
+        "n_extremes": 11336,
+        "kind_counts": {
+          "peak": 11336
+        },
+        "max_extremes_per_30min_bin": 549,
+        "occupied_30min_bins": 49,
+        "temporal_pattern": "strongly clustered extremes"
+      },
+      "caveat": "Temporal clustering of extremes is meaningful only when read together with synchrony and z-score summaries."
+    },
+    "anomaly_vs_synthetic_tidal_forcing": {
+      "available": true,
+      "graph": "anomaly vs synthetic tidal forcing",
+      "title": "Anomaly vs synthetic tidal forcing",
+      "source_file": "resultados\\La_Palma_Canary_Islands__RECENT_20260828_171943\\mainshock\\forzantes\\forzantes_La_Palma_Canary_Islands__RECENT_20260828_171943_mainshock_24h.csv",
+      "key_message": "The anomaly does not strongly track the smooth forcing reference.",
+      "reading": "The forcing CSV was read as a contextual reference. The strongest absolute correlation between candidate anomaly columns and forcing-like columns is 0.359061. The relationship is classified as 'weak_or_no_linear_tracking'. This curve is treated as a smooth reference, not as a prediction signal.",
+      "technical_interpretation": {
+        "max_abs_correlation": 0.359061,
+        "best_column_pair": {
+          "anomaly_column": "p90_z",
+          "forcing_column": "tide_norm",
+          "correlation": 0.359061
+        },
+        "relationship_to_anomaly": "weak_or_no_linear_tracking"
+      },
+      "caveat": "The forcing curve is contextual only. It should not be interpreted as a forecasting input or causal proof."
+    },
+    "robust_precursors": {
+      "available": false,
+      "graph": "robust precursors / null model",
+      "title": "Robustness / null-model comparison",
+      "key_message": "No robust precursor files available.",
+      "reading": "The robustness layer cannot be interpreted because robust_precursors outputs were not found."
+    }
+  },
+  "joint_interpretation": {
+    "title": "Joint network interpretation",
+    "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
+    "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
+    "coherence_level": "low",
+    "anomaly_level": "low",
+    "temporal_structure": "no clear synchronized episodes",
+    "extreme_structure": "strongly clustered extremes",
+    "forcing_relationship": "weak_or_no_linear_tracking",
+    "robust_statistical_support": "not available",
+    "pattern_tags": [
+      "coherence: low",
+      "no clear synchronized episodes",
+      "anomaly: low",
+      "strongly clustered extremes",
+      "forcing: weak_or_no_linear_tracking",
+      "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY"
+    ],
+    "evidence": [
+      "Synchrony reaches 1 of 5 stations at peak, but synchronized samples represent 0.0% of the window.",
+      "The z-score distribution has p95 |z| = 1.843025 and max |z| = 12.763148.",
+      "The extreme scan contains 11336 extremes, with up to 549 extremes in a 30-minute bin.",
+      "The forcing-reference layer shows weak_or_no_linear_tracking with the anomaly candidates (max |corr| = 0.359061)."
+    ],
+    "cross_plot_consistency": [
+      "The global anomaly background is low, but isolated extreme z-score outliers are present.",
+      "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
+      "The observed anomaly structure does not simply track the smooth forcing reference."
+    ],
+    "summary": "La Palma Canary Islands is classified as clustered extreme episodes without broad synchrony based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available.",
+    "interpretation_logic": {
+      "sync_used": true,
+      "metrics_allstations_used": true,
+      "scan_allstations_used": true,
+      "forcing_used_as_context": true,
+      "robust_null_used": false,
+      "ignored_station_level_csv": true,
+      "ignored_images": true,
+      "fusion_method": "rule-based multivariate interpretation from CSV/JSON pipeline outputs"
+    },
+    "descriptive_score_0_100": 37.91,
+    "descriptive_score_level": "low",
+    "score_components": {
+      "sync_peak_score": 6.0,
+      "sync_persistence_score": 0.0,
+      "anomaly_distribution_score": 15.359,
+      "isolated_extreme_score": 1.553,
+      "scan_cluster_score": 15.0,
+      "forcing_context_score": 0.0
+    },
+    "score_notice": "This is a descriptive structure score for UI ranking only. It is not seismic risk, probability, forecast or warning.",
+    "notice": "Descriptive network-level analysis only. Not predictive. Not an early-warning or risk-assessment system."
+  },
+  "interpretation": {
+    "title": "Joint network interpretation",
+    "analysis_type": "Joint multistation coherence / z-score / extreme / forcing / robust-null reading",
+    "network_state": "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY",
+    "coherence_level": "low",
+    "anomaly_level": "low",
+    "temporal_structure": "no clear synchronized episodes",
+    "extreme_structure": "strongly clustered extremes",
+    "forcing_relationship": "weak_or_no_linear_tracking",
+    "robust_statistical_support": "not available",
+    "pattern_tags": [
+      "coherence: low",
+      "no clear synchronized episodes",
+      "anomaly: low",
+      "strongly clustered extremes",
+      "forcing: weak_or_no_linear_tracking",
+      "CLUSTERED EXTREME EPISODES WITHOUT BROAD SYNCHRONY"
+    ],
+    "evidence": [
+      "Synchrony reaches 1 of 5 stations at peak, but synchronized samples represent 0.0% of the window.",
+      "The z-score distribution has p95 |z| = 1.843025 and max |z| = 12.763148.",
+      "The extreme scan contains 11336 extremes, with up to 549 extremes in a 30-minute bin.",
+      "The forcing-reference layer shows weak_or_no_linear_tracking with the anomaly candidates (max |corr| = 0.359061)."
+    ],
+    "cross_plot_consistency": [
+      "The global anomaly background is low, but isolated extreme z-score outliers are present.",
+      "Extremes are temporally clustered even though the global z-score distribution remains mostly low.",
+      "The observed anomaly structure does not simply track the smooth forcing reference."
+    ],
+    "summary": "La Palma Canary Islands is classified as clustered extreme episodes without broad synchrony based on the joint reading of synchrony, z-scores, extreme structure, forcing context and robust/null outputs where available.",
+    "interpretation_logic": {
+      "sync_used": true,
+      "metrics_allstations_used": true,
+      "scan_allstations_used": true,
+      "forcing_used_as_context": true,
+      "robust_null_used": false,
+      "ignored_station_level_csv": true,
+      "ignored_images": true,
+      "fusion_method": "rule-based multivariate interpretation from CSV/JSON pipeline outputs"
+    },
+    "descriptive_score_0_100": 37.91,
+    "descriptive_score_level": "low",
+    "score_components": {
+      "sync_peak_score": 6.0,
+      "sync_persistence_score": 0.0,
+      "anomaly_distribution_score": 15.359,
+      "isolated_extreme_score": 1.553,
+      "scan_cluster_score": 15.0,
+      "forcing_context_score": 0.0
+    },
+    "score_notice": "This is a descriptive structure score for UI ranking only. It is not seismic risk, probability, forecast or warning.",
+    "notice": "Descriptive network-level analysis only. Not predictive. Not an early-warning or risk-assessment system."
+  }
+}
