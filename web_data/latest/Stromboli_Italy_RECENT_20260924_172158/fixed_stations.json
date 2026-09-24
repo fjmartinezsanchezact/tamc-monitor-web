@@ -1,0 +1,42 @@
+[
+  {
+    "net": "MN",
+    "sta": "WDD",
+    "loc": "",
+    "stalat": 35.8373,
+    "stalon": 14.5242,
+    "dist_km": 333.28905317086566
+  },
+  {
+    "net": "MN",
+    "sta": "DIVS",
+    "loc": "",
+    "stalat": 44.0981,
+    "stalon": 19.9917,
+    "dist_km": 711.9005466795464
+  },
+  {
+    "net": "MN",
+    "sta": "VLC",
+    "loc": "",
+    "stalat": 44.1594,
+    "stalon": 10.3864,
+    "dist_km": 719.3886526217639
+  },
+  {
+    "net": "CH",
+    "sta": "MUGIO",
+    "loc": "",
+    "stalat": 45.92186,
+    "stalon": 9.04167,
+    "dist_km": 940.5183638828473
+  },
+  {
+    "net": "WM",
+    "sta": "MAHO",
+    "loc": "",
+    "stalat": 39.895901,
+    "stalon": 4.2665,
+    "dist_km": 950.7421428281403
+  }
+]
